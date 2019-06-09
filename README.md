@@ -1,4 +1,4 @@
-# Maya-like Viewport with NGL 
+# Maya-like Viewport using NGL 
 ![alt tag](mlvn.jpg)
 
 
