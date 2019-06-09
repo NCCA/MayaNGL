@@ -1,0 +1,58 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.DS_Store
+*.pyc
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# shadow build directories
+build-*
+Makefile
+*.Debug
+*.Release
+
+# qt files
+*.pro.user*
+.qmake*
+Makefile
+moc/
+moc_*
+obj/
+gui/
+ui_*
+debug/
+release/
+
+# Visual Studio Crap
+*.vcproj
+*.vcxproj
+*.sln
+*.user
+*.filters
+
+# Executables
+*.exe
+*.out
+*.app
+
+# temp files under linux
+*.~*
+
+#Cmake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
+install_manifest.txt
