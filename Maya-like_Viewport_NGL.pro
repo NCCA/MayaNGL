@@ -15,26 +15,31 @@ MOC_DIR = moc
 
 CONFIG -= app_bundle
 
-SOURCES += $$PWD/src/*.cpp
-HEADERS += $$PWD/include/*.h
+HEADERS += $$PWD/include/*.h \
+           $$PWD/include/Camera/*.h
+
+SOURCES += $$PWD/src/*.cpp \
+           $$PWD/src/Camera/*.cpp
+
+OTHER_FILES += $$PWD/shaders/*.glsl \
+               README.md
 
 INCLUDEPATH += ./include
 
 DESTDIR = ./
 
-OTHER_FILES += README.md
 
 CONFIG += console
 
 !equals(PWD, $${OUT_PWD}){
-        copydata.commands = echo "creating destination dirs" ;
-	copydata.commands += mkdir -p $$OUT_PWD/shaders ;
-        copydata.commands += echo "copying files" ;
-        copydata.commands += $(COPY_DIR) $$PWD/shaders/* $$OUT_PWD/shaders/ ;
-	first.depends = $(first) copydata
-	export(first.depends)
-        export(copydata.commands)
-	QMAKE_EXTRA_TARGETS += first copydata
+    copydata.commands = echo "creating destination dirs" ;
+    copydata.commands += mkdir -p $$OUT_PWD/shaders ;
+    copydata.commands += echo "copying files" ;
+    copydata.commands += $(COPY_DIR) $$PWD/shaders/* $$OUT_PWD/shaders/ ;
+    first.depends = $(first) copydata
+    export(first.depends)
+    export(copydata.commands)
+    QMAKE_EXTRA_TARGETS += first copydata
 }
 
 NGLPATH=$$(NGLDIR)
@@ -46,4 +51,3 @@ else{
 	message("Using custom NGL location")
 	include($(NGLDIR)/UseNGL.pri)
 }
-
