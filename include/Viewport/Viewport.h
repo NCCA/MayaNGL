@@ -19,8 +19,8 @@ class Viewport
         typedef ngl::Mat4 ProjectionMat;
 
     private:
-        const unsigned &screenWidth;
-        const unsigned &screenHeight;
+        const int &screenWidth;
+        const int &screenHeight;
         ViewMat &view;
         ProjectionMat &projection;
 
@@ -34,12 +34,13 @@ class Viewport
 
     private:
         void loadLineColourShader();
+        void loadColourShader();
         ProjectionMat goPersp();
         ProjectionMat goOrtho();
 
     public:
-        explicit Viewport( const unsigned &screenWidth_,
-                           const unsigned &screenHeight_,
+        explicit Viewport( const int &screenWidth_,
+                           const int &screenHeight_,
                            ngl::Mat4 &view_,
                            ngl::Mat4 &projection_ );
 

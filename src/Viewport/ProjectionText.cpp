@@ -2,8 +2,8 @@
 #include "Viewport/ProjectionText.h"
 
 
-ProjectionText::ProjectionText( const unsigned &screenWidth_,
-                                const unsigned &screenHeight_ )
+ProjectionText::ProjectionText( const int &screenWidth_,
+                                const int &screenHeight_ )
                                 :
                                 screenWidth(screenWidth_),
                                 screenHeight(screenHeight_),
@@ -21,5 +21,5 @@ void ProjectionText::update()
 {
     // could use a function that updates the font size at run-time.
     m_label->setScreenSize(screenWidth,screenHeight);
-    m_label->renderText(screenWidth*0.5-(title.length()*2),screenHeight-50,title.c_str());
+    m_label->renderText(screenWidth*0.5f-(title.length()*2.f),screenHeight-50.f,title.c_str());
 }

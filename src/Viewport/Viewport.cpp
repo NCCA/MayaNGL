@@ -4,8 +4,8 @@
 
 
 
-Viewport::Viewport( const unsigned &screenWidth_,
-                    const unsigned &screenHeight_,
+Viewport::Viewport( const int &screenWidth_,
+                    const int &screenHeight_,
                     ngl::Mat4 &view_,
                     ngl::Mat4 &projection_ )
                     :
@@ -32,9 +32,19 @@ void Viewport::loadLineColourShader()
 
     auto MVP = projection * view * m_model.getMatrix();
 
-    float dist = -view.m_32*0.025;
     shader->setUniform("MVP",MVP);
-    shader->setUniform("Dist",dist);
+    shader->setUniform("Dist",abs(view.m_32));
+}
+
+void Viewport::loadColourShader()
+{
+    auto *shader = ngl::ShaderLib::instance();
+    shader->use(ngl::nglColourShader);
+
+    auto MVP = projection * view * m_model.getMatrix();
+
+    shader->setUniform("MVP",MVP);
+    shader->setUniform("Colour",1.0f,0.1f,0.1f,1.0f);
 }
 
 void Viewport::resize()
@@ -85,6 +95,23 @@ void Viewport::update_draw()
 
     loadLineColourShader();
     grid->draw("Grid");
+
+    {
+        loadColourShader();
+        std::vector<ngl::Vec3> points(4);
+        points[0]=ngl::Vec3::zero();
+        points[1]=ngl::Vec3(0.f,4.f,0.f);
+        points[2]=ngl::Vec3::zero();
+        points[3]=ngl::Vec3(4.f,4.f,0.f);
+
+        std::unique_ptr<ngl::AbstractVAO> vao(ngl::VAOFactory::createVAO("simpleVAO",GL_LINES));
+        vao->bind();
+        vao->setData(ngl::AbstractVAO::VertexData(4*sizeof(ngl::Vec3),points[0].m_x));
+        vao->setNumIndices(4);
+        vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+        vao->draw();
+        vao->unbind();
+    }
 
     m_projText.update();
 }

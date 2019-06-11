@@ -9,8 +9,8 @@ class ProjectionText
         typedef std::unique_ptr<ngl::Text> TextPtr;
 
     private:
-        const unsigned &screenWidth;
-        const unsigned &screenHeight;
+        const int &screenWidth;
+        const int &screenHeight;
 
     private:
         TextPtr m_label;
@@ -19,8 +19,8 @@ class ProjectionText
         std::string title;
 
     public:
-        ProjectionText( const unsigned &screenWidth_,
-                        const unsigned &screenHeight_ );
+        ProjectionText( const int &screenWidth_,
+                        const int &screenHeight_ );
 
         void initialize();
         void update();

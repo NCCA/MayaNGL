@@ -34,12 +34,12 @@ void main()
     vec3 vtx1 = gl_in[1].gl_Position.xyz;
 
     axisColour = vec4(0.3f,0.3f,0.3f,1.f);
-    float Thickness = Dist * 0.025f;
+    float Thickness = Dist * 0.0006f;
 
     if ( vtx0.x == 0.f || vtx0.z == 0.f)
     {
         axisColour = vec4(0.25f,0.25f,0.25f,1.f);
-        Thickness = Dist * 0.05f;
+        Thickness = Dist * 0.001f;
     }
 
     vec3 lineVec = normalize(vtx1 - vtx0);
@@ -70,5 +70,4 @@ void main()
     createFace(v4, v0, v3);
 
     EndPrimitive();
-
 }

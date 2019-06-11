@@ -44,7 +44,7 @@ void NGLScene::initializeGL()
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
 
     screen_width = this->size().width();
-    screen_height = this->size().height(),
+    screen_height = this->size().height();
 
     m_viewport.initialize();
 }

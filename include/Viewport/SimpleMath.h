@@ -16,6 +16,8 @@ namespace sm
     float toDegs(float num_);
     float toRads(float num_);
 
+    ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_);
+
     glm::mat3 X_Matrix(float angle_);
     glm::mat3 Y_Matrix(float angle_);
     glm::mat3 Z_Matrix(float angle_);

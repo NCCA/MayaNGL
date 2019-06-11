@@ -23,7 +23,6 @@ class Camera
         Direction m_inverseDirection;
         View m_currentView;
 
-
     public:
         explicit Camera(const Mouse &mouse_);
 
@@ -31,6 +30,7 @@ class Camera
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_upVector,UpVector)
         GET_MEMBER(m_currentView,CurrentView)
+        GET_MEMBER(m_inverseDirection,InverseDirection)
 
         void pan();
         void dolly();

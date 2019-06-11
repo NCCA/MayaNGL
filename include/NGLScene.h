@@ -14,7 +14,7 @@ class NGLScene : public QOpenGLWindow
     Q_OBJECT
 
     private:
-        unsigned screen_width, screen_height;
+        int screen_width, screen_height;
 
         ngl::Transformation m_model;
         ngl::Mat4 m_view;
