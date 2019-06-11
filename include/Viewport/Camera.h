@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Camera/Mouse.h"
+#include "Viewport/Mouse.h"
 #include <ngl/Mat3.h>
-#include <ngl/Mat4.h>
-#include <QKeyEvent>
-#include <QMouseEvent>
 
 
 class Camera
@@ -13,36 +10,36 @@ class Camera
         typedef ngl::Vec3 Position;
         typedef ngl::Vec3 Direction;
 
-    private:
+    public:
         enum class View {PERSPECTIVE,FRONT,SIDE,TOP};
 
+    private:
+        const Mouse &mouse;
+
+    private:
         Position m_position;
         Position m_lookAt;
         Direction m_upVector;
         Direction m_inverseDirection;
         View m_currentView;
-        Mouse m_mouse;
 
-    private:
-        void pan();
-        void dolly();
-        void track();
-        void refocus();
-        void focusOn(const Position &target_);
-        void front();
-        void side();
-        void top();
 
     public:
-        explicit Camera();
+        explicit Camera(const Mouse &mouse_);
 
         GET_MEMBER(m_position,Position)
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_upVector,UpVector)
+        GET_MEMBER(m_currentView,CurrentView)
 
-        void keyPress(QKeyEvent *event_);
-        void mousePress(QMouseEvent *event_);
-        void mouseMove(QMouseEvent *event_);
+        void pan();
+        void dolly();
+        void track();
+        void reset(Position &&pos_={28.f,21.f,28.f},View view_=View::PERSPECTIVE,Direction &&up_=ngl::Vec3::up());
+        void focusOn(const Position &target_);
+        void front();
+        void side();
+        void top();
 
         ~Camera() noexcept = default;
 };

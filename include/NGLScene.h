@@ -1,15 +1,12 @@
 #pragma once
 
 #include <iostream>
-#include <ngl/Vec3.h>
-#include <ngl/Vec4.h>
 #include <ngl/Mat4.h>
 #include <ngl/Transformation.h>
-#include <ngl/Text.h>
-#include "Camera/Camera.h"
 #include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include "Viewport/Viewport.h"
 
 
 class NGLScene : public QOpenGLWindow
@@ -17,16 +14,16 @@ class NGLScene : public QOpenGLWindow
     Q_OBJECT
 
     private:
+        unsigned screen_width, screen_height;
+
         ngl::Transformation m_model;
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;
 
-        Camera m_camera;
-        std::unique_ptr<ngl::Text> m_projection_title;
+        Viewport m_viewport;
 
+    private:
         void loadDiffuseShader();
-        void loadLineColourShader();
-
         void keyPressEvent(QKeyEvent *event_ = nullptr) override;
         void mousePressEvent(QMouseEvent *event_ = nullptr) override;
         void mouseMoveEvent(QMouseEvent *event_ = nullptr) override;
@@ -38,5 +35,5 @@ class NGLScene : public QOpenGLWindow
         void paintGL() override;
         void resizeGL(int w_, int h_) override;
 
-        ~NGLScene() override = default;
+        ~NGLScene() noexcept override = default;
 };

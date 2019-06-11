@@ -8,7 +8,7 @@
     auto get##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &    \
     {                                                                                   \
         return n_;                                                                      \
-    }
+    }                                                                                   \
 
 
 namespace sm

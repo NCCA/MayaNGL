@@ -16,18 +16,17 @@ MOC_DIR = moc
 CONFIG -= app_bundle
 
 HEADERS += $$PWD/include/*.h \
-           $$PWD/include/Camera/*.h
+           $$PWD/include/Viewport/*.h
 
 SOURCES += $$PWD/src/*.cpp \
-           $$PWD/src/Camera/*.cpp
+           $$PWD/src/Viewport/*.cpp
 
-OTHER_FILES += $$PWD/shaders/*.glsl \
+OTHER_FILES += $$PWD/shaders/Viewport/*.glsl \
                README.md
 
 INCLUDEPATH += ./include
 
 DESTDIR = ./
-
 
 CONFIG += console
 
@@ -51,3 +50,4 @@ else{
 	message("Using custom NGL location")
 	include($(NGLDIR)/UseNGL.pri)
 }
+
