@@ -17,9 +17,13 @@ void ProjectionText::initialize()
     m_label->setColour(1.f,1.f,1.f);
 }
 
-void ProjectionText::update()
+void ProjectionText::resize()
 {
     // could use a function that updates the font size at run-time.
     m_label->setScreenSize(screenWidth,screenHeight);
-    m_label->renderText(screenWidth*0.5f-(title.length()*2.f),screenHeight-50.f,title.c_str());
+}
+
+void ProjectionText::draw()
+{
+    m_label->renderText(screenWidth*0.5f-(title.length()*2.f),screenHeight-25.f,title.c_str());
 }

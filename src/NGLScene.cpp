@@ -21,7 +21,7 @@ void NGLScene::resizeGL(int w_, int h_)
 {
     screen_width = w_;
     screen_height = h_;
-    m_projection = ngl::perspective( 45.0f, static_cast<float>(screen_width)/screen_height, 0.1f, 200.0f );
+    m_projection = ngl::perspective(35.0f, static_cast<float>(screen_width)/screen_height, 0.1f, 200.0f );
     m_viewport.resize();
 }
 

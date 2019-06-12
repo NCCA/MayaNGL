@@ -13,7 +13,12 @@
 
 namespace sm
 {
-    float toDegs(float num_);
+    template<typename T>
+    T toDegs(T num_)
+    {
+        return static_cast<T>(num_*(180.0/M_PI));
+    }
+
     float toRads(float num_);
 
     ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_);

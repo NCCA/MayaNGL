@@ -4,9 +4,10 @@
 
 namespace sm
 {
-    float toDegs(float num_)
+    template<>
+    ngl::Vec3 toDegs(ngl::Vec3 num_)
     {
-        return num_*(180.f/static_cast<float>(M_PI));
+        return ngl::Vec3{toDegs(num_.m_x),toDegs(num_.m_y),toDegs(num_.m_z)};
     }
 
     float toRads(float num_)

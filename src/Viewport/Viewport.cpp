@@ -18,7 +18,8 @@ Viewport::Viewport( const int &screenWidth_,
                     m_mouse(),
                     m_camera(m_mouse),
                     m_projText(screenWidth,screenHeight),
-                    m_model()
+                    m_model(),
+                    m_axis(view)
 {
     m_model.reset();
     m_model.setPosition(ngl::Vec3::zero());
@@ -34,27 +35,19 @@ void Viewport::loadLineColourShader()
 
     shader->setUniform("MVP",MVP);
     shader->setUniform("Dist",abs(view.m_32));
-}
-
-void Viewport::loadColourShader()
-{
-    auto *shader = ngl::ShaderLib::instance();
-    shader->use(ngl::nglColourShader);
-
-    auto MVP = projection * view * m_model.getMatrix();
-
-    shader->setUniform("MVP",MVP);
-    shader->setUniform("Colour",1.0f,0.1f,0.1f,1.0f);
+    shader->setUniform("enableViewAxisColours",false);
 }
 
 void Viewport::resize()
 {
     m_aspectRatio = static_cast<float>(screenWidth)/screenHeight;
+    m_projText.resize();
+    m_axis.resize(m_aspectRatio);
 }
 
 Viewport::ProjectionMat Viewport::goPersp()
 {
-    return ngl::perspective(45.0f,static_cast<float>(screenWidth)/screenHeight,0.1f,200.f);
+    return ngl::perspective(35.0f,static_cast<float>(screenWidth)/screenHeight,0.1f,200.f);
 }
 
 Viewport::ProjectionMat Viewport::goOrtho()
@@ -85,6 +78,7 @@ void Viewport::initialize()
     grid->createLineGrid("Grid",24,24,24);
 
     m_projText.initialize();
+    m_axis.initialize();
 }
 
 void Viewport::update_draw()
@@ -96,24 +90,8 @@ void Viewport::update_draw()
     loadLineColourShader();
     grid->draw("Grid");
 
-    {
-        loadColourShader();
-        std::vector<ngl::Vec3> points(4);
-        points[0]=ngl::Vec3::zero();
-        points[1]=ngl::Vec3(0.f,4.f,0.f);
-        points[2]=ngl::Vec3::zero();
-        points[3]=ngl::Vec3(4.f,4.f,0.f);
-
-        std::unique_ptr<ngl::AbstractVAO> vao(ngl::VAOFactory::createVAO("simpleVAO",GL_LINES));
-        vao->bind();
-        vao->setData(ngl::AbstractVAO::VertexData(4*sizeof(ngl::Vec3),points[0].m_x));
-        vao->setNumIndices(4);
-        vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-        vao->draw();
-        vao->unbind();
-    }
-
-    m_projText.update();
+    m_projText.draw();
+    m_axis.draw();
 }
 
 void Viewport::keyPress(QKeyEvent *event_)

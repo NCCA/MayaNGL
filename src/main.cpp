@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
     NGLScene window;
     std::cout << "Profile is " << format.majorVersion() << " " << format.minorVersion() << "\n";
-    window.resize(1024, 720);
+    window.resize(1024, 640);
     window.show();
 
     return app.exec();

@@ -1,11 +1,22 @@
 #version 410 core
 
+#define UP      vec3(0.0,1.0,0.0)
+#define RIGHT   vec3(1.0,0.0,0.0)
+#define FRONT   vec3(0.0,0.0,1.0)
+
+#define RED         vec4(1.0,0.0,0.0,1.0)
+#define GREEN       vec4(0.0,1.0,0.0,1.0)
+#define BLUE        vec4(0.0,0.0,1.0,1.0)
+#define LIGHT_GRAY  vec4(0.3,0.3,0.3,1.0);
+#define DARK_GRAY   vec4(0.25,0.25,0.25,1.0);
+
 layout (lines) in;
 layout (triangle_strip, max_vertices = 36) out;
 //layout(line_strip, max_vertices = 8) out;
 
 uniform mat4 MVP;
 uniform float Dist;
+uniform bool enableViewAxisColours;
 
 out vec4 axisColour;
 
@@ -33,18 +44,34 @@ void main()
     vec3 vtx0 = gl_in[0].gl_Position.xyz;
     vec3 vtx1 = gl_in[1].gl_Position.xyz;
 
-    axisColour = vec4(0.3f,0.3f,0.3f,1.f);
-    float Thickness = Dist * 0.0006f;
-
-    if ( vtx0.x == 0.f || vtx0.z == 0.f)
-    {
-        axisColour = vec4(0.25f,0.25f,0.25f,1.f);
-        Thickness = Dist * 0.001f;
-    }
-
     vec3 lineVec = normalize(vtx1 - vtx0);
 
-    vec3 upVec = vec3(0.0,1.0,0.0);
+    float Thickness = 0.05;
+    if (enableViewAxisColours == false)
+    {
+        axisColour = LIGHT_GRAY;
+        Thickness = Dist * 0.0006;
+
+        if ( vtx0.x == 0.0 || vtx0.z == 0.0)
+        {
+            axisColour = DARK_GRAY;
+            Thickness = Dist * 0.001;
+        }
+    }
+    else
+    {
+        if (lineVec == UP)
+            axisColour = vec4(0,1,0,1);
+        if (lineVec == RIGHT)
+            axisColour = vec4(1,0,0,1);
+        if (lineVec == FRONT)
+            axisColour = vec4(0,0,1,1);
+    }
+
+    vec3 upVec = UP;
+    if (dot(lineVec,upVec)==1.0)
+        upVec = FRONT;
+
     vec3 normalVec = normalize(cross(lineVec,upVec));
 
     vec4 v0 = MVP * vec4((vtx0 - Thickness * normalVec),1.0);

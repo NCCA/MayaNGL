@@ -3,6 +3,7 @@
 #include "Viewport/Camera.h"
 #include "Viewport/Mouse.h"
 #include "Viewport/ProjectionText.h"
+#include "Viewport/ViewAxis.h"
 #include <ngl/Mat4.h>
 #include <ngl/Transformation.h>
 #include <ngl/VAOPrimitives.h>
@@ -31,10 +32,10 @@ class Viewport
         Camera m_camera;
         ProjectionText m_projText;
         Transform m_model;
+        ViewAxis m_axis;
 
     private:
         void loadLineColourShader();
-        void loadColourShader();
         ProjectionMat goPersp();
         ProjectionMat goOrtho();
 

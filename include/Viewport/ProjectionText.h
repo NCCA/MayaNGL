@@ -23,7 +23,8 @@ class ProjectionText
                         const int &screenHeight_ );
 
         void initialize();
-        void update();
+        void resize();
+        void draw();
 
         ~ProjectionText() noexcept = default;
 };
