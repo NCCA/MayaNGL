@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Viewport/Mouse.h"
-#include <ngl/Mat3.h>
 
 
 class Camera
@@ -19,9 +18,30 @@ class Camera
     private:
         Position m_position;
         Position m_lookAt;
+        Direction m_inverse;
         Direction m_upVector;
-        Direction m_inverseDirection;
         View m_currentView;
+
+        Direction updateInverse()
+        {
+            m_inverse = m_position-m_lookAt;
+            m_inverse.normalize();
+            return m_inverse;
+        }
+
+        void updateUpVector() // needs work
+        {
+            bool is_perp = (fabs(m_upVector.dot(m_inverse))>=0.98f);
+            if (is_perp)
+            {
+                auto side = m_upVector.cross(m_inverse);
+                m_upVector = m_inverse.cross(side);
+                m_upVector.normalize();
+            }
+
+            std::cout<< m_upVector <<std::endl;
+
+        }
 
     public:
         explicit Camera(const Mouse &mouse_);
@@ -30,7 +50,6 @@ class Camera
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_upVector,UpVector)
         GET_MEMBER(m_currentView,CurrentView)
-        GET_MEMBER(m_inverseDirection,InverseDirection)
 
         void pan();
         void dolly();

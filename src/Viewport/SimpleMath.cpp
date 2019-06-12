@@ -4,15 +4,14 @@
 
 namespace sm
 {
-    template<>
-    ngl::Vec3 toDegs(ngl::Vec3 num_)
+    ngl::Vec3 toDegs(const ngl::Vec3 &num_)
     {
         return ngl::Vec3{toDegs(num_.m_x),toDegs(num_.m_y),toDegs(num_.m_z)};
     }
 
-    float toRads(float num_)
+    ngl::Vec3 toRads(const ngl::Vec3 &num_)
     {
-        return num_*(static_cast<float>(M_PI)/180.f);
+        return ngl::Vec3{toRads(num_.m_x),toRads(num_.m_y),toRads(num_.m_z)};
     }
 
     ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_)

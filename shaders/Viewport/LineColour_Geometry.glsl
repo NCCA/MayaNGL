@@ -46,7 +46,7 @@ void main()
 
     vec3 lineVec = normalize(vtx1 - vtx0);
 
-    float Thickness = 0.05;
+    float Thickness = Dist * 0.05;
     if (enableViewAxisColours == false)
     {
         axisColour = LIGHT_GRAY;
@@ -61,11 +61,11 @@ void main()
     else
     {
         if (lineVec == UP)
-            axisColour = vec4(0,1,0,1);
+            axisColour = GREEN;
         if (lineVec == RIGHT)
-            axisColour = vec4(1,0,0,1);
+            axisColour = RED;
         if (lineVec == FRONT)
-            axisColour = vec4(0,0,1,1);
+            axisColour = BLUE;
     }
 
     vec3 upVec = UP;

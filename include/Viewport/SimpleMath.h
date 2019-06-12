@@ -1,7 +1,16 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <ngl/Vec2.h>
 #include <ngl/Vec3.h>
+#include <ngl/Mat3.h>
+#include <ngl/Mat4.h>
+#include <ngl/VAOFactory.h>
+#include <ngl/VAOPrimitives.h>
+#include <ngl/Transformation.h>
+#include <ngl/ShaderLib.h>
+#include <ngl/Text.h>
+#include <ngl/NGLStream.h>
 
 
 #define GET_MEMBER(n_,N_)                                                               \
@@ -19,8 +28,14 @@ namespace sm
         return static_cast<T>(num_*(180.0/M_PI));
     }
 
-    float toRads(float num_);
+    template<typename T>
+    T toRads(T num_)
+    {
+        return static_cast<T>(num_*(M_PI/180.0));
+    }
 
+    ngl::Vec3 toDegs(const ngl::Vec3 &num_);
+    ngl::Vec3 toRads(const ngl::Vec3 &num_);
     ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_);
 
     glm::mat3 X_Matrix(float angle_);

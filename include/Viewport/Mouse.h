@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ngl/Vec2.h>
 #include "Viewport/SimpleMath.h"
 
 

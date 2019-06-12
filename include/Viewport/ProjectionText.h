@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ngl/Text.h>
+#include "Viewport/SimpleMath.h"
 
 
 class ProjectionText

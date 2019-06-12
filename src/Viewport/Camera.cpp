@@ -7,19 +7,17 @@ Camera::Camera( const Mouse &mouse_ )
                 mouse(mouse_),
                 m_position(28.f,21.f,28.f),
                 m_lookAt(ngl::Vec3::zero()),
+                m_inverse(updateInverse()),
                 m_upVector(ngl::Vec3::up()),
-                m_inverseDirection(m_position-m_lookAt),
                 m_currentView(View::PERSPECTIVE)
-{
-    m_inverseDirection.normalize();
-}
+{;}
 
 void Camera::pan()
 {
-    m_inverseDirection = m_position-m_lookAt;
-    m_inverseDirection.normalize();
+    updateInverse();
+    updateUpVector();
 
-    auto rotationAxis = m_upVector.cross(m_inverseDirection);
+    auto rotationAxis = m_upVector.cross(m_inverse);
     rotationAxis.normalize();
 
     ngl::Mat3 R = sm::Y_Matrix(sm::toRads(mouse.velocity*mouse.getDirection().m_x)) *
@@ -31,26 +29,24 @@ void Camera::pan()
 
 void Camera::dolly()
 {
-    m_inverseDirection = m_position-m_lookAt;
-    m_inverseDirection.normalize();
+    updateInverse();
 
     auto dist = (m_position-m_lookAt).length();
 
     if(dist<0.5f) // this needs work
     {
-        auto dir = -m_inverseDirection;
+        auto dir = -m_inverse;
         m_lookAt += dist*dir;
     }
 
-    m_position -= mouse.getDirection().m_x * mouse.velocity * m_inverseDirection * Mouse::slowdown;
+    m_position -= mouse.getDirection().m_x * mouse.velocity * m_inverse * Mouse::slowdown;
 }
 
 void Camera::track()
 {
-    m_inverseDirection = m_position-m_lookAt;
-    m_inverseDirection.normalize();
+    updateInverse();
 
-    auto localTrackAxis = m_upVector.cross(m_inverseDirection);
+    auto localTrackAxis = m_upVector.cross(m_inverse);
     localTrackAxis.normalize();
 
     switch(m_currentView)
@@ -80,8 +76,7 @@ void Camera::reset(Position &&pos_, View view_, Direction &&up_)
     m_position = pos_;
     m_lookAt = ngl::Vec3::zero();
     m_upVector = up_;
-    m_inverseDirection = m_position-m_lookAt;
-    m_inverseDirection.normalize();
+    m_inverse = updateInverse();
     m_currentView = view_;
 }
 

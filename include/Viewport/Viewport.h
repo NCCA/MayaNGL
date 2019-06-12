@@ -4,10 +4,6 @@
 #include "Viewport/Mouse.h"
 #include "Viewport/ProjectionText.h"
 #include "Viewport/ViewAxis.h"
-#include <ngl/Mat4.h>
-#include <ngl/Transformation.h>
-#include <ngl/VAOPrimitives.h>
-#include <ngl/ShaderLib.h>
 #include <QKeyEvent>
 #include <QMouseEvent>
 
