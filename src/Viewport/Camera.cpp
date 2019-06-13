@@ -25,9 +25,11 @@ void Camera::pan()
 {
     updateInverse();
 
-//    auto rotationAxis = sm::absl(m_upVector.cross(m_inverse));
-    auto rotationAxis = (m_upVector.cross(m_inverse));
+    auto rotationAxis = m_upVector.cross(m_inverse);
     rotationAxis.normalize();
+
+//    m_upVector = m_inverse.cross(rotationAxis);
+//    m_upVector.normalize();
 
     ngl::Mat4 R = sm::Y_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_x)) *
                   sm::Axis_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_y),rotationAxis);

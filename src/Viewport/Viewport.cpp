@@ -85,8 +85,8 @@ void Viewport::initialize()
 
 void Viewport::update_draw()
 {
-    view = orig_view * m_camera.Rot;
-//    view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+//    view = orig_view * m_camera.Rot;
+    view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector()); // this is preferred
 
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
 
