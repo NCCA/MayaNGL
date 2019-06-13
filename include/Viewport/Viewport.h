@@ -19,6 +19,7 @@ class Viewport
         const int &screenWidth;
         const int &screenHeight;
         ViewMat &view;
+        ViewMat orig_view;
         ProjectionMat &projection;
 
     private:

@@ -11,6 +11,7 @@
 #include <ngl/ShaderLib.h>
 #include <ngl/Text.h>
 #include <ngl/NGLStream.h>
+#include <math.h>
 
 
 #define GET_MEMBER(n_,N_)                                                               \
@@ -36,10 +37,11 @@ namespace sm
 
     ngl::Vec3 toDegs(const ngl::Vec3 &num_);
     ngl::Vec3 toRads(const ngl::Vec3 &num_);
+    ngl::Vec3 absl(const ngl::Vec3 &num_);
     ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_);
 
-    glm::mat3 X_Matrix(float angle_);
-    glm::mat3 Y_Matrix(float angle_);
-    glm::mat3 Z_Matrix(float angle_);
-    glm::mat3 Axis_Matrix(float angle_, const ngl::Vec3 &axis_);
+    glm::mat4 X_Matrix(float angle_);
+    glm::mat4 Y_Matrix(float angle_);
+    glm::mat4 Z_Matrix(float angle_);
+    glm::mat4 Axis_Matrix(float angle_, const ngl::Vec3 &axis_);
 }

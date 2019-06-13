@@ -14,6 +14,12 @@ namespace sm
         return ngl::Vec3{toRads(num_.m_x),toRads(num_.m_y),toRads(num_.m_z)};
     }
 
+    ngl::Vec3 absl(const ngl::Vec3 &num_)
+    {
+        return ngl::Vec3{fabs(num_.m_x),fabs(num_.m_y),fabs(num_.m_z)};
+    }
+
+
     ngl::Vec3 intersect(const ngl::Vec3 &rayPosition_, const ngl::Vec3 &rayDirection_, const ngl::Vec3 &planePos_)
     {
         auto planePosition = planePos_;
@@ -43,32 +49,36 @@ namespace sm
         return ngl::Vec3::zero();
     }
 
-    glm::mat3 X_Matrix(float angle_)
+    glm::mat4 X_Matrix(float angle_)
     {
-        return glm::mat3{ 1.f, 0.f        , 0.f,
-                          0.f, cosf(angle_),-sinf(angle_),
-                          0.f, sinf(angle_), cosf(angle_) };
+        return glm::mat4{ 1.f, 0.f         , 0.f         , 0.f,
+                          0.f, cosf(angle_),-sinf(angle_), 0.f,
+                          0.f, sinf(angle_), cosf(angle_), 0.f,
+                          0.f, 0.f         , 0.f         , 1.f };
     }
 
-    glm::mat3 Y_Matrix(float angle_)
+    glm::mat4 Y_Matrix(float angle_)
     {
-        return glm::mat3{ cosf(angle_), 0.f, sinf(angle_),
-                          0.f        , 1.f, 0.f,
-                         -sinf(angle_), 0.f, cosf(angle_) };
+        return glm::mat4{ cosf(angle_), 0.f, sinf(angle_), 0.f,
+                          0.f         , 1.f, 0.f         , 0.f,
+                         -sinf(angle_), 0.f, cosf(angle_), 0.f,
+                          0.f         , 0.f, 0.f         , 1.f };
     }
 
-    glm::mat3 Z_Matrix(float angle_)
+    glm::mat4 Z_Matrix(float angle_)
     {
-        return glm::mat3{ cosf(angle_),-sinf(angle_), 0.0,
-                          sinf(angle_), cosf(angle_), 0.0,
-                          0.0        , 0.0        , 1.0 };
+        return glm::mat4{ cosf(angle_),-sinf(angle_), 0.f, 0.f,
+                          sinf(angle_), cosf(angle_), 0.f, 0.f,
+                          0.f         , 0.f         , 1.f, 0.f,
+                          0.f         , 0.f         , 0.f, 1.f };
     }
 
-    glm::mat3 Axis_Matrix(float angle_, const ngl::Vec3 &axis_)
+    glm::mat4 Axis_Matrix(float angle_, const ngl::Vec3 &axis_)
     {
-        return glm::mat3{ cosf(angle_)+powf(axis_.m_x,2)*(1.f-cosf(angle_))                  , (axis_.m_x*axis_.m_y*(1.f-cosf(angle_)))-(axis_.m_z*sinf(angle_)) , (axis_.m_x*axis_.m_z*(1.f-cosf(angle_)))+(axis_.m_y*sinf(angle_)),
-                          (axis_.m_y*axis_.m_x*(1.f-cosf(angle_)))+(axis_.m_z*sinf(angle_)) , cosf(angle_)+powf(axis_.m_y,2)*(1.f - cosf(angle_))                , (axis_.m_y*axis_.m_z*(1.f-cosf(angle_)))-(axis_.m_x*sinf(angle_)),
-                          (axis_.m_z*axis_.m_x*(1.f-cosf(angle_)))-(axis_.m_y*sinf(angle_)) , (axis_.m_z*axis_.m_y*(1.f-cosf(angle_)))+(axis_.m_x*sinf(angle_))  , cosf(angle_)+powf(axis_.m_z,2)*(1.f - cosf(angle_)) };
+        return glm::mat4{ cosf(angle_)+powf(axis_.m_x,2)*(1.f-cosf(angle_))                 , (axis_.m_x*axis_.m_y*(1.f-cosf(angle_)))-(axis_.m_z*sinf(angle_)) , (axis_.m_x*axis_.m_z*(1.f-cosf(angle_)))+(axis_.m_y*sinf(angle_)), 0.f,
+                          (axis_.m_y*axis_.m_x*(1.f-cosf(angle_)))+(axis_.m_z*sinf(angle_)) , cosf(angle_)+powf(axis_.m_y,2)*(1.f - cosf(angle_))               , (axis_.m_y*axis_.m_z*(1.f-cosf(angle_)))-(axis_.m_x*sinf(angle_)), 0.f,
+                          (axis_.m_z*axis_.m_x*(1.f-cosf(angle_)))-(axis_.m_y*sinf(angle_)) , (axis_.m_z*axis_.m_y*(1.f-cosf(angle_)))+(axis_.m_x*sinf(angle_)) , cosf(angle_)+powf(axis_.m_z,2)*(1.f - cosf(angle_))              , 0.f,
+                          0.f                                                               , 0.f                                                               , 0.f                                                              , 1.f };
     }
 }
 

@@ -12,6 +12,7 @@ Viewport::Viewport( const int &screenWidth_,
                     screenWidth(screenWidth_),
                     screenHeight(screenHeight_),
                     view(view_),
+                    orig_view(view),
                     projection(projection_),
                     m_aspectRatio(static_cast<float>(screenWidth)/screenHeight),
                     m_ortho_zoom(10.f),
@@ -23,7 +24,6 @@ Viewport::Viewport( const int &screenWidth_,
 {
     m_model.reset();
     m_model.setPosition(ngl::Vec3::zero());
-    m_model.setRotation(ngl::Vec3::zero());
 }
 
 void Viewport::loadLineColourShader()
@@ -79,11 +79,14 @@ void Viewport::initialize()
 
     m_projText.initialize();
     m_axis.initialize();
+
+    orig_view = view;
 }
 
 void Viewport::update_draw()
 {
-    view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+    view = orig_view * m_camera.Rot;
+//    view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
 
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
 
@@ -104,6 +107,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_mouse.reset();
             m_model.setRotation(ngl::Vec3::zero());
             projection = goPersp();
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
             break;
 
         case Qt::Key_1:
@@ -113,6 +117,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(90.f,0.f,0.f);
             m_ortho_zoom = 10.f;
             projection = goOrtho();
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
             break;
 
         case Qt::Key_2:
@@ -122,6 +127,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(0.f,0.f,90.f);
             m_ortho_zoom = 10.f;
             projection = goOrtho();
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
             break;
 
         case Qt::Key_3:
@@ -131,6 +137,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(ngl::Vec3::zero());
             m_ortho_zoom = 10.f;
             projection = goOrtho();
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
             break;
 
         default:
@@ -158,16 +165,16 @@ void Viewport::mouseMove(QMouseEvent *event_)
                 break;
 
             case Qt::MiddleButton:
-                m_camera.track();
+//                m_camera.track();
                 break;
 
             case Qt::RightButton:
                 m_camera.dolly();
-                if (m_camera.getCurrentView() != Camera::View::PERSPECTIVE)
-                {
-                    m_ortho_zoom -= m_mouse.getDirection().m_x * m_mouse.velocity * Mouse::slowdown;
-                    projection = goOrtho();
-                }
+//                if (m_camera.getCurrentView() != Camera::View::PERSPECTIVE)
+//                {
+//                    m_ortho_zoom -= m_mouse.getDirection().m_x * m_mouse.velocity * Mouse::slowdown;
+//                    projection = goOrtho();
+//                }
                 break;
 
             default:
