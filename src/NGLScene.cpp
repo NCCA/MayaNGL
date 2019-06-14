@@ -35,7 +35,7 @@ void NGLScene::initializeGL()
 
     m_view = ngl::lookAt(m_viewport.getCamera().getPosition(),
                          m_viewport.getCamera().getLookAt(),
-                         m_viewport.getCamera().getUpVector());
+                         ngl::Vec3::up());
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 

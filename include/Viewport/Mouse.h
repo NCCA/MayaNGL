@@ -13,7 +13,6 @@ class Mouse
         Position m_previous;
         Position m_current;
         Direction m_direction;
-        Position m_translation;
         float m_velocity;
 
     public:
@@ -23,7 +22,6 @@ class Mouse
         explicit Mouse() = default;
 
         GET_MEMBER(m_direction,Direction)
-        GET_MEMBER(m_translation,Translation)
         GET_MEMBER(m_velocity,Velocity)
 
         void setAnchor(float x_, float y_);

@@ -85,8 +85,7 @@ void Viewport::initialize()
 
 void Viewport::update_draw()
 {
-//    view = orig_view * m_camera.Rot;
-    view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector()); // this is preferred
+    view = orig_view * m_camera.Rot * m_camera.Tra;
 
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
 
@@ -107,7 +106,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_mouse.reset();
             m_model.setRotation(ngl::Vec3::zero());
             projection = goPersp();
-            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
             break;
 
         case Qt::Key_1:
@@ -117,7 +116,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(90.f,0.f,0.f);
             m_ortho_zoom = 10.f;
             projection = goOrtho();
-            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
             break;
 
         case Qt::Key_2:
@@ -127,7 +126,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(0.f,0.f,90.f);
             m_ortho_zoom = 10.f;
             projection = goOrtho();
-            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
             break;
 
         case Qt::Key_3:
@@ -137,7 +136,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_model.setRotation(ngl::Vec3::zero());
             m_ortho_zoom = 10.f;
             projection = goOrtho();
-            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),m_camera.getUpVector());
+            orig_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
             break;
 
         default:
@@ -165,7 +164,7 @@ void Viewport::mouseMove(QMouseEvent *event_)
                 break;
 
             case Qt::MiddleButton:
-//                m_camera.track();
+                m_camera.track();
                 break;
 
             case Qt::RightButton:

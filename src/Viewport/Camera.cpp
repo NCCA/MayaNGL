@@ -2,7 +2,6 @@
 #include "Viewport/Camera.h"
 
 
-
 Camera::Direction Camera::updateInverse()
 {
     m_inverse = m_position-m_lookAt;
@@ -14,86 +13,99 @@ Camera::Camera( const Mouse &mouse_ )
                 :
                 mouse(mouse_),
                 m_position(28.f,21.f,28.f),
-                m_orig_position(m_position),
                 m_lookAt(ngl::Vec3::zero()),
                 m_inverse(updateInverse()),
-                m_upVector(ngl::Vec3::up()),
+                m_refInverse(m_inverse.m_x,0.f,m_inverse.m_z),
                 m_currentView(View::PERSPECTIVE)
 {;}
 
+/*
+ * I have a strong fealing that Maya uses only one Transformation matrix for all the objects in the
+ * scene. The user is only able to modify the transformations of each object at a program level, which
+ * get accumulated to the final graphical transformation matrix. When the camera rotates in Maya, I
+ * think that it rotates the common Graphics Transformation Matrix, not the View Matrix. When I implement
+ * this logic with NGL using only one ngl::Transformation for all objects, then it works just like Maya.
+ * However, the ngl::Transformation is not a Singleton and we can have multiple Graphical Transforms.
+ * Also, the getMatrix is not a const & which does not help with the logic above.
+ * The method below uses a reference of the inverse vector which rotates only about the Y-axis. The
+ * correct rotation axis is then calculated using the reference vector instead of the currect inverse.
+*/
 void Camera::pan()
 {
     updateInverse();
 
-    auto rotationAxis = m_upVector.cross(m_inverse);
+    Rotation Ry = sm::Y_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_x));
+    m_refInverse = m_refInverse*Ry;
+
+    auto rotationAxis = ngl::Vec3::up().cross(m_refInverse);
     rotationAxis.normalize();
 
-//    m_upVector = m_inverse.cross(rotationAxis);
-//    m_upVector.normalize();
-
-    ngl::Mat4 R = sm::Y_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_x)) *
-                  sm::Axis_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_y),rotationAxis);
-
-    Rot *= R.inverse();
+    Rotation Rx = sm::Axis_Matrix(sm::toRads(mouse.getVelocity()*mouse.getDirection().m_y),rotationAxis);
+    Rotation localR = Rx*Ry;
 
     m_position -= m_lookAt;
-    m_position = m_lookAt + (m_position * R);
+    m_position = m_lookAt + (m_position * localR);
+    Rot *= localR.inverse();
 }
 
 void Camera::dolly()
 {
-    updateInverse();
+//    updateInverse();
 
-    auto dist = (m_position-m_lookAt).length();
+//    auto dist = (m_position-m_lookAt).length();
 
-    if(dist<0.5f) // this needs work
-    {
-        auto dir = -m_inverse;
-        m_lookAt += dist*dir;
-    }
+//    if(dist<0.5f)
+//    {
+//        auto dir = -m_inverse;
+//        m_lookAt += dist*dir;
+//    }
 
-    m_position += mouse.getVelocity() * mouse.getDirection().m_x * m_inverse * Mouse::slowdown;
+//    auto Tx = mouse.getVelocity() * mouse.getDirection().m_x * m_inverse * Mouse::slowdown;
+//    m_position -= Tx;
 
-//    Rot.translate(m_position.m_x,m_position.m_y,m_position.m_z);
+//    Rot.m_30 += Tx.m_x;
+//    Rot.m_31 += Tx.m_y;
+//    Rot.m_32 += Tx.m_z;
 }
 
 void Camera::track()
 {
-//    updateInverse();
+    updateInverse();
 
-//    auto localTrackAxis = m_upVector.cross(m_inverse);
-//    localTrackAxis.normalize();
+    auto horizontal_axis = ngl::Vec3::up().cross(m_refInverse);
+    horizontal_axis.normalize();
 
-//    switch(m_currentView)
-//    {
-//        case View::TOP:
-////            m_position.m_x -= mouse.velocity * localTrackAxis.m_x * mouse.getDirection().m_x * Mouse::slowdown;
-////            m_position.m_z += mouse.velocity * mouse.getDirection().m_y * Mouse::slowdown;
+    auto vertical_axis = horizontal_axis.cross(m_inverse);
+    vertical_axis.normalize();
 
-////            m_lookAt.m_x -= mouse.velocity * localTrackAxis.m_x * mouse.getDirection().m_x * Mouse::slowdown;
-////            m_lookAt.m_z += mouse.velocity * mouse.getDirection().m_y * Mouse::slowdown;
-//            break;
+    auto mouse_move = mouse.getVelocity() * mouse.getDirection() * Mouse::slowdown;
 
-//        default:
-////            m_position.m_x -= mouse.velocity * localTrackAxis.m_x * mouse.getDirection().m_x * Mouse::slowdown;
-////            m_position.m_y += mouse.velocity * mouse.getDirection().m_y * Mouse::slowdown;
-////            m_position.m_z -= mouse.velocity * localTrackAxis.m_z * mouse.getDirection().m_x * Mouse::slowdown;
+    auto Tx = mouse_move.m_x * horizontal_axis.m_x +  mouse_move.m_y * vertical_axis.m_x;
+    auto Ty = mouse_move.m_y * vertical_axis.m_y;
+    auto Tz = mouse_move.m_x * horizontal_axis.m_z +  mouse_move.m_y * vertical_axis.m_z;
 
-////            m_lookAt.m_x -= mouse.velocity * localTrackAxis.m_x * mouse.getDirection().m_x * Mouse::slowdown;
-////            m_lookAt.m_y += mouse.velocity * mouse.getDirection().m_y * Mouse::slowdown;
-////            m_lookAt.m_z -= mouse.velocity * localTrackAxis.m_z * mouse.getDirection().m_x * Mouse::slowdown;
-//            break;
-//    }
+    m_position.m_x -= Tx;
+    m_position.m_y += Ty;
+    m_position.m_z -= Tz;
+
+    m_lookAt.m_x -= Tx;
+    m_lookAt.m_y += Ty;
+    m_lookAt.m_z -= Tz;
+
+    Tra.m_30 += Tx;
+    Tra.m_31 += Ty;
+    Tra.m_32 += Tz;
 }
 
-void Camera::reset(Position &&pos_, View panel_, Direction &&up_)
+void Camera::reset(Position &&pos_, View panel_)
 {
     m_position = pos_;
     m_lookAt = ngl::Vec3::zero();
-    m_upVector = up_;
     m_inverse = updateInverse();
+    m_refInverse = ngl::Vec3(m_inverse.m_x,0.f,m_inverse.m_z);
     m_currentView = panel_;
     Rot.identity();
+    Tra.identity();
 }
 
 void Camera::focusOn(const Position &target_)
@@ -113,7 +125,7 @@ void Camera::side()
 
 void Camera::top()
 {
-    reset({0.f,28.f,0.f},View::TOP,ngl::Vec3::in());
+    reset({0.f,28.f,0.f},View::TOP);
 }
 
 

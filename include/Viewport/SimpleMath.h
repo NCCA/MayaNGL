@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtx/perpendicular.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include <ngl/Vec2.h>
 #include <ngl/Vec3.h>
 #include <ngl/Mat3.h>
@@ -33,6 +36,16 @@ namespace sm
     T toRads(T num_)
     {
         return static_cast<T>(num_*(M_PI/180.0));
+    }
+
+    template<typename T>
+    float inverseCosAngle(const T &v1_,const T &v2_)
+    {
+        if ((v1_-v2_).length() <= 0.000009)
+            return 0.0;
+
+        float c = v1_.dot(v2_)/(v1_.length()*v2_.length());
+        return (c>=1.0) ? acos(1.0) : acos(c);
     }
 
     ngl::Vec3 toDegs(const ngl::Vec3 &num_);
