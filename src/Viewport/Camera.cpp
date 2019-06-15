@@ -16,6 +16,7 @@ Camera::Camera( const Mouse &mouse_ )
                 m_lookAt(ngl::Vec3::zero()),
                 m_inverse(updateInverse()),
                 m_refInverse(m_inverse.m_x,0.f,m_inverse.m_z),
+                m_origInverse(m_inverse),
                 m_currentView(View::PERSPECTIVE)
 {;}
 
@@ -45,27 +46,19 @@ void Camera::pan()
 
     m_position -= m_lookAt;
     m_position = m_lookAt + (m_position * localR);
-    Rot *= localR.inverse();
+    transform *= localR.inverse();
 }
 
 void Camera::dolly()
 {
-//    updateInverse();
+    updateInverse();
 
-//    auto dist = (m_position-m_lookAt).length();
+    auto Tx = mouse.getVelocity() * mouse.getDirection().m_x * Mouse::slowdown;
+    m_position -= Tx * m_inverse;
 
-//    if(dist<0.5f)
-//    {
-//        auto dir = -m_inverse;
-//        m_lookAt += dist*dir;
-//    }
-
-//    auto Tx = mouse.getVelocity() * mouse.getDirection().m_x * m_inverse * Mouse::slowdown;
-//    m_position -= Tx;
-
-//    Rot.m_30 += Tx.m_x;
-//    Rot.m_31 += Tx.m_y;
-//    Rot.m_32 += Tx.m_z;
+    transform.m_30 += Tx * m_origInverse.m_x;
+    transform.m_31 += Tx * m_origInverse.m_y;
+    transform.m_32 += Tx * m_origInverse.m_z;
 }
 
 void Camera::track()
@@ -92,9 +85,11 @@ void Camera::track()
     m_lookAt.m_y += Ty;
     m_lookAt.m_z -= Tz;
 
-    Tra.m_30 += Tx;
-    Tra.m_31 += Ty;
-    Tra.m_32 += Tz;
+    Translation tmp;
+    tmp.m_30 = Tx;
+    tmp.m_31 = Ty;
+    tmp.m_32 = Tz;
+    transform *= tmp;
 }
 
 void Camera::reset(Position &&pos_, View panel_)
@@ -104,8 +99,7 @@ void Camera::reset(Position &&pos_, View panel_)
     m_inverse = updateInverse();
     m_refInverse = ngl::Vec3(m_inverse.m_x,0.f,m_inverse.m_z);
     m_currentView = panel_;
-    Rot.identity();
-    Tra.identity();
+    transform.identity();
 }
 
 void Camera::focusOn(const Position &target_)

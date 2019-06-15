@@ -9,8 +9,9 @@ class Camera
     private:
         typedef ngl::Vec3 Position;
         typedef ngl::Vec3 Direction;
-        typedef ngl::Mat4 Translation;
         typedef ngl::Mat4 Rotation;
+        typedef ngl::Mat4 Translation;
+        typedef ngl::Mat4 Matrix;
 
     public:
         enum class View {PERSPECTIVE,FRONT,SIDE,TOP};
@@ -21,8 +22,11 @@ class Camera
     private:
         Position m_position;
         Position m_lookAt;
+        //refactor
         Direction m_inverse;
         Direction m_refInverse;
+        Direction m_origInverse;
+
         View m_currentView;
 
     private:
@@ -35,8 +39,7 @@ class Camera
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_currentView,CurrentView)
 
-        Rotation Tra;
-        Rotation Rot;
+        Matrix transform;
 
         void pan();
         void dolly();

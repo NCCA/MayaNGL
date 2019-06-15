@@ -85,7 +85,7 @@ void Viewport::initialize()
 
 void Viewport::update_draw()
 {
-    view = orig_view * m_camera.Rot * m_camera.Tra;
+    view = orig_view * m_camera.transform;
 
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
 
