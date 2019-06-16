@@ -1,28 +1,23 @@
 
 #include "NGLScene.h"
 #include <ngl/NGLInit.h>
-#include <ngl/NGLStream.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/VAOPrimitives.h>
 #include <QGuiApplication>
 
 
-NGLScene::NGLScene() : screen_width(0),
-                       screen_height(0),
-                       m_model(),
+NGLScene::NGLScene() : m_model(),
                        m_view(),
                        m_projection(),
-                       m_viewport(screen_width,screen_height,m_view,m_projection)
+                       m_viewport(m_view,m_projection)
 {
     setTitle( "Maya-like Viewport using NGL" );
 }
 
 void NGLScene::resizeGL(int w_, int h_)
 {
-    screen_width = w_;
-    screen_height = h_;
-    m_projection = ngl::perspective(35.0f, static_cast<float>(screen_width)/screen_height, 0.1f, 200.0f );
-    m_viewport.resize();
+    m_projection = ngl::perspective(35.0f, static_cast<float>(w_)/h_, 0.1f, 200.0f );
+    m_viewport.resize(w_,h_);
 }
 
 void NGLScene::initializeGL()
@@ -37,16 +32,13 @@ void NGLScene::initializeGL()
                          m_viewport.getCamera().getLookAt(),
                          ngl::Vec3::up());
 
+    m_viewport.initialize();
+
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
     shader->use(ngl::nglDiffuseShader);
     shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
-
-    screen_width = this->size().width();
-    screen_height = this->size().height();
-
-    m_viewport.initialize();
 }
 
 void NGLScene::loadDiffuseShader()
@@ -66,13 +58,12 @@ void NGLScene::loadDiffuseShader()
 
 void NGLScene::paintGL()
 {
-    glViewport( 0, 0, screen_width, screen_height);
+    glViewport( 0, 0, width(), height());
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     m_viewport.update_draw();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-
     m_model.reset();
     {
         m_model.setPosition(0.f,0.f,0.f);

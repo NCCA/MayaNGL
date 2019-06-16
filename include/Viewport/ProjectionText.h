@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/SimpleMath.h"
+#include "Viewport/Common.h"
 
 
 class ProjectionText
@@ -9,22 +9,19 @@ class ProjectionText
         typedef std::unique_ptr<ngl::Text> TextPtr;
 
     private:
-        const int &screenWidth;
-        const int &screenHeight;
-
-    private:
+        int m_screen_width;
+        int m_screen_height;
         TextPtr m_label;
 
     public:
         std::string title;
 
     public:
-        ProjectionText( const int &screenWidth_,
-                        const int &screenHeight_ );
+        explicit ProjectionText();
 
         void initialize();
-        void resize();
-        void draw();
+        void resize(int w_, int h_);
+        void draw() const;
 
         ~ProjectionText() noexcept = default;
 };

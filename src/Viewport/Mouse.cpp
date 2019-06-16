@@ -16,6 +16,7 @@ void Mouse::setTransform(float x_, float y_)
         m_direction = m_current-m_previous;
         m_velocity = m_direction.length() * 0.5f;
         m_direction.normalize();
+        m_drag = m_velocity*m_direction;
     }
 }
 

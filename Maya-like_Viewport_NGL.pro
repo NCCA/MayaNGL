@@ -16,7 +16,8 @@ MOC_DIR = moc
 CONFIG -= app_bundle
 
 HEADERS += $$PWD/include/*.h \
-           $$PWD/include/Viewport/*.h
+           $$PWD/include/Viewport/*.h \
+           $$PWD/include/Viewport/*.hpp
 
 SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/Viewport/*.cpp

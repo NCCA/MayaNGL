@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/SimpleMath.h"
+#include "Viewport/Common.h"
 
 
 class Mouse
@@ -10,10 +10,11 @@ class Mouse
         typedef ngl::Vec2 Direction;
 
     private:
+        float m_velocity;
         Position m_previous;
         Position m_current;
         Direction m_direction;
-        float m_velocity;
+        Direction m_drag;
 
     public:
         static constexpr float slowdown = 0.15f;
@@ -21,8 +22,7 @@ class Mouse
     public:
         explicit Mouse() = default;
 
-        GET_MEMBER(m_direction,Direction)
-        GET_MEMBER(m_velocity,Velocity)
+        GET_MEMBER(m_drag,Drag)
 
         void setAnchor(float x_, float y_);
         void setTransform(float x_, float y_);

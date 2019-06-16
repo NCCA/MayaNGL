@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <ngl/Vec3.h>
 #include <ngl/Mat4.h>
 #include <ngl/Transformation.h>
 #include <QOpenGLWindow>
@@ -14,8 +15,6 @@ class NGLScene : public QOpenGLWindow
     Q_OBJECT
 
     private:
-        int screen_width, screen_height;
-
         ngl::Transformation m_model;
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;

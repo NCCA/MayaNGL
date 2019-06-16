@@ -1,18 +1,11 @@
 #pragma once
 
+#include "Viewport/Inverse_Def.hpp"
 #include "Viewport/Mouse.h"
 
 
 class Camera
 {
-
-    private:
-        typedef ngl::Vec3 Position;
-        typedef ngl::Vec3 Direction;
-        typedef ngl::Mat4 Rotation;
-        typedef ngl::Mat4 Translation;
-        typedef ngl::Mat4 Matrix;
-
     public:
         enum class View {PERSPECTIVE,FRONT,SIDE,TOP};
 
@@ -20,35 +13,29 @@ class Camera
         const Mouse &mouse;
 
     private:
-        Position m_position;
-        Position m_lookAt;
-        //refactor
-        Direction m_inverse;
-        Direction m_refInverse;
-        Direction m_origInverse;
-
+        vc::Position m_position;
+        vc::Position m_lookAt;
+        Inverse<Camera> m_inverse;
         View m_currentView;
-
-    private:
-        Direction updateInverse();
+        vc::Transform m_transform;
 
     public:
-        explicit Camera(const Mouse &mouse_);
+        explicit Camera( const Mouse &mouse_ );
 
         GET_MEMBER(m_position,Position)
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_currentView,CurrentView)
-
-        Matrix transform;
+        GET_MEMBER(m_transform,Transform)
 
         void pan();
         void dolly();
         void track();
-        void reset(Position &&pos_={28.f,21.f,28.f},View panel_=View::PERSPECTIVE);
-        void focusOn(const Position &target_);
+        void reset(vc::Position &&pos_={28.f,21.f,28.f},View panel_=View::PERSPECTIVE);
+        void focusOn(const vc::Position &target_);
         void front();
         void side();
         void top();
 
         ~Camera() noexcept = default;
 };
+

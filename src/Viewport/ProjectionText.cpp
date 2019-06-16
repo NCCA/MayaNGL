@@ -2,13 +2,8 @@
 #include "Viewport/ProjectionText.h"
 
 
-ProjectionText::ProjectionText( const int &screenWidth_,
-                                const int &screenHeight_ )
-                                :
-                                screenWidth(screenWidth_),
-                                screenHeight(screenHeight_),
-                                m_label(),
-                                title("persp")
+ProjectionText::ProjectionText() : m_label(),
+                                   title("persp")
 {;}
 
 void ProjectionText::initialize()
@@ -17,13 +12,15 @@ void ProjectionText::initialize()
     m_label->setColour(1.f,1.f,1.f);
 }
 
-void ProjectionText::resize()
+void ProjectionText::resize(int w_, int h_)
 {
     // could use a function that updates the font size at run-time.
-    m_label->setScreenSize(screenWidth,screenHeight);
+    m_screen_width = w_;
+    m_screen_height = h_;
+    m_label->setScreenSize(m_screen_width,m_screen_height);
 }
 
-void ProjectionText::draw()
+void ProjectionText::draw() const
 {
-    m_label->renderText(screenWidth*0.5f-(title.length()*2.f),screenHeight-25.f,title.c_str());
+    m_label->renderText(m_screen_width*0.5f-(title.length()*2.f),m_screen_height-25.f,title.c_str());
 }
