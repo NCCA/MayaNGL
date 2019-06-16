@@ -5,8 +5,8 @@
 Camera::Camera( const Mouse &mouse_ )
                 :
                 mouse(mouse_),
-                m_position(10.f,21.f,28.f),
-                m_lookAt(10.f,0.f,0.f),//ngl::Vec3::zero()),
+                m_position(28.f,21.f,28.f),
+                m_lookAt(ngl::Vec3::zero()),
                 m_inverse(*this),
                 m_currentView(View::PERSPECTIVE)
 {;}
@@ -27,16 +27,16 @@ void Camera::pan()
     m_position -= m_lookAt;
     m_position = m_lookAt + (m_position * localR);
 
-    // this works, but needs refactoring...
     vc::Translation tmp;
-    tmp.m_30 = -10.f;
-    tmp.m_31 = 0.f;
-    tmp.m_32 = 0.f;
+    tmp.translate(m_lookAt.m_x,m_lookAt.m_y,m_lookAt.m_z);
 
-    m_transform.m_30 = 10.f;
-    m_transform.m_31 = 0.f;
-    m_transform.m_32 = 0.f;
-    m_transform *= localR.inverse() * tmp;
+    // bug with track -> pan
+    // bug with dolly -> pan
+    // something to do with the translation matrix.
+    m_transform.m_30 = tmp.m_30;
+    m_transform.m_31 = tmp.m_31;
+    m_transform.m_32 = tmp.m_32;
+    m_transform *= localR.inverse() * tmp.inverse();
 }
 
 void Camera::dolly()
@@ -46,7 +46,10 @@ void Camera::dolly()
     auto mouse_move = mouse.getDrag().m_x * Mouse::slowdown;
     m_position -= mouse_move * m_inverse.current;
 
-    auto translate = mouse_move * m_inverse.original;
+    vc::Translation tmp;
+    tmp.translate(m_lookAt.m_x,m_lookAt.m_y,m_lookAt.m_z);
+
+    auto translate = mouse_move * m_inverse.original * tmp.inverse();
 
     m_transform.m_30 += translate.m_x;
     m_transform.m_31 += translate.m_y;
