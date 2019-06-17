@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Viewport/LookAt.h"
 #include "Viewport/Inverse_Def.hpp"
 #include "Viewport/Mouse.h"
 
@@ -13,24 +14,30 @@ class Camera
         const Mouse &mouse;
 
     private:
-        vc::Position m_position;
-        vc::Position m_lookAt;
+        LookAt m_lookAt;
+
         Inverse<Camera> m_inverse;
         View m_currentView;
-        vc::Transform m_transform;
+
+        vc::Translation m_track;
+        vc::Translation m_dolly;
+        vc::Rotation m_pan;
 
     public:
-        explicit Camera( const Mouse &mouse_ );
+        explicit Camera( const Mouse &mouse_,
+                         const LookAt &lookAt_ );
 
-        GET_MEMBER(m_position,Position)
-        GET_MEMBER(m_lookAt,LookAt)
+        GET_MEMBER(m_lookAt.eye,Eye)
+        GET_MEMBER(m_lookAt.target,Target)
+        GET_MEMBER(m_lookAt.up,Up)
         GET_MEMBER(m_currentView,CurrentView)
-        GET_MEMBER(m_transform,Transform)
+
+        vc::Transform computeTransform();
 
         void pan();
         void dolly();
         void track();
-        void reset(vc::Position &&pos_={28.f,21.f,28.f},View panel_=View::PERSPECTIVE);
+        void reset(const LookAt &lookAt_, View panel_=View::PERSPECTIVE);
         void focusOn(const vc::Position &target_);
         void front();
         void side();
@@ -38,4 +45,3 @@ class Camera
 
         ~Camera() noexcept = default;
 };
-

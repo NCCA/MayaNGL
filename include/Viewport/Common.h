@@ -34,6 +34,10 @@ namespace vc //viewport common
     using Projection = ngl::Mat4;
     using Transform = ngl::Mat4;
 
+    static constexpr float fov = 35.f;
+    static constexpr float near = 0.1f;
+    static constexpr float far = 200.f;
+
     template<typename T>
     T toDegs(T num_)
     {
@@ -46,15 +50,20 @@ namespace vc //viewport common
         return static_cast<T>(num_*(M_PI/180.f));
     }
 
+    template<typename T>
+    T round(T num_, unsigned precision_)
+    {
+        return floor((num_ * pow(10.f,precision_)) + 0.5f) / pow(10.f,precision_);
+    }
+
     ngl::Vec3 toDegs(const ngl::Vec3 &num_);
     ngl::Vec3 toRads(const ngl::Vec3 &num_);
     ngl::Vec3 absl(const ngl::Vec3 &num_);
+    ngl::Vec3 round(const ngl::Vec3 &num_, unsigned precision_);
 
     Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &plane_position_, const Direction &plane_normal_);
 
-    glm::mat4 X_Matrix(float angle_);
     glm::mat4 Y_Matrix(float angle_);
-    glm::mat4 Z_Matrix(float angle_);
     glm::mat4 Axis_Matrix(float angle_, const Direction &axis_);
 
 }

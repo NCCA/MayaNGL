@@ -20,6 +20,11 @@ namespace vc
         return ngl::Vec3{fabs(num_.m_x),fabs(num_.m_y),fabs(num_.m_z)};
     }
 
+    ngl::Vec3 round(const ngl::Vec3 &num_, unsigned precision_)
+    {
+        return ngl::Vec3{round(num_.m_x,precision_),round(num_.m_y,precision_),round(num_.m_z,precision_)};
+    }
+
     Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &plane_position_, const Direction &plane_normal_)
     {
         float t = (plane_position_-ray_position_).dot(plane_normal_)/ray_direction_.dot(plane_normal_);

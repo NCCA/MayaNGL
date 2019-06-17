@@ -2,66 +2,62 @@
 #include "Viewport/Camera.h"
 
 
-Camera::Camera( const Mouse &mouse_ )
+Camera::Camera( const Mouse &mouse_,
+                const LookAt &lookAt_ )
                 :
                 mouse(mouse_),
-                m_position(28.f,21.f,28.f),
-                m_lookAt(ngl::Vec3::zero()),
+                m_lookAt(lookAt_),
                 m_inverse(*this),
                 m_currentView(View::PERSPECTIVE)
 {;}
 
+vc::Transform Camera::computeTransform()
+{
+    return m_dolly * m_pan * m_track;
+}
+
 void Camera::pan()
 {
-    m_inverse.update();
-
     vc::Rotation Ry = vc::Y_Matrix(vc::toRads(mouse.getDrag().m_x));
     m_inverse.shadow = m_inverse.shadow*Ry;
 
-    auto rotationAxis = ngl::Vec3::up().cross(m_inverse.shadow);
+    auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
     rotationAxis.normalize();
 
     vc::Rotation Rx = vc::Axis_Matrix(vc::toRads(mouse.getDrag().m_y),rotationAxis);
     vc::Rotation localR = Rx*Ry;
 
-    m_position -= m_lookAt;
-    m_position = m_lookAt + (m_position * localR);
+    m_lookAt.eye -= m_lookAt.target;
+    m_lookAt.eye = m_lookAt.target + (m_lookAt.eye * localR);
 
-    vc::Translation tmp;
-    tmp.translate(m_lookAt.m_x,m_lookAt.m_y,m_lookAt.m_z);
-
-    // bug with track -> pan
-    // bug with dolly -> pan
-    // something to do with the translation matrix.
-    m_transform.m_30 = tmp.m_30;
-    m_transform.m_31 = tmp.m_31;
-    m_transform.m_32 = tmp.m_32;
-    m_transform *= localR.inverse() * tmp.inverse();
+    m_pan *= localR.inverse();
 }
 
 void Camera::dolly()
 {
-    m_inverse.update();
+    m_inverse.calcCurrent();
 
-    auto mouse_move = mouse.getDrag().m_x * Mouse::slowdown;
-    m_position -= mouse_move * m_inverse.current;
+    auto dist = m_lookAt.calcDist();
+    if (dist < 1.0f)
+        m_lookAt.target += 10.f * m_inverse.current;
 
-    vc::Translation tmp;
-    tmp.translate(m_lookAt.m_x,m_lookAt.m_y,m_lookAt.m_z);
+    auto mouse_move = mouse.getDrag().m_x  * Mouse::slowdown;
+    m_lookAt.eye -= mouse_move * m_inverse.current;
 
-    auto translate = mouse_move * m_inverse.original * tmp.inverse();
-
-    m_transform.m_30 += translate.m_x;
-    m_transform.m_31 += translate.m_y;
-    m_transform.m_32 += translate.m_z;
+    m_dolly.m_30 += mouse_move * m_inverse.original.m_x;
+    m_dolly.m_31 += mouse_move * m_inverse.original.m_y;
+    m_dolly.m_32 += mouse_move * m_inverse.original.m_z;
 }
 
 void Camera::track()
 {
-    m_inverse.update();
+    m_inverse.calcCurrent();
 
-    auto horizontal_axis = ngl::Vec3::up().cross(m_inverse.shadow);
+    auto horizontal_axis = m_lookAt.up.cross(m_inverse.shadow);
     horizontal_axis.normalize();
+
+    if (vc::absl(horizontal_axis) == vc::absl(m_inverse.current))
+        horizontal_axis = m_inverse.shadow;
 
     auto vertical_axis = horizontal_axis.cross(m_inverse.current);
     vertical_axis.normalize();
@@ -72,29 +68,27 @@ void Camera::track()
     auto Ty = mouse_move.m_y * vertical_axis.m_y;
     auto Tz = mouse_move.m_x * horizontal_axis.m_z +  mouse_move.m_y * vertical_axis.m_z;
 
-    m_position.m_x -= Tx;
-    m_position.m_y += Ty;
-    m_position.m_z -= Tz;
+    m_lookAt.eye.m_x -= Tx;
+    m_lookAt.eye.m_y += Ty;
+    m_lookAt.eye.m_z -= Tz;
 
-    m_lookAt.m_x -= Tx;
-    m_lookAt.m_y += Ty;
-    m_lookAt.m_z -= Tz;
+    m_lookAt.target.m_x -= Tx;
+    m_lookAt.target.m_y += Ty;
+    m_lookAt.target.m_z -= Tz;
 
-    vc::Translation tmp;
-    tmp.m_30 = Tx;
-    tmp.m_31 = Ty;
-    tmp.m_32 = Tz;
-
-    m_transform *= tmp;
+    m_track.m_30 += Tx;
+    m_track.m_31 += Ty;
+    m_track.m_32 += Tz;
 }
 
-void Camera::reset(vc::Position &&pos_, View panel_)
+void Camera::reset(const LookAt &lookAt_, View panel_)
 {
-    m_position = pos_;
-    m_lookAt = vc::Position::zero();
-    m_inverse.reset();
+    m_lookAt = lookAt_;
     m_currentView = panel_;
-    m_transform.identity();
+    m_inverse.reset();
+    m_track.identity();
+    m_dolly.identity();
+    m_pan.identity();
 }
 
 void Camera::focusOn(const vc::Position &target_)
@@ -104,17 +98,15 @@ void Camera::focusOn(const vc::Position &target_)
 
 void Camera::front()
 {
-    reset({0.f,0.f,28.f},View::FRONT);
+    reset(LookAt{{0.f,0.f,28.f}},View::FRONT);
 }
 
 void Camera::side()
 {
-    reset({28.f,0.f,0.f},View::SIDE);
+    reset(LookAt{{28.f,0.f,0.f}},View::SIDE);
 }
 
 void Camera::top()
 {
-    reset({0.f,28.f,0.f},View::TOP);
+    reset(LookAt{{0.f,28.f,0.f},vc::Position::zero(),vc::Direction::out()},View::TOP);
 }
-
-

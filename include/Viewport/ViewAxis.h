@@ -1,14 +1,13 @@
 #pragma once
 
 #include "Viewport/Common.h"
-#include <ngl/Transformation.h>
 
 
 struct ViewAxis
 {
     private:
         typedef std::array<ngl::Vec3,6> Vertices;
-        typedef std::unique_ptr<ngl::AbstractVAO> AvaoPtr;
+        typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:
         const vc::View &scene_view;
@@ -18,7 +17,7 @@ struct ViewAxis
         vc::View m_view;
         vc::Projection m_projection;
         Vertices m_coordinates;
-        AvaoPtr m_vao;
+        VAOPtr m_vao;
 
     public:
         ViewAxis( const vc::View &view_ );

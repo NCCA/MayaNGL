@@ -7,7 +7,7 @@
 #include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include "Viewport/Viewport.h"
+#include "Viewport/Viewport_Def.hpp"
 
 
 class NGLScene : public QOpenGLWindow

@@ -10,13 +10,23 @@ Viewport::Viewport( vc::View &view_,
                     projection(projection_),
                     m_aspectRatio(0.f),
                     m_orthographic_zoom(10.f),
+                    m_initial_lookAt(),
                     m_initial_view(view),
                     m_mouse(),
-                    m_camera(m_mouse),
+                    m_camera(m_mouse,m_initial_lookAt),
                     m_grid(view,projection),
                     m_projText(),
                     m_axis(view)
 {;}
+
+void Viewport::initialize()
+{
+    m_grid.initialize();
+    m_projText.initialize();
+    m_axis.initialize();
+
+    m_initial_view = view;
+}
 
 void Viewport::resize(int w_, int h_)
 {
@@ -33,26 +43,22 @@ void Viewport::resize(int w_, int h_)
 
 void Viewport::goPersp()
 {
-    projection = ngl::perspective(35.0f,m_aspectRatio,0.1f,200.f);
+    projection = ngl::perspective(vc::fov,m_aspectRatio,vc::near,vc::far);
 }
 
 void Viewport::goOrtho()
 {
-    projection = ngl::ortho(-m_aspectRatio*m_orthographic_zoom,m_aspectRatio*m_orthographic_zoom,-m_orthographic_zoom,m_orthographic_zoom,0.1f,200.f);
-}
-
-void Viewport::initialize()
-{
-    m_initial_view = view;
-
-    m_grid.initialize();
-    m_projText.initialize();
-    m_axis.initialize();
+    projection = ngl::ortho( -m_aspectRatio*m_orthographic_zoom,
+                              m_aspectRatio*m_orthographic_zoom,
+                             -m_orthographic_zoom,
+                              m_orthographic_zoom,
+                              vc::near,
+                              vc::far );
 }
 
 void Viewport::update_draw()
 {
-    view = m_initial_view * m_camera.getTransform();
+    view = m_initial_view * m_camera.computeTransform();
 
     m_grid.draw();
     m_projText.draw();
@@ -63,13 +69,13 @@ void Viewport::keyPress(QKeyEvent *event_)
 {
     switch ( event_->key() )
     {
-        case Qt::Key_F:
+        case Qt::Key_R:
             m_projText.title = "persp";
-            m_camera.reset();
+            m_camera.reset(m_initial_lookAt);
             m_mouse.reset();
             m_grid.reset();
             goPersp();
-            m_initial_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
+            m_initial_view = ngl::lookAt(m_camera.getEye(),m_camera.getTarget(),m_camera.getUp());
             break;
 
         case Qt::Key_1:
@@ -79,7 +85,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_grid.front();
             m_orthographic_zoom = 10.f;
             goOrtho();
-            m_initial_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
+            m_initial_view = ngl::lookAt(m_camera.getEye(),m_camera.getTarget(),m_camera.getUp());
             break;
 
         case Qt::Key_2:
@@ -89,7 +95,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_grid.side();
             m_orthographic_zoom = 10.f;
             goOrtho();
-            m_initial_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::up());
+            m_initial_view = ngl::lookAt(m_camera.getEye(),m_camera.getTarget(),m_camera.getUp());
             break;
 
         case Qt::Key_3:
@@ -99,7 +105,7 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_grid.reset();
             m_orthographic_zoom = 10.f;
             goOrtho();
-            m_initial_view = ngl::lookAt(m_camera.getPosition(),m_camera.getLookAt(),ngl::Vec3::out());
+            m_initial_view = ngl::lookAt(m_camera.getEye(),m_camera.getTarget(),m_camera.getUp());
             break;
 
         default:
@@ -134,7 +140,11 @@ void Viewport::mouseMove(QMouseEvent *event_)
                 m_camera.dolly();
                 if (m_camera.getCurrentView() != Camera::View::PERSPECTIVE)
                 {
-                    m_orthographic_zoom -= m_mouse.getDrag().m_x * Mouse::slowdown;
+                    std::cout<< m_orthographic_zoom <<std::endl;
+                    if ((m_orthographic_zoom < 0.1f) && (m_mouse.getDrag().m_x > 0.f))
+                        std::cout<< "that's it!" <<std::endl;
+                    else
+                        m_orthographic_zoom -= m_mouse.getDrag().m_x * Mouse::slowdown;
                     goOrtho();
                 }
                 break;

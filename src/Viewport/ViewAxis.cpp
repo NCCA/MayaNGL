@@ -6,15 +6,15 @@ ViewAxis::ViewAxis( const vc::View &view_ )
                     :
                     scene_view(view_),
                     m_model(),
-                    m_view(ngl::lookAt(ngl::Vec3::in(),ngl::Vec3::zero(),ngl::Vec3::up())),
+                    m_view(ngl::lookAt(vc::Position::in(),vc::Position::zero(),vc::Direction::up())),
                     m_projection(),
                     m_coordinates{{
-                                      ngl::Vec3::zero(),
-                                      ngl::Vec3::right(),
-                                      ngl::Vec3::zero(),
-                                      ngl::Vec3::up(),
-                                      ngl::Vec3::zero(),
-                                      ngl::Vec3::in()
+                                      vc::Direction::zero(),
+                                      vc::Direction::right(),
+                                      vc::Direction::zero(),
+                                      vc::Direction::up(),
+                                      vc::Direction::zero(),
+                                      vc::Direction::in()
                                  }},
                     m_vao()
 {;}
@@ -32,9 +32,9 @@ void ViewAxis::initialize()
 void ViewAxis::resize(float aspectRatio_)
 {
     float zoom = 20.f;
-    m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,0.1f,200.f);
+    m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,vc::near,vc::far);
 
-    auto bl = ngl::Vec3(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
+    auto bl = vc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
     m_model.translate(bl.m_x,bl.m_y,bl.m_z);
 }
 

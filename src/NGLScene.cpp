@@ -28,9 +28,9 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-    m_view = ngl::lookAt(m_viewport.getCamera().getPosition(),
-                         m_viewport.getCamera().getLookAt(),
-                         ngl::Vec3::up());
+    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
+                         m_viewport.getCamera().getTarget(),
+                         m_viewport.getCamera().getUp());
 
     m_viewport.initialize();
 

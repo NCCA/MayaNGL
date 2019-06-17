@@ -16,7 +16,8 @@ class Inverse
 
     explicit Inverse( const CAM &cam_ );
 
-    vc::Direction update();
+    vc::Direction calcCurrent();
+    vc::Direction calcShadow();
     void reset();
 
     ~Inverse() noexcept = default;
