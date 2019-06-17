@@ -8,7 +8,10 @@ Camera::Camera( const Mouse &mouse_,
                 mouse(mouse_),
                 m_lookAt(lookAt_),
                 m_inverse(*this),
-                m_currentView(View::PERSPECTIVE)
+                m_currentView(View::PERSPECTIVE),
+                m_track(),
+                m_dolly(),
+                m_pan()
 {;}
 
 vc::Transform Camera::computeTransform()

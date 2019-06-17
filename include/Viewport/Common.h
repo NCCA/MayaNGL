@@ -35,8 +35,8 @@ namespace vc //viewport common
     using Transform = ngl::Mat4;
 
     static constexpr float fov = 35.f;
-    static constexpr float near = 0.1f;
-    static constexpr float far = 200.f;
+    static constexpr float near_clip = 0.1f;
+    static constexpr float far_clip = 200.f;
 
     template<typename T>
     T toDegs(T num_)

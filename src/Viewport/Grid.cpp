@@ -2,22 +2,17 @@
 #include "Viewport/Grid.h"
 
 
-Grid::Grid( const vc::View &view_,
-            const vc::Projection &projection_ )
-            :
-            view(view_),
-            projection(projection_)
-{;}
-
 void Grid::loadLineColourShader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use("LineColour");
 
-    auto MVP = projection * view * m_model;
+    auto MV = view * m_model;
+    auto MVP = projection * MV;
 
+    shader->setUniform("MV",MV);
     shader->setUniform("MVP",MVP);
-    shader->setUniform("Dist",abs(view.m_32));
+    shader->setUniform("camEye",camera.eye);
     shader->setUniform("enableViewAxisColours",false);
 }
 

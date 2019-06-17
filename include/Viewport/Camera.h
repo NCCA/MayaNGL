@@ -15,7 +15,6 @@ class Camera
 
     private:
         LookAt m_lookAt;
-
         Inverse<Camera> m_inverse;
         View m_currentView;
 
@@ -30,6 +29,7 @@ class Camera
         GET_MEMBER(m_lookAt.eye,Eye)
         GET_MEMBER(m_lookAt.target,Target)
         GET_MEMBER(m_lookAt.up,Up)
+        GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_currentView,CurrentView)
 
         vc::Transform computeTransform();

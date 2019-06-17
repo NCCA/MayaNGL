@@ -14,7 +14,7 @@ Viewport::Viewport( vc::View &view_,
                     m_initial_view(view),
                     m_mouse(),
                     m_camera(m_mouse,m_initial_lookAt),
-                    m_grid(view,projection),
+                    m_grid(view,projection,m_camera),
                     m_projText(),
                     m_axis(view)
 {;}
@@ -43,7 +43,7 @@ void Viewport::resize(int w_, int h_)
 
 void Viewport::goPersp()
 {
-    projection = ngl::perspective(vc::fov,m_aspectRatio,vc::near,vc::far);
+    projection = ngl::perspective(vc::fov,m_aspectRatio,vc::near_clip,vc::far_clip);
 }
 
 void Viewport::goOrtho()
@@ -52,8 +52,8 @@ void Viewport::goOrtho()
                               m_aspectRatio*m_orthographic_zoom,
                              -m_orthographic_zoom,
                               m_orthographic_zoom,
-                              vc::near,
-                              vc::far );
+                              vc::near_clip,
+                              vc::far_clip );
 }
 
 void Viewport::update_draw()

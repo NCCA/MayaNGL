@@ -15,9 +15,9 @@ layout (triangle_strip, max_vertices = 36) out;
 //layout(line_strip, max_vertices = 8) out;
 
 uniform mat4 MVP;
-uniform float Dist;
 uniform bool enableViewAxisColours;
 
+//in vec4 eye_position;
 out vec4 axisColour;
 
 
@@ -46,16 +46,19 @@ void main()
 
     vec3 lineVec = normalize(vtx1 - vtx0);
 
-    float Thickness = Dist * 0.05;
+//    float dist = length(eye_position);
+//    float attenuation = 0.9f/((1.f+0.6f*dist)+(1.f+0.001f*pow(dist,2)));
+
+    float Thickness = 0.1f;//attenuation;
     if (enableViewAxisColours == false)
     {
         axisColour = LIGHT_GRAY;
-        Thickness = Dist * 0.0006;
+        Thickness = 0.1f;
 
         if ( vtx0.x == 0.0 || vtx0.z == 0.0)
         {
             axisColour = DARK_GRAY;
-            Thickness = Dist * 0.001;
+            Thickness = 0.1f;
         }
     }
     else

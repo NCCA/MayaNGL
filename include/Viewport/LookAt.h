@@ -9,7 +9,7 @@ struct LookAt
     vc::Position target = vc::Position::zero();
     vc::Direction up = vc::Direction::up();
 
-    float calcDist()
+    float calcDist() const
     {
         return (target-eye).length();
     }
