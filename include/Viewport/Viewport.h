@@ -4,6 +4,7 @@
 #include "Viewport/ProjectionText.h"
 #include "Viewport/ViewAxis.h"
 #include "Viewport/Grid.h"
+#include "Viewport/Select.h"
 #include <QKeyEvent>
 #include <QMouseEvent>
 
@@ -26,9 +27,7 @@ class Viewport
         Grid m_grid;
         ProjectionText m_projText;
         ViewAxis m_axis;
-
-        std::array<ngl::Vec3,2> select_dir;
-        std::unique_ptr<ngl::AbstractVAO> sdvao;
+        Select m_select;
 
     private:
         void goPersp();

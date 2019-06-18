@@ -13,4 +13,11 @@ struct LookAt
     {
         return (target-eye).length();
     }
+
+    vc::Direction calcDirection() const
+    {
+        auto dir = target-eye;
+        dir.normalize();
+        return dir;
+    }
 };

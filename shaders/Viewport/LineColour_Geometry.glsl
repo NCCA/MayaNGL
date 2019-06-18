@@ -53,7 +53,8 @@ void main()
     {
         axisColour = LIGHT_GRAY;
         float dist = distance(cam_eye,lineVec);
-//        float attenuation = 0.9f/((1.f+0.6f*dist)+(1.f+0.001f*pow(dist,2)));
+        // The attenuation is a good idea, but needs more work.
+        // float attenuation = 0.9f/((1.f+0.6f*dist)+(1.f+0.001f*pow(dist,2)));
         Thickness = dist * 0.0006f;
 
         if ( vtx0.x == 0.0 || vtx0.z == 0.0)
@@ -72,6 +73,9 @@ void main()
             axisColour = BLUE;
     }
 
+    // This is a small condition to compensate for vertical
+    //  lines. Ideally I need to compute the up vector using
+    //  the same approach as with the camera.
     vec3 upVec = UP;
     if (dot(lineVec,upVec)==1.0)
         upVec = FRONT;

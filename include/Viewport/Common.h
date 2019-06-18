@@ -16,6 +16,22 @@
 #include <math.h>
 
 
+/*
+ * Recomendations for NGL:
+ * (1) All functions that return a copy should be marked as const.
+ *     Currently const & objects cannot call them.
+ * (2) Vec::normalize() should have an overload that returns a
+ *     copy. This can be used in constructors.
+ * (3) Make model matrix and/or ngl::Transformation a singleton.
+ *     I **think** that maya has only on model
+ *     matrix in the graphics side. The user is able to modify the
+ *     attributes of each object from the software side.
+ * (4) Implement an Axis-Based rotation matrix (see below).
+ * (5) ngl::Transformation::getMatrix() should not return a copy.
+ * (6) Create a function that can update the font size in ngl::Text.
+*/
+
+
 #define GET_MEMBER(n_,N_)                                                               \
     auto get##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &    \
     {                                                                                   \

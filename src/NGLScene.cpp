@@ -46,7 +46,7 @@ void NGLScene::loadDiffuseShader()
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglDiffuseShader);
 
-    ngl::Mat4 MV = m_view * m_model.getMatrix();
+    ngl::Mat4 MV = m_view * m_model;
     ngl::Mat4 MVP = m_projection * MV;
     ngl::Mat3 normalMatrix = MV;
     normalMatrix.inverse().transpose();
@@ -64,10 +64,10 @@ void NGLScene::paintGL()
     m_viewport.update_draw();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    m_model.reset();
+    m_model.identity();
     {
-        m_model.setPosition(0.f,0.f,0.f);
-        m_model.setScale(2.f,2.f,2.f);
+        m_model.translate(0.f,0.f,0.f);
+        m_model.scale(2.f,2.f,2.f);
         loadDiffuseShader();
         prim->draw( "teapot" );
     }
