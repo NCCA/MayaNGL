@@ -27,6 +27,9 @@ class Viewport
         ProjectionText m_projText;
         ViewAxis m_axis;
 
+        std::array<ngl::Vec3,2> select_dir;
+        std::unique_ptr<ngl::AbstractVAO> sdvao;
+
     private:
         void goPersp();
         void goOrtho();
@@ -51,6 +54,7 @@ class Viewport
         void update_draw();
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);
+        void mouseRelease(QMouseEvent *event_);
         void mouseMove(QMouseEvent *event_);
 
         ~Viewport() noexcept = default;

@@ -1,14 +1,15 @@
 #version 410 core
 
-#define UP      vec3(0.0,1.0,0.0)
-#define RIGHT   vec3(1.0,0.0,0.0)
-#define FRONT   vec3(0.0,0.0,1.0)
+#define UP      vec3(0.f,1.f,0.f)
+#define RIGHT   vec3(1.f,0.f,0.f)
+#define FRONT   vec3(0.f,0.f,1.f)
 
-#define RED         vec4(1.0,0.0,0.0,1.0)
-#define GREEN       vec4(0.0,1.0,0.0,1.0)
-#define BLUE        vec4(0.0,0.0,1.0,1.0)
-#define LIGHT_GRAY  vec4(0.3,0.3,0.3,1.0);
-#define DARK_GRAY   vec4(0.25,0.25,0.25,1.0);
+#define WHITE       vec4(1.f,1.f,1.f,1.f)
+#define RED         vec4(1.f,0.f,0.f,1.f)
+#define GREEN       vec4(0.f,1.f,0.f,1.f)
+#define BLUE        vec4(0.f,0.f,1.f,1.f)
+#define LIGHT_GRAY  vec4(0.3f,0.3f,0.3f,1.f);
+#define DARK_GRAY   vec4(0.25f,0.25f,0.25f,1.f);
 
 layout (lines) in;
 layout (triangle_strip, max_vertices = 36) out;
@@ -16,8 +17,8 @@ layout (triangle_strip, max_vertices = 36) out;
 
 uniform mat4 MVP;
 uniform bool enableViewAxisColours;
+uniform vec3 cam_eye;
 
-//in vec4 eye_position;
 out vec4 axisColour;
 
 
@@ -46,19 +47,19 @@ void main()
 
     vec3 lineVec = normalize(vtx1 - vtx0);
 
-//    float dist = length(eye_position);
-//    float attenuation = 0.9f/((1.f+0.6f*dist)+(1.f+0.001f*pow(dist,2)));
-
-    float Thickness = 0.1f;//attenuation;
+    float Thickness = 0.06f;
+    axisColour = WHITE;
     if (enableViewAxisColours == false)
     {
         axisColour = LIGHT_GRAY;
-        Thickness = 0.1f;
+        float dist = distance(cam_eye,lineVec);
+//        float attenuation = 0.9f/((1.f+0.6f*dist)+(1.f+0.001f*pow(dist,2)));
+        Thickness = dist * 0.0006f;
 
         if ( vtx0.x == 0.0 || vtx0.z == 0.0)
         {
             axisColour = DARK_GRAY;
-            Thickness = 0.1f;
+            Thickness = dist * 0.001f;
         }
     }
     else

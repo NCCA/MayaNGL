@@ -26,6 +26,11 @@ void Viewport::initialize()
     m_axis.initialize();
 
     m_initial_view = view;
+
+
+
+    select_dir[0] = select_dir[1] = m_camera.getEye();
+    sdvao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 }
 
 void Viewport::resize(int w_, int h_)
@@ -63,6 +68,24 @@ void Viewport::update_draw()
     m_grid.draw();
     m_projText.draw();
     m_axis.draw();
+
+
+
+
+    ngl::ShaderLib *shader = ngl::ShaderLib::instance();
+    shader->use(ngl::nglColourShader);
+
+    auto MVP = projection * view * ngl::Mat4();
+
+    shader->setUniform("MVP",MVP);
+    shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f));
+
+    sdvao->bind();
+    sdvao->setData(ngl::AbstractVAO::VertexData(select_dir.size()*sizeof(ngl::Vec3),select_dir[0].m_x));
+    sdvao->setNumIndices(select_dir.size());
+    sdvao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+    sdvao->draw();
+    sdvao->unbind();
 }
 
 void Viewport::keyPress(QKeyEvent *event_)
@@ -119,6 +142,55 @@ void Viewport::mousePress(QMouseEvent *event_)
         m_mouse.setAnchor(event_->x(),event_->y());
 }
 
+void Viewport::mouseRelease(QMouseEvent *event_)
+{
+    if(event_->modifiers() & Qt::ControlModifier)
+    {
+        std::cout<<std::flush;
+
+        /// from here: http://antongerdelan.net/opengl/raycasting.html
+        /// Pipeline: Local Space (Vertex) -> Model Matrix (World Space) -> View Matrix (Eye Space) ->
+        ///           Projection Matrix (Clip Space) -> Perspective Division (Normalized Device Space) ->
+        ///           Viewport Transform (Screen Space).
+
+        int screen_width = 1024;
+        int screen_height = 640;
+
+        // get mouse position on Screen Space.
+        int mouseX = event_->x();
+        int mouseY = event_->y();
+        std::cout<< "mouseX = " << mouseX <<std::endl;
+        std::cout<< "mouseX = " << mouseY <<std::endl;
+
+        // convert mouse position to Normalized Device Space.
+        float normMouseX = (2.f*mouseX)/screen_width - 1.f;
+        float normMouseY = 1.f - (2.f*mouseY)/screen_height;
+        std::cout<< "normMouseX = " << normMouseX <<std::endl;
+        std::cout<< "normMouseY = " << normMouseY <<std::endl;
+
+        // create vector on Clip Space using -1 on the z-depth.
+        ngl::Vec4 clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
+        std::cout<< "clip_coordinates = " << clip_coordinates <<std::endl;
+
+        // convert the clip coordinates to Eye Space.
+        ngl::Vec4 eye_coordinates = clip_coordinates * projection.inverse();
+        eye_coordinates.m_z = -1.f;
+        eye_coordinates.m_w = 0.f;
+        std::cout<< "eye_coordinates = " << eye_coordinates <<std::endl;
+
+        // convert the eye coordinates to World Space.
+        ngl::Vec4 world_coordinates = eye_coordinates * view;
+        ngl::Vec3 ray_direction = world_coordinates.toVec3();
+        ray_direction.normalize();
+        std::cout<< "ray_direction = " << ray_direction <<std::endl;
+        std::cout<< "======================================" <<std::endl;
+
+        select_dir[0] = m_camera.getEye();
+        select_dir[1] = m_camera.getEye()+ray_direction*100.f;
+    }
+}
+
+
 void Viewport::mouseMove(QMouseEvent *event_)
 {
     m_mouse.setTransform(event_->x(),event_->y());
@@ -139,14 +211,14 @@ void Viewport::mouseMove(QMouseEvent *event_)
             case Qt::RightButton:
                 m_camera.dolly();
                 if (m_camera.getCurrentView() != Camera::View::PERSPECTIVE)
-                {
+                { //--------------- this needs work ---------------
                     std::cout<< m_orthographic_zoom <<std::endl;
                     if ((m_orthographic_zoom < 0.1f) && (m_mouse.getDrag().m_x > 0.f))
                         std::cout<< "that's it!" <<std::endl;
                     else
                         m_orthographic_zoom -= m_mouse.getDrag().m_x * Mouse::slowdown;
                     goOrtho();
-                }
+                } //-----------------------------------------------
                 break;
 
             default:

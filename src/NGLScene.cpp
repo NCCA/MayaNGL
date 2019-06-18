@@ -94,6 +94,11 @@ void NGLScene::mousePressEvent(QMouseEvent *event_)
     m_viewport.mousePress(event_);
 }
 
+void NGLScene::mouseReleaseEvent(QMouseEvent *event_)
+{
+    m_viewport.mouseRelease(event_);
+}
+
 void NGLScene::mouseMoveEvent(QMouseEvent *event_)
 {
     m_viewport.mouseMove(event_);

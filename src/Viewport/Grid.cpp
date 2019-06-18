@@ -7,12 +7,10 @@ void Grid::loadLineColourShader() const
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use("LineColour");
 
-    auto MV = view * m_model;
-    auto MVP = projection * MV;
+    auto MVP = projection * view * m_model;
 
-    shader->setUniform("MV",MV);
     shader->setUniform("MVP",MVP);
-    shader->setUniform("camEye",camera.eye);
+    shader->setUniform("cam_eye",camera.eye);
     shader->setUniform("enableViewAxisColours",false);
 }
 
