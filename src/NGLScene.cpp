@@ -67,9 +67,22 @@ void NGLScene::paintGL()
     m_model.identity();
     {
         m_model.translate(0.f,0.f,0.f);
-        m_model.scale(2.f,2.f,2.f);
+        m_model.rotateY(45.f);
+        m_model.scale(4.f,4.f,4.f);
         loadDiffuseShader();
         prim->draw( "teapot" );
+        m_viewport.make_selectable(1,m_model,"teapot");
+    }
+
+    m_model.identity();
+    {
+        m_model.translate(-4.f,5.5f,-6.f);
+        m_model.rotateY(45.f);
+        m_model.rotateX(45.f);
+        m_model.scale(10.f,10.f,10.f);
+        loadDiffuseShader();
+        prim->draw( "troll" );
+        m_viewport.make_selectable(2,m_model,"troll");
     }
 }
 

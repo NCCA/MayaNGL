@@ -124,10 +124,10 @@ void Viewport::mousePress(QMouseEvent *event_)
 
 void Viewport::mouseRelease(QMouseEvent *event_)
 {
-    if(event_->modifiers() & Qt::ControlModifier)
-        m_select.emitRay(event_->x(),event_->y());
+    if (event_->buttons() & Qt::LeftButton)
+        std::cout<< "left mouse button released" <<std::endl;
+//            m_select.pick(event_->x(),event_->y());
 }
-
 
 void Viewport::mouseMove(QMouseEvent *event_)
 {

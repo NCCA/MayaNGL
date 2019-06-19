@@ -27,13 +27,34 @@ namespace vc
 
     Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &plane_position_, const Direction &plane_normal_)
     {
+//        std::cout<<std::flush << "---- Intersection Ray - Plane ----" <<std::endl;
         float t = (plane_position_-ray_position_).dot(plane_normal_)/ray_direction_.dot(plane_normal_);
 
         if (t>=0)
-            return ray_position_+(t*ray_direction_) + ngl::EPSILON;
+            return ray_position_+(t*ray_direction_);
 
-        return Position::zero();
+        return failed;
     }
+
+    Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &sphere_position_, float sphere_radius_)
+    {
+//        std::cout<<std::flush << "---- Intersection Ray - Sphere ----" <<std::endl;
+        auto m = ray_position_ - sphere_position_;
+        float b = m.dot(ray_direction_);
+        float c = m.dot(m) - pow(sphere_radius_,2);
+
+        float discr = pow(b,2) - c;
+        if (discr > 0.f)
+        {
+            auto t = -b - sqrt(discr);
+            if (t < 0.f)
+                t = 0.f;
+            return ray_position_+(t*ray_direction_);
+        }
+        return failed;
+    }
+
+
 
     glm::mat4 Y_Matrix(float angle_)
     {

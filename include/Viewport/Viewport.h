@@ -51,6 +51,12 @@ class Viewport
         void initialize();
         void resize(int w_, int h_);
         void update_draw();
+
+        void make_selectable(std::size_t id_, const vc::Model &model_, std::string &&prim_name_)
+        {
+            m_select.make_selectable(id_, model_,std::move(prim_name_));
+        }
+
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);
         void mouseRelease(QMouseEvent *event_);

@@ -18,17 +18,23 @@
 
 /*
  * Recomendations for NGL:
- * (1) All functions that return a copy should be marked as const.
- *     Currently const & objects cannot call them.
- * (2) Vec::normalize() should have an overload that returns a
- *     copy. This can be used in constructors.
- * (3) Make model matrix and/or ngl::Transformation a singleton.
- *     I **think** that maya has only on model
- *     matrix in the graphics side. The user is able to modify the
- *     attributes of each object from the software side.
- * (4) Implement an Axis-Based rotation matrix (see below).
- * (5) ngl::Transformation::getMatrix() should not return a copy.
- * (6) Create a function that can update the font size in ngl::Text.
+ * (1)  All functions that return a copy should be marked as const.
+ *      Currently const & objects cannot call them.
+ * (2)  Vec::normalize() should have an overload that returns a
+ *      copy. This can be used in constructors.
+ * (3)  Make model matrix and/or ngl::Transformation a singleton.
+ *      I **think** that maya has only on model
+ *      matrix in the graphics side. The user is able to modify the
+ *      attributes of each object from the software side.
+ * (4)  Implement an Axis-Based rotation matrix (see below).
+ * (5)  ngl::Transformation::getMatrix() should not return a copy.
+ * (6)  Create a function that can update the font size in ngl::Text.
+ * (7)  Create a copy constructor in ngl::Transformation that takes
+ *      an ngl::Mat4 as a parameter.
+ * (8)  get vertex data from VAOPrimitives.
+ * (9)  Convert Matrix to Euler Rotations.
+ * (10) Access the static id of each ngl::VAOPrimitive that's created.
+ * (11) ngl::Mat4::scale does not work properly.
 */
 
 
@@ -44,12 +50,15 @@ namespace vc //viewport common
 
     using Position = ngl::Vec3;
     using Direction = ngl::Vec3;
+    using Size = ngl::Vec3;
     using Translation = ngl::Mat4;
     using Rotation = ngl::Mat4;
+    using Model = ngl::Mat4;
     using View = ngl::Mat4;
     using Projection = ngl::Mat4;
     using Transform = ngl::Mat4;
 
+    static const Position failed = {-ngl::EPSILON,-ngl::EPSILON,-ngl::EPSILON};
     static constexpr float fov = 35.f;
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 200.f;
@@ -77,7 +86,9 @@ namespace vc //viewport common
     ngl::Vec3 absl(const ngl::Vec3 &num_);
     ngl::Vec3 round(const ngl::Vec3 &num_, unsigned precision_);
 
+    // should I make these function take template params or Rays???
     Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &plane_position_, const Direction &plane_normal_);
+    Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &sphere_position_, float sphere_radius_);
 
     glm::mat4 Y_Matrix(float angle_);
     glm::mat4 Axis_Matrix(float angle_, const Direction &axis_);
