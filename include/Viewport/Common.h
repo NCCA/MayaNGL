@@ -17,7 +17,7 @@
 
 
 /*
- * Recomendations for NGL:
+ * About NGL:
  * (1)  All functions that return a copy should be marked as const.
  *      Currently const & objects cannot call them.
  * (2)  Vec::normalize() should have an overload that returns a
@@ -35,6 +35,8 @@
  * (9)  Convert Matrix to Euler Rotations.
  * (10) Access the static id of each ngl::VAOPrimitive that's created.
  * (11) ngl::Mat4::scale does not work properly.
+ * (12) Why isn't ngl::Vec3 * working with ngl::AbstractVAO in the
+ *      Base_Selection class.
 */
 
 
@@ -47,21 +49,45 @@
 
 namespace vc //viewport common
 {
+    using V3 = ngl::Vec3;
+    using M4 = ngl::Mat4;
 
-    using Position = ngl::Vec3;
-    using Direction = ngl::Vec3;
-    using Size = ngl::Vec3;
-    using Translation = ngl::Mat4;
-    using Rotation = ngl::Mat4;
-    using Model = ngl::Mat4;
-    using View = ngl::Mat4;
-    using Projection = ngl::Mat4;
-    using Transform = ngl::Mat4;
+    using Position = V3;
+    using Direction = V3;
+    using Size = V3;
+    using Translation = M4;
+    using Rotation = M4;
+    using Model = M4;
+    using View = M4;
+    using Projection = M4;
+    using Transform = M4;
+
+    template<typename T>
+    using Generic = T;
 
     static const Position failed = {-ngl::EPSILON,-ngl::EPSILON,-ngl::EPSILON};
     static constexpr float fov = 35.f;
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 200.f;
+
+    struct Ray
+    {
+        Position position;
+        Direction direction;
+    };
+
+    struct InfPlane
+    {
+        Position position;
+        Direction normal;
+    };
+
+    struct Sphere
+    {
+        Position position;
+        float radius;
+    };
+
 
     template<typename T>
     T toDegs(T num_)
@@ -81,16 +107,14 @@ namespace vc //viewport common
         return floor((num_ * pow(10.f,precision_)) + 0.5f) / pow(10.f,precision_);
     }
 
-    ngl::Vec3 toDegs(const ngl::Vec3 &num_);
-    ngl::Vec3 toRads(const ngl::Vec3 &num_);
-    ngl::Vec3 absl(const ngl::Vec3 &num_);
-    ngl::Vec3 round(const ngl::Vec3 &num_, unsigned precision_);
+    Generic<V3> toDegs(const Generic<V3> &num_);
+    Generic<V3> toRads(const Generic<V3> &num_);
+    Generic<V3> absl(const Generic<V3> &num_);
+    Generic<V3> round(const Generic<V3> &num_, unsigned precision_);
 
-    // should I make these function take template params or Rays???
-    Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &plane_position_, const Direction &plane_normal_);
-    Position intersect(const Position &ray_position_, const Direction &ray_direction_, const Position &sphere_position_, float sphere_radius_);
+    Generic<M4> Y_Matrix(float angle_);
+    Generic<M4> Axis_Matrix(float angle_, const Direction &axis_);
 
-    glm::mat4 Y_Matrix(float angle_);
-    glm::mat4 Axis_Matrix(float angle_, const Direction &axis_);
-
+    Position intersect(const Ray &ray_, const InfPlane &plane_);
+    Position intersect(const Ray &ray_, const Sphere &sphere_);
 }

@@ -1,5 +1,5 @@
 
-#include "Viewport/Camera.h"
+#include "Viewport/Camera/Camera.h"
 
 
 Camera::Camera( const Mouse &mouse_,
@@ -96,7 +96,7 @@ void Camera::reset(const LookAt &lookAt_, View panel_)
 
 void Camera::focusOn(const vc::Position &target_)
 {
-
+    /* THIS NEEDS SORTING OUT */
 }
 
 void Camera::front()

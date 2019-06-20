@@ -71,18 +71,18 @@ void NGLScene::paintGL()
         m_model.scale(4.f,4.f,4.f);
         loadDiffuseShader();
         prim->draw( "teapot" );
-        m_viewport.make_selectable(1,m_model,"teapot");
+        m_viewport.make_selectable(1,"teapot",m_model);
     }
 
     m_model.identity();
     {
-        m_model.translate(-4.f,5.5f,-6.f);
+        m_model.translate(-4.f,0.f,-6.f);
         m_model.rotateY(45.f);
         m_model.rotateX(45.f);
-        m_model.scale(10.f,10.f,10.f);
+        m_model.scale(2.f,2.f,2.f);
         loadDiffuseShader();
-        prim->draw( "troll" );
-        m_viewport.make_selectable(2,m_model,"troll");
+        prim->draw( "football" );
+        m_viewport.make_selectable(2,"football",m_model);
     }
 }
 
@@ -105,11 +105,6 @@ void NGLScene::keyPressEvent(QKeyEvent *event_)
 void NGLScene::mousePressEvent(QMouseEvent *event_)
 {
     m_viewport.mousePress(event_);
-}
-
-void NGLScene::mouseReleaseEvent(QMouseEvent *event_)
-{
-    m_viewport.mouseRelease(event_);
 }
 
 void NGLScene::mouseMoveEvent(QMouseEvent *event_)

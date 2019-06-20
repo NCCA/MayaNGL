@@ -16,11 +16,23 @@ MOC_DIR = moc
 CONFIG -= app_bundle
 
 HEADERS += $$PWD/include/*.h \
-           $$PWD/include/Viewport/*.h \
-           $$PWD/include/Viewport/*.hpp
+           $$PWD/include/Viewport/*.h* \
+           $$PWD/include/Viewport/Camera/*.h* \
+           $$PWD/include/Viewport/Grid/*.h* \
+           $$PWD/include/Viewport/LookAt/*.h* \
+           $$PWD/include/Viewport/Mouse/*.h* \
+           $$PWD/include/Viewport/ProjectionText/*.h* \
+           $$PWD/include/Viewport/Select/*.h* \
+           $$PWD/include/Viewport/ViewAxis/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
-           $$PWD/src/Viewport/*.cpp
+           $$PWD/src/Viewport/*.cpp \
+           $$PWD/src/Viewport/Camera/*.cpp \
+           $$PWD/src/Viewport/Grid/*.cpp \
+           $$PWD/src/Viewport/Mouse/*.cpp \
+           $$PWD/src/Viewport/ProjectionText/*.cpp \
+           $$PWD/src/Viewport/Select/*.cpp \
+           $$PWD/src/Viewport/ViewAxis/*.cpp
 
 OTHER_FILES += $$PWD/shaders/Viewport/*.glsl \
                README.md

@@ -1,5 +1,5 @@
 
-#include "Viewport/Grid.h"
+#include "Viewport/Grid/Grid.h"
 
 
 void Grid::loadLineColourShader() const

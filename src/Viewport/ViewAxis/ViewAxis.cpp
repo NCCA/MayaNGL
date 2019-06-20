@@ -1,5 +1,5 @@
 
-#include "Viewport/ViewAxis.h"
+#include "Viewport/ViewAxis/ViewAxis.h"
 
 
 ViewAxis::ViewAxis( const vc::View &view_ )
@@ -23,7 +23,7 @@ void ViewAxis::initialize()
 {
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
     m_vao->bind();
-    m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(ngl::Vec3),m_coordinates[0].m_x));
+    m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(vc::Position),m_coordinates[0].m_x));
     m_vao->setNumIndices(m_coordinates.size());
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
     m_vao->unbind();

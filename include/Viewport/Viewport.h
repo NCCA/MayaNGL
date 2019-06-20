@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Viewport/Camera.h"
-#include "Viewport/ProjectionText.h"
-#include "Viewport/ViewAxis.h"
-#include "Viewport/Grid.h"
-#include "Viewport/Select.h"
+#include "Viewport/Camera/Camera.h"
+#include "Viewport/ProjectionText/ProjectionText.h"
+#include "Viewport/ViewAxis/ViewAxis.h"
+#include "Viewport/Grid/Grid.h"
+#include "Viewport/Select/Select_Def.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
 
@@ -27,7 +27,7 @@ class Viewport
         Grid m_grid;
         ProjectionText m_projText;
         ViewAxis m_axis;
-        Select m_select;
+        Select<> m_select;
 
     private:
         void goPersp();
@@ -52,14 +52,11 @@ class Viewport
         void resize(int w_, int h_);
         void update_draw();
 
-        void make_selectable(std::size_t id_, const vc::Model &model_, std::string &&prim_name_)
-        {
-            m_select.make_selectable(id_, model_,std::move(prim_name_));
-        }
+        template<typename S>
+        void make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_);
 
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);
-        void mouseRelease(QMouseEvent *event_);
         void mouseMove(QMouseEvent *event_);
 
         ~Viewport() noexcept = default;

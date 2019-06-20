@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Viewport/LookAt.h"
-#include "Viewport/Inverse_Def.hpp"
-#include "Viewport/Mouse.h"
+#include "Viewport/LookAt/LookAt.h"
+#include "Viewport/Camera/Inverse_Def.hpp"
+#include "Viewport/Mouse/Mouse.h"
 
 
 class Camera

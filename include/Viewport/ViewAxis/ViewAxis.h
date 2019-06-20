@@ -6,7 +6,7 @@
 struct ViewAxis
 {
     private:
-        typedef std::array<ngl::Vec3,6> Vertices;
+        typedef std::array<vc::Position,6> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:

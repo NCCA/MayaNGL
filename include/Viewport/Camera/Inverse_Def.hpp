@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Inverse.h"
+#include "Viewport/Camera/Inverse.h"
 
 
 template<typename CAM>

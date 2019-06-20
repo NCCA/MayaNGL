@@ -24,4 +24,8 @@ void Viewport::initialize(const CNT<T> &lookAt_)
     this->initialize(lookAt_[0],lookAt_[1],lookAt_[2]);
 }
 
-
+template<typename S>
+void Viewport::make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_)
+{
+    m_select.make_selectable(id_,std::forward<S>(prim_name_),prim_transform_);
+}

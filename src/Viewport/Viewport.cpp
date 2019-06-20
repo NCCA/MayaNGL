@@ -118,15 +118,17 @@ void Viewport::keyPress(QKeyEvent *event_)
 
 void Viewport::mousePress(QMouseEvent *event_)
 {
-    if(event_->modifiers() & Qt::AltModifier)
-        m_mouse.setAnchor(event_->x(),event_->y());
-}
-
-void Viewport::mouseRelease(QMouseEvent *event_)
-{
-    if (event_->buttons() & Qt::LeftButton)
-        std::cout<< "left mouse button released" <<std::endl;
-//            m_select.pick(event_->x(),event_->y());
+    switch(event_->buttons())
+    {
+        case Qt::LeftButton:
+            if(event_->modifiers() & Qt::AltModifier)
+                m_mouse.setAnchor(event_->x(),event_->y());
+            else
+                m_select.pick(event_->x(),event_->y());
+            break;
+        default:
+            break;
+    }
 }
 
 void Viewport::mouseMove(QMouseEvent *event_)

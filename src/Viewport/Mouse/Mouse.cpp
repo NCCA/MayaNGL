@@ -1,5 +1,5 @@
 
-#include "Viewport/Mouse.h"
+#include "Viewport/Mouse/Mouse.h"
 
 
 void Mouse::setAnchor(float x_, float y_)
