@@ -48,12 +48,12 @@ class Viewport
         template< typename T, template<typename,typename = std::allocator<T>> class CNT >
         void initialize(const CNT<T> &lookAt_);
 
+        template<typename S>
+        void make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_);
+
         void initialize();
         void resize(int w_, int h_);
         void update_draw();
-
-        template<typename S>
-        void make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_);
 
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);

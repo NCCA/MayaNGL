@@ -23,6 +23,8 @@ class Base_Selection
         /*const*/ vc::Projection &projection;
 
     protected:
+        int m_screen_width;
+        int m_screen_height;
         vc::Ray m_ray;
         Selectables m_selectables;
         Selections m_current_selections;

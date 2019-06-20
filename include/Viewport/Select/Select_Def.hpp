@@ -12,10 +12,24 @@ Select<visualize_bv_and_ray>::Select( const LookAt &cam_lookAt_,
 {;}
 
 template<bool visualize_bv_and_ray>
+bool Select<visualize_bv_and_ray>::alreadySelected(std::size_t id_)
+{
+    auto elem = std::find(this->m_current_selections.cbegin(),this->m_current_selections.cend(),id_);
+    return (elem != this->m_current_selections.cend());
+}
+
+template<bool visualize_bv_and_ray>
     template<typename S>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_)
 {
     this->m_selectables.emplace(id_,SelectablePrim{std::forward<S>(prim_name_),prim_transform_});
+}
+
+template<bool visualize_bv_and_ray>
+void Select<visualize_bv_and_ray>::resize(int w_, int h_)
+{
+    this->m_screen_width = w_;
+    this->m_screen_height = h_;
 }
 
 template<bool visualize_bv_and_ray>
@@ -39,8 +53,6 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
     if (this->m_selectables.empty())
         return;
 
-    /* THIS NEEDS SORTING OUT */
-
     this->emitRay(mouse_x,mouse_y);
 
     bool nothing_selected = true;
@@ -50,23 +62,25 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
         if (this->clickedOnObject(prim))
         {
             auto &&id = i.first;
-            this->m_current_selections.emplace_back(id);
             nothing_selected = false;
-            break;
+            if(!alreadySelected(id))
+            {
+                this->m_current_selections.emplace_back(id);
+                break;
+            }
         }
     }
 
     if (nothing_selected)
         this->m_current_selections.clear();
 
-
     std::cout<<this->m_current_selections.size()<<std::endl;
-    std::cout<<this->m_selectables.size()<<std::endl;
-
-//    auto elem = std::find_if(this->m_selectables.cbegin(), this->m_selectables.cend(), [&id_](const SelectablePrim &sp)
-//                                                                                       {
-//                                                                                            return (id_ == sp.id);
-//                                                                                       });
-//    if (elem == this->m_selectables.cend())
-//        this->m_selectables.emplace_back(id_,std::forward<S>(prim_name_),prim_transform_);
+//    std::cout<<this->m_selectables.size()<<std::endl;
 }
+
+template<bool visualize_bv_and_ray>
+void Select<visualize_bv_and_ray>::multipick(int mouse_x, int mouse_y)
+{
+    std::cout<< "Multi selection in progress" <<std::endl;
+}
+

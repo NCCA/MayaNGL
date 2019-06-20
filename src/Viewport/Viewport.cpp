@@ -41,6 +41,7 @@ void Viewport::resize(int w_, int h_)
 
     m_projText.resize(w_,h_);
     m_axis.resize(m_aspectRatio);
+    m_select.resize(w_,h_);
 }
 
 void Viewport::goPersp()
@@ -123,6 +124,8 @@ void Viewport::mousePress(QMouseEvent *event_)
         case Qt::LeftButton:
             if(event_->modifiers() & Qt::AltModifier)
                 m_mouse.setAnchor(event_->x(),event_->y());
+            else if(event_->modifiers() & Qt::ShiftModifier)
+                m_select.multipick(event_->x(),event_->y());
             else
                 m_select.pick(event_->x(),event_->y());
             break;

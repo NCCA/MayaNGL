@@ -10,6 +10,8 @@ Base_Selection<false>::Base_Selection( const LookAt &cam_lookAt_,
                                        cam_lookAt(cam_lookAt_),
                                        view(view_),
                                        projection(projection_),
+                                       m_screen_width(0),
+                                       m_screen_height(0),
                                        m_ray{cam_lookAt.eye,vc::Direction::zero()},
                                        m_selectables(),
                                        m_current_selections()
@@ -27,13 +29,9 @@ void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 ///           Projection Matrix (Clip Space) -> Perspective Division (Normalized Device Space) ->
 ///           Viewport Transform (Screen Space).
 
-    /* THIS NEEDS SORTING OUT */
-    int screen_width = 1024;
-    int screen_height = 640;
-
     // convert mouse position from Screen Space to Normalized Device Space.
-    float normMouseX = (2.f*mouse_x)/screen_width - 1.f;
-    float normMouseY = 1.f - (2.f*mouse_y)/screen_height;
+    float normMouseX = (2.f*mouse_x)/m_screen_width - 1.f;
+    float normMouseY = 1.f - (2.f*mouse_y)/m_screen_height;
 
     // create vector on Clip Space using -1 on the z-depth.
     ngl::Vec4 clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
@@ -92,6 +90,8 @@ Base_Selection<true>::Base_Selection( const LookAt &cam_lookAt_,
 
 void Base_Selection<true>::initialize()
 {
+    Base_Selection<false>::initialize();
+
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     prim->createSphere("BV",1.f,10);
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
@@ -100,6 +100,7 @@ void Base_Selection<true>::initialize()
 void Base_Selection<true>::emitRay(int mouse_x, int mouse_y)
 {
     Base_Selection<false>::emitRay(mouse_x,mouse_y);
+
     m_ray_end = this->m_ray.position + this->m_ray.direction * vc::far_clip;
     m_vtxs = {{this->m_ray.position,m_ray_end}};
 }

@@ -52,6 +52,7 @@ namespace vc //viewport common
     using V3 = ngl::Vec3;
     using M4 = ngl::Mat4;
 
+    using ScreenSize = ngl::Vec2;
     using Position = V3;
     using Direction = V3;
     using Size = V3;

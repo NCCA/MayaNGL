@@ -2,7 +2,9 @@
 #include "Viewport/ProjectionText/ProjectionText.h"
 
 
-ProjectionText::ProjectionText() : m_label(),
+ProjectionText::ProjectionText() : m_screen_width(0),
+                                   m_screen_height(0),
+                                   m_label(),
                                    title("persp")
 {;}
 
