@@ -47,43 +47,56 @@ class Camera
 
 
 
-//            m_inverse.reset(); //this is important
+//            auto translate_axis = target-m_lookAt.target;
+//            if (translate_axis == vc::Direction::zero())
+//                return;
+//            translate_axis.normalize();
 
-//            auto dist = m_lookAt.calcDist()*0.75f;
+//            float translate_dist = (target-m_lookAt.target).length();
+
+//            m_track.m_30 += -translate_dist*translate_axis.m_x;
+//            m_track.m_31 += -translate_dist*translate_axis.m_y;
+//            m_track.m_32 += -translate_dist*translate_axis.m_z;
+
+
+//            auto rotation_dist = (m_lookAt.eye-target).length();
+//            auto phi = asin((target.m_y-m_lookAt.eye.m_y)/rotation_dist);
+//            auto theta = asin((target.m_x-m_lookAt.eye.m_x)/(rotation_dist*cos(phi)));
+
+//            vc::Rotation Ry = vc::Y_Matrix(theta);
+//            m_inverse.shadow = m_inverse.shadow*Ry;
+//            auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
+//            rotationAxis.normalize();
+//            vc::Rotation Rx = vc::Axis_Matrix(phi*0.5f,rotationAxis);
+//            vc::Rotation localR = Rx*Ry;
+//            m_pan *= localR.inverse();
+
+
+//            float dolly_dist = rotation_dist * 0.6f;
+//            m_dolly.m_30 += dolly_dist * m_inverse.original.m_x;
+//            m_dolly.m_31 += dolly_dist * m_inverse.original.m_y;
+//            m_dolly.m_32 += dolly_dist * m_inverse.original.m_z;
+
+
+            /*
+             * The problem is that I do not return the correct
+             * transform so that I can get the correct position
+             * of the camera.
+            */
+
+//            auto transform = m_dolly * m_pan * m_track;
+
+//            m_lookAt.eye.m_x = transform.m_30;
+//            m_lookAt.eye.m_y = transform.m_31;
+//            m_lookAt.eye.m_z = transform.m_32;
+
+//            m_lookAt.target = target;
+//            m_inverse.reset();
+//            auto dist = m_lookAt.calcDist()*0.4f;
 //            m_lookAt.eye = m_lookAt.target + dist*m_inverse.current;
-//            reset(m_lookAt);
 
 
-            auto translate_axis = target-m_lookAt.target;
-            if (translate_axis == vc::Direction::zero())
-                return;
-            translate_axis.normalize();
-
-            float translate_dist = (target-m_lookAt.target).length();
-
-            m_track.m_30 = -translate_dist*translate_axis.m_x;
-            m_track.m_31 = -translate_dist*translate_axis.m_y;
-            m_track.m_32 = -translate_dist*translate_axis.m_z;
-
-
-
-            auto rotation_dist = (m_lookAt.eye-target).length();
-            auto phi = asin((target.m_y-m_lookAt.eye.m_y)/rotation_dist);
-            auto theta = asin((target.m_x-m_lookAt.eye.m_x)/(rotation_dist*cos(phi)));
-
-            vc::Rotation Ry = vc::Y_Matrix(theta);
-            m_inverse.shadow = m_inverse.shadow*Ry;
-            auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
-            rotationAxis.normalize();
-            vc::Rotation Rx = vc::Axis_Matrix(phi*0.5f,rotationAxis);
-            vc::Rotation localR = Rx*Ry;
-            m_pan = localR.inverse();
-
-
-            float dolly_dist = rotation_dist * 0.6f;
-            m_dolly.m_30 = dolly_dist * m_inverse.original.m_x;
-            m_dolly.m_31 = dolly_dist * m_inverse.original.m_y;
-            m_dolly.m_32 = dolly_dist * m_inverse.original.m_z;
+            std::cout<< m_lookAt.eye <<std::endl;
         }
 
         vc::Transform computeTransform();
