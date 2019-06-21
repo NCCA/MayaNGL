@@ -28,11 +28,15 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
-                         m_viewport.getCamera().getTarget(),
-                         m_viewport.getCamera().getUp());
+//    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
+//                         m_viewport.getCamera().getTarget(),
+//                         m_viewport.getCamera().getUp());
 
-    m_viewport.initialize();
+    m_view = ngl::lookAt({0.f,0.f,28.f},
+                         {0.f,0.f,0.f},
+                         {0.f,1.f,0.f});
+
+    m_viewport.initialize(ngl::Vec3{0.f,0.f,28.f},ngl::Vec3{0.f,0.f,0.f},ngl::Vec3{0.f,1.f,0.f});
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
@@ -76,7 +80,7 @@ void NGLScene::paintGL()
 
     m_model.identity();
     {
-        m_model.translate(-4.f,0.f,-6.f);
+        m_model.translate(8.f,0.f,0.f);
         m_model.rotateY(45.f);
         m_model.rotateX(45.f);
         m_model.scale(2.f,2.f,2.f);
@@ -105,6 +109,7 @@ void NGLScene::keyPressEvent(QKeyEvent *event_)
 void NGLScene::mousePressEvent(QMouseEvent *event_)
 {
     m_viewport.mousePress(event_);
+    update();
 }
 
 void NGLScene::mouseMoveEvent(QMouseEvent *event_)

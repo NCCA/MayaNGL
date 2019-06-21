@@ -19,7 +19,7 @@ class Base_Selection
 
     protected:
         const LookAt &cam_lookAt;
-        const vc::View &view;
+        /*const*/ vc::View &view;
         /*const*/ vc::Projection &projection;
 
     protected:
@@ -27,12 +27,15 @@ class Base_Selection
         int m_screen_height;
         vc::Ray m_ray;
         Selectables m_selectables;
-        Selections m_current_selections;
+        Selections m_currently_selected;
 
     public:
         explicit Base_Selection( const LookAt &cam_lookAt_,
-                                 const vc::View &view_,
+                                 /*const*/ vc::View &view_,
                                  /*const*/ vc::Projection &projection_ );
+
+        GET_MEMBER(m_selectables,AllSelectables)
+        GET_MEMBER(m_currently_selected,CurrentlySelected)
 
         void initialize();
         void emitRay(int mouse_x, int mouse_y);
@@ -59,7 +62,7 @@ class Base_Selection<true> : public Base_Selection<false>
 
     public:
         explicit Base_Selection( const LookAt &cam_lookAt_,
-                                 const vc::View &view_,
+                                 /*const*/ vc::View &view_,
                                  /*const*/ vc::Projection &projection_ );
 
         void initialize();

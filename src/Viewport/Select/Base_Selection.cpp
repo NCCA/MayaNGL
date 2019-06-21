@@ -4,7 +4,7 @@
 
 template<>
 Base_Selection<false>::Base_Selection( const LookAt &cam_lookAt_,
-                                       const vc::View &view_,
+                                       /*const*/ vc::View &view_,
                                        /*const*/ vc::Projection &projection_ )
                                        :
                                        cam_lookAt(cam_lookAt_),
@@ -14,7 +14,7 @@ Base_Selection<false>::Base_Selection( const LookAt &cam_lookAt_,
                                        m_screen_height(0),
                                        m_ray{cam_lookAt.eye,vc::Direction::zero()},
                                        m_selectables(),
-                                       m_current_selections()
+                                       m_currently_selected()
 {;}
 
 template<>
@@ -24,6 +24,7 @@ void Base_Selection<false>::initialize()
 template<>
 void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 {
+    using namespace vc;
 /// from here: http://antongerdelan.net/opengl/raycasting.html
 /// Pipeline: Local Space (Vertex) -> Model Matrix (World Space) -> View Matrix (Eye Space) ->
 ///           Projection Matrix (Clip Space) -> Perspective Division (Normalized Device Space) ->
@@ -34,16 +35,15 @@ void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
     float normMouseY = 1.f - (2.f*mouse_y)/m_screen_height;
 
     // create vector on Clip Space using -1 on the z-depth.
-    ngl::Vec4 clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
+    Generic<V4> clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
 
     // convert the clip coordinates to Eye Space.
-    ngl::Vec4 eye_coordinates = clip_coordinates * projection.inverse();
+    Generic<V4> eye_coordinates = clip_coordinates * projection.inverse();
     eye_coordinates.m_z = -1.f;
     eye_coordinates.m_w = 0.f;
 
     // convert the eye coordinates to World Space.
-    ngl::Vec4 world_coordinates = eye_coordinates * view;
-
+    Generic<V4> world_coordinates = eye_coordinates * view;
     m_ray.position = cam_lookAt.eye;
     m_ray.direction = world_coordinates.toVec3();
     m_ray.direction.normalize();
@@ -52,14 +52,14 @@ void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 template<>
 void Base_Selection<false>::draw() const
 {
-    if (m_current_selections.empty())
+    if (m_currently_selected.empty())
         return;
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglColourShader);
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
-    for (const auto &i : m_current_selections)
+    for (const auto &i : m_currently_selected)
     {
         auto &&prim_name = m_selectables.at(i).name;
         auto &&prim_transform = m_selectables.at(i).transform;
@@ -80,7 +80,7 @@ void Base_Selection<false>::draw() const
 
 
 Base_Selection<true>::Base_Selection( const LookAt &cam_lookAt_,
-                                      const vc::View &view_,
+                                      /*const*/ vc::View &view_,
                                       /*const*/ vc::Projection &projection_ )
                                       :
                                       Base_Selection<false>(cam_lookAt_,view_,projection_),
@@ -124,22 +124,22 @@ void Base_Selection<true>::draw() const
     m_vao->draw();
     m_vao->unbind();
 
-    if (!m_current_selections.empty())
+    if (m_currently_selected.empty())
+        return;
+
+    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+    for (const auto &i : m_currently_selected)
     {
-        ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-        for (const auto &i : m_current_selections)
-        {
-            auto &&prim_transform = m_selectables.at(i).transform;
+        auto &&prim_transform = m_selectables.at(i).transform;
 
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-            auto MVP = projection * view * prim_transform;
-            shader->setUniform("MVP",MVP);
-            shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
-            prim->draw("BV");
+        auto MVP = projection * view * prim_transform;
+        shader->setUniform("MVP",MVP);
+        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
+        prim->draw("BV");
 
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        }
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 }
 

@@ -27,7 +27,7 @@ class Viewport
         Grid m_grid;
         ProjectionText m_projText;
         ViewAxis m_axis;
-        Select<> m_select;
+        Select<true> m_select;
 
     private:
         void goPersp();

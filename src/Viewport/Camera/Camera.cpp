@@ -72,11 +72,11 @@ void Camera::track()
     auto Tz = mouse_move.m_x * horizontal_axis.m_z +  mouse_move.m_y * vertical_axis.m_z;
 
     m_lookAt.eye.m_x -= Tx;
-    m_lookAt.eye.m_y += Ty;
+    m_lookAt.eye.m_y -= Ty;
     m_lookAt.eye.m_z -= Tz;
 
     m_lookAt.target.m_x -= Tx;
-    m_lookAt.target.m_y += Ty;
+    m_lookAt.target.m_y -= Ty;
     m_lookAt.target.m_z -= Tz;
 
     m_track.m_30 += Tx;
@@ -92,11 +92,6 @@ void Camera::reset(const LookAt &lookAt_, View panel_)
     m_track.identity();
     m_dolly.identity();
     m_pan.identity();
-}
-
-void Camera::focusOn(const vc::Position &target_)
-{
-    /* THIS NEEDS SORTING OUT */
 }
 
 void Camera::front()

@@ -51,7 +51,6 @@ namespace vc
         float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
         if (t>=0)
             return r_pos+(t*r_dir);
-
         return failed;
     }
 
@@ -69,10 +68,9 @@ namespace vc
         float discr = pow(b,2) - c;
         if (discr > 0.f)
         {
-            auto t = -b - sqrt(discr);
-            //check if inside the sphere
-            if (t < 0.f)
-                t = 0.f;
+            auto t = -b - sqrt(discr);  // front side
+            if (t < 0.f)  // check if inside the sphere
+                t = -b + sqrt(discr);  // back side
             return r_pos+(t*r_dir);
         }
         return failed;

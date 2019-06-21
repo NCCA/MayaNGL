@@ -73,7 +73,13 @@ void Viewport::keyPress(QKeyEvent *event_)
 {
     switch ( event_->key() )
     {
-        case Qt::Key_R:
+        case Qt::Key_F:
+            m_camera.focusOn(m_select);
+            m_mouse.reset();
+            m_grid.reset();
+            break;
+
+        case Qt::Key_Space:
             m_projText.title = "persp";
             m_camera.reset(m_initial_lookAt);
             m_mouse.reset();
@@ -123,12 +129,15 @@ void Viewport::mousePress(QMouseEvent *event_)
     {
         case Qt::LeftButton:
             if(event_->modifiers() & Qt::AltModifier)
+            {
                 m_mouse.setAnchor(event_->x(),event_->y());
-            else if(event_->modifiers() & Qt::ShiftModifier)
-                m_select.multipick(event_->x(),event_->y());
-            else
-                m_select.pick(event_->x(),event_->y());
+                break;
+            }
+            if(event_->modifiers() & Qt::ShiftModifier)
+                m_select.enableMultiSelection();
+            m_select.pick(event_->x(),event_->y());
             break;
+
         default:
             break;
     }

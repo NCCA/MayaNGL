@@ -7,11 +7,7 @@ This is a simple demo illustrating a Maya-like viewport, camera movement and obj
 
 To Do:
 
-- Select: Multiple selection objects.
-
-- Select: Get object nearest to camera when occluded.
-
-- Camera: Focus on target (selected object).
+- Camera: Focus on target (selected object). ~nearly there...
 
 - Select: Template overload for ngl::Mat4, ngl::Transformation, ngl::Obj.
 
