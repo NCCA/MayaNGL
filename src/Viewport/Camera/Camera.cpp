@@ -21,6 +21,9 @@ vc::Transform Camera::computeTransform()
 
 void Camera::pan()
 {
+    m_inverse.calcCurrent();
+    m_inverse.calcShadow();
+
     vc::Rotation Ry = vc::Y_Matrix(vc::toRads(mouse.getDrag().m_x));
     m_inverse.shadow = m_inverse.shadow*Ry;
 
@@ -108,3 +111,69 @@ void Camera::top()
 {
     reset(LookAt{{0.f,28.f,0.f},vc::Position::zero(),vc::Direction::out()},View::TOP);
 }
+
+
+
+vc::Position Camera::focus_track(vc::Position &axis_,float dist_)
+{
+    axis_.normalize();
+
+    auto transform = dist_*axis_;
+
+    m_track.m_30 += transform.m_x;
+    m_track.m_31 += transform.m_y;
+    m_track.m_32 += transform.m_z;
+
+    return transform;
+}
+
+vc::Rotation Camera::focus_pan(const vc::Position &target_pos_)
+{
+    m_inverse.calcCurrent();
+    m_inverse.calcShadow();
+
+    float rotation_dist = (m_lookAt.eye-target_pos_).length();
+    auto phi = asin((target_pos_.m_y-m_lookAt.eye.m_y)/rotation_dist);
+    auto theta = asin((target_pos_.m_x-m_lookAt.eye.m_x)/(rotation_dist*cos(phi)));
+
+    vc::Rotation Ry = vc::Y_Matrix(theta);
+    m_inverse.shadow = m_inverse.shadow*Ry;
+    auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
+    rotationAxis.normalize();
+    vc::Rotation Rx = vc::Axis_Matrix(phi*0.5f,rotationAxis);
+    vc::Rotation localR = Rx*Ry;
+
+    m_pan *= localR.inverse();
+
+    return localR;
+}
+
+float Camera::focus_dolly(const vc::Position &target_pos_, const vc::Size &target_size_)
+{
+    /* THIS NEEDS MORE WORK */
+    float dolly_dist = 2.f * ((m_lookAt.eye-target_pos_).length()-target_size_.length());
+
+    std::cout<< dolly_dist <<std::endl;
+
+    m_dolly.m_30 += dolly_dist * m_inverse.original.m_x;
+    m_dolly.m_31 += dolly_dist * m_inverse.original.m_y;
+    m_dolly.m_32 += dolly_dist * m_inverse.original.m_z;
+
+    return dolly_dist;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

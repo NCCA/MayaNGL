@@ -5,7 +5,7 @@
 
 
 template<bool visualize_bv_and_ray = false>
-struct Select : Base_Selection<visualize_bv_and_ray>
+struct Select final : Base_Selection<visualize_bv_and_ray>
 {
     private:
         typedef typename Base_Selection<visualize_bv_and_ray>::SelectablePrim SelectablePrim;

@@ -43,60 +43,23 @@ class Camera
                 return;
 
             auto target_transform = selectables.at(currently_selected[0]).transform;
-            vc::Position target(target_transform.m_30,target_transform.m_31,target_transform.m_32);
+            vc::Position target_position(target_transform.m_30,target_transform.m_31,target_transform.m_32);
+            vc::Size target_size(target_transform.m_00,target_transform.m_11,target_transform.m_22);
 
+            auto axis = m_lookAt.target-target_position;
+            float dist = axis.length();
+            if (dist < ngl::EPSILON)
+                return;
 
+            auto translate = focus_track(axis,dist);
+            auto rotate = focus_pan(target_position);
+            auto zoom = focus_dolly(target_position,target_size);
 
-//            auto translate_axis = target-m_lookAt.target;
-//            if (translate_axis == vc::Direction::zero())
-//                return;
-//            translate_axis.normalize();
-
-//            float translate_dist = (target-m_lookAt.target).length();
-
-//            m_track.m_30 += -translate_dist*translate_axis.m_x;
-//            m_track.m_31 += -translate_dist*translate_axis.m_y;
-//            m_track.m_32 += -translate_dist*translate_axis.m_z;
-
-
-//            auto rotation_dist = (m_lookAt.eye-target).length();
-//            auto phi = asin((target.m_y-m_lookAt.eye.m_y)/rotation_dist);
-//            auto theta = asin((target.m_x-m_lookAt.eye.m_x)/(rotation_dist*cos(phi)));
-
-//            vc::Rotation Ry = vc::Y_Matrix(theta);
-//            m_inverse.shadow = m_inverse.shadow*Ry;
-//            auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
-//            rotationAxis.normalize();
-//            vc::Rotation Rx = vc::Axis_Matrix(phi*0.5f,rotationAxis);
-//            vc::Rotation localR = Rx*Ry;
-//            m_pan *= localR.inverse();
-
-
-//            float dolly_dist = rotation_dist * 0.6f;
-//            m_dolly.m_30 += dolly_dist * m_inverse.original.m_x;
-//            m_dolly.m_31 += dolly_dist * m_inverse.original.m_y;
-//            m_dolly.m_32 += dolly_dist * m_inverse.original.m_z;
-
-
-            /*
-             * The problem is that I do not return the correct
-             * transform so that I can get the correct position
-             * of the camera.
-            */
-
-//            auto transform = m_dolly * m_pan * m_track;
-
-//            m_lookAt.eye.m_x = transform.m_30;
-//            m_lookAt.eye.m_y = transform.m_31;
-//            m_lookAt.eye.m_z = transform.m_32;
-
-//            m_lookAt.target = target;
-//            m_inverse.reset();
-//            auto dist = m_lookAt.calcDist()*0.4f;
-//            m_lookAt.eye = m_lookAt.target + dist*m_inverse.current;
-
-
-            std::cout<< m_lookAt.eye <<std::endl;
+            m_lookAt.eye -= translate + target_position;
+            m_lookAt.eye = target_position + (m_lookAt.eye * rotate);
+            m_lookAt.target = target_position;
+            m_inverse.calcCurrent();
+            m_lookAt.eye -= zoom * m_inverse.current;
         }
 
         vc::Transform computeTransform();
@@ -107,6 +70,10 @@ class Camera
         void front();
         void side();
         void top();
+
+        vc::Position focus_track(vc::Position &axis_, float dist_);
+        vc::Rotation focus_pan(const vc::Position &target_pos_);
+        float focus_dolly(const vc::Position &target_pos_, const vc::Size &target_size_);
 
         ~Camera() noexcept = default;
 };
