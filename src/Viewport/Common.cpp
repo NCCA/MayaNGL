@@ -41,7 +41,8 @@ namespace vc
                           0.f                                                               , 0.f                                                               , 0.f                                                              , 1.f };
     }
 
-    Position intersect(const Ray &ray_, const InfPlane &plane_)
+    template<>
+    Position intersect(const Ray &ray_, const Plane<true> &plane_)
     {
         auto &&r_pos = ray_.position;
         auto &&r_dir = ray_.direction;
@@ -54,6 +55,33 @@ namespace vc
         return failed;
     }
 
+    template<>
+    Position intersect(const Ray &ray_, const Plane<false> &plane_)
+    {
+        auto &&p_pos = plane_.position;
+        auto &&p_size = plane_.size;
+
+        auto poi = intersect<true>(ray_, plane_);
+        if (poi != failed)
+        {
+            Position top_left = {p_pos.m_x-p_size.m_x,p_pos.m_y+p_size.m_y,p_pos.m_z};
+            Position top_right = {p_pos.m_x+p_size.m_x,p_pos.m_y+p_size.m_y,p_pos.m_z};
+            Position bottom_right = {p_pos.m_x+p_size.m_x,p_pos.m_y-p_size.m_y,p_pos.m_z};
+
+            auto TR_POI = poi-top_right;
+            auto TR_BR = bottom_right-top_right;
+            auto TR_TL = top_left-top_right;
+
+            if  ( ( (TR_POI.dot(TR_BR) >= 0.f) && (TR_POI.dot(TR_BR) <= TR_BR.dot(TR_BR)) ) &&
+                  ( (TR_POI.dot(TR_TL) >= 0.f) && (TR_POI.dot(TR_TL) <= TR_TL.dot(TR_TL)) ) )
+            {
+                return poi;
+            }
+            return failed;
+        }
+        return failed;
+    }
+
     Position intersect(const Ray &ray_, const Sphere &sphere_)
     {
         auto &&r_pos = ray_.position;
@@ -63,9 +91,9 @@ namespace vc
 
         auto a = r_pos - s_pos;
         float b = a.dot(r_dir);
-        float c = a.dot(a) - pow(s_rad,2);
+        float c = a.dot(a) - powf(s_rad,2);
 
-        float discr = pow(b,2) - c;
+        float discr = powf(b,2) - c;
         if (discr > 0.f)
         {
             auto t = -b - sqrt(discr);  // front side

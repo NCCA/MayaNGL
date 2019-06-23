@@ -49,20 +49,23 @@
 
 namespace vc //viewport common
 {
+    using V2 = ngl::Vec2;
     using V3 = ngl::Vec3;
     using V4 = ngl::Vec4;
     using M4 = ngl::Mat4;
 
-    using ScreenSize = ngl::Vec2;
+    using ScreenSize = V2;
     using Position = V3;
     using Direction = V3;
-    using Size = V3;
     using Translation = M4;
     using Rotation = M4;
     using Model = M4;
     using View = M4;
     using Projection = M4;
     using Transform = M4;
+
+    template<typename T = V3>
+    using Size = T;
 
     template<typename T>
     using Generic = T;
@@ -72,16 +75,24 @@ namespace vc //viewport common
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 200.f;
 
+
     struct Ray
     {
         Position position;
         Direction direction;
     };
 
-    struct InfPlane
+    template<bool infinite = true>
+    struct Plane
     {
         Position position;
         Direction normal;
+    };
+
+    template<>
+    struct Plane<false> : Plane<true>
+    {
+        Size<V2> size;
     };
 
     struct Sphere
@@ -117,6 +128,7 @@ namespace vc //viewport common
     Generic<M4> Y_Matrix(float angle_);
     Generic<M4> Axis_Matrix(float angle_, const Direction &axis_);
 
-    Position intersect(const Ray &ray_, const InfPlane &plane_);
+    template<bool infinite = true>
+    Position intersect(const Ray &ray_, const Plane<infinite> &plane_);
     Position intersect(const Ray &ray_, const Sphere &sphere_);
 }

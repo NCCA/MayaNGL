@@ -20,12 +20,7 @@ class Grid
         template<typename CAM>
         explicit Grid( const vc::View &view_,
                        const vc::Projection &projection_,
-                       const CAM &camera_ )
-                       :
-                       view(view_),
-                       projection(projection_),
-                       camera(camera_.getLookAt())
-        {;}
+                       const CAM &camera_ );
 
         void initialize();
         void reset();

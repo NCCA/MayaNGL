@@ -3,7 +3,6 @@
 #include "Viewport/Select/Base_Selection.h"
 
 
-
 template<bool visualize_bv_and_ray = false>
 struct Select final : Base_Selection<visualize_bv_and_ray>
 {

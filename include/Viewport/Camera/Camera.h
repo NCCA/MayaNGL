@@ -3,13 +3,13 @@
 #include "Viewport/LookAt/LookAt.h"
 #include "Viewport/Camera/Inverse_Def.hpp"
 #include "Viewport/Mouse/Mouse.h"
-#include "Viewport/Camera/Focus.h"
+#include "Viewport/Camera/Focus_Def.hpp"
 
 
-class Camera : Focus<Camera>
+class Camera
 {
     private:
-        friend class Focus<Camera>;
+        friend Focus<Camera>;
 
     public:
         enum class View {PERSPECTIVE,FRONT,SIDE,TOP};
@@ -37,10 +37,7 @@ class Camera : Focus<Camera>
         GET_MEMBER(m_currentView,CurrentView)
 
         template<typename SEL>
-        void focus(const SEL &select_)
-        {
-            Focus<Camera>::focus(select_);
-        }
+        void focus(const SEL &select_);
 
         vc::Transform computeTransform();
         void pan();

@@ -16,7 +16,7 @@ Camera::Camera( const Mouse &mouse_,
 
 vc::Transform Camera::computeTransform()
 {
-    return m_dolly * m_pan * m_track;
+    return m_dolly *  m_pan * m_track;
 }
 
 void Camera::pan()
@@ -41,11 +41,15 @@ void Camera::pan()
 
 void Camera::dolly()
 {
+    /*
+     * PROBLEM HERE: The position of the camera breaks after
+     *               going through the target position.
+    */
     m_inverse.calcCurrent();
 
-    auto dist = m_lookAt.calcDist();
-    if (dist < 1.0f)
-        m_lookAt.target += 10.f * m_inverse.current;
+    std::cout<< "DOLLY" <<std::endl;
+    std::cout<< "Eye = " << m_lookAt.eye <<std::endl;
+    std::cout<< "Inv = " << m_inverse.current <<std::endl<<std::endl;
 
     auto mouse_move = mouse.getDrag().m_x  * Mouse::slowdown;
     m_lookAt.eye -= mouse_move * m_inverse.current;

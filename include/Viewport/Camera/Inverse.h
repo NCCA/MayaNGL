@@ -3,10 +3,11 @@
 #include "Viewport/Common.h"
 
 
-template<typename CAM>
+template<typename CAM = class Camera>
 class Inverse
 {
-    friend CAM;
+    friend class Camera;
+    template <class Camera> friend class Focus;
 
     const CAM &cam;
 
@@ -14,7 +15,7 @@ class Inverse
     vc::Direction original;
     vc::Direction shadow;
 
-    explicit Inverse( const CAM &cam_ );
+    Inverse( const CAM &cam_ );
 
     vc::Direction calcCurrent();
     vc::Direction calcShadow();

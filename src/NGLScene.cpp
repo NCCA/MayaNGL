@@ -28,15 +28,15 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-//    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
-//                         m_viewport.getCamera().getTarget(),
-//                         m_viewport.getCamera().getUp());
+    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
+                         m_viewport.getCamera().getTarget(),
+                         m_viewport.getCamera().getUp());
 
-    m_view = ngl::lookAt({0.f,3.f,28.f},
-                         {0.f,0.f,0.f},
-                         {0.f,1.f,0.f});
+//    m_view = ngl::lookAt({0.f,3.f,28.f},
+//                         {0.f,0.f,0.f},
+//                         {0.f,1.f,0.f});
 
-    m_viewport.initialize(ngl::Vec3{0.f,3.f,28.f},ngl::Vec3{0.f,0.f,0.f},ngl::Vec3{0.f,1.f,0.f});
+    m_viewport.initialize(/*ngl::Vec3{0.f,3.f,28.f},ngl::Vec3{0.f,0.f,0.f},ngl::Vec3{0.f,1.f,0.f}*/);
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 

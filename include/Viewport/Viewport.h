@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Viewport/Camera/Camera.h"
+#include "Viewport/Camera/Camera_Def.hpp"
 #include "Viewport/ProjectionText/ProjectionText.h"
 #include "Viewport/ViewAxis/ViewAxis.h"
-#include "Viewport/Grid/Grid.h"
+#include "Viewport/Grid/Grid_Def.hpp"
 #include "Viewport/Select/Select_Def.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>

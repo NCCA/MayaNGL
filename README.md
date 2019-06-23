@@ -3,15 +3,13 @@
 <!-- ![alt tag](mlvn.jpg) -->
 
 
-This is a simple demo illustrating a Maya-like viewport, camera movement and object selection using NGL.
+This is a simple demo illustrating a Maya-like viewport, camera movement, object selection and object transformation using NGL.
 
 To Do:
 
-- Camera: Focus on target (selected object). ~nearly there...
+- BUG: There's a bug in the updated position of the Camera after dollying through the target object.
 
 - Select: Template overload for ngl::Mat4, ngl::Transformation, ngl::Obj.
-
-- Select: Create other Bounding Volumes (Plane, Sphere, AABB, OBB, Cone, Convex Hull) and add it as a template arg to the make_selectable() function.
 
 - Handles: Create new Transformation handles for move, rotate, scale.
 
@@ -21,3 +19,4 @@ To Do:
 
 - Refactor: Use ScreenSize type for width and height.
 
+- Select: Create other Bounding Volumes (Plane, Sphere, AABB, OBB, Cone, Convex Hull) and add it as a template arg to the make_selectable() function.

@@ -16,6 +16,8 @@ class NGLScene : public QOpenGLWindow
 
     private:
         ngl::Mat4 m_model;
+//        ngl::Transformation m_tranform;
+
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;
 

@@ -107,6 +107,9 @@ void Base_Selection<true>::emitRay(int mouse_x, int mouse_y)
 
 void Base_Selection<true>::draw() const
 {
+    if (m_currently_selected.empty())
+        return;
+
     Base_Selection<false>::draw();
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
@@ -123,9 +126,6 @@ void Base_Selection<true>::draw() const
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
     m_vao->draw();
     m_vao->unbind();
-
-    if (m_currently_selected.empty())
-        return;
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     for (const auto &i : m_currently_selected)
