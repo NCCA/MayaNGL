@@ -9,10 +9,6 @@ class Base_Selection
     protected:
         struct SelectablePrim
         {
-            /*
-             * THIS NEEDS TO BE A TEMPLATE FOR NGL::OBJ TYPES.
-             * PROBABLY NEED TO SFINAE OVERLOAD THE DRAW FUNCTION TOO.
-            */
             std::string prim;
             vc::Transform transform;
         };

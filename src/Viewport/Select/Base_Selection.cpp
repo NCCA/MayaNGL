@@ -25,10 +25,6 @@ template<>
 void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 {
     using namespace vc;
-/// from here: http://antongerdelan.net/opengl/raycasting.html
-/// Pipeline: Local Space (Vertex) -> Model Matrix (World Space) -> View Matrix (Eye Space) ->
-///           Projection Matrix (Clip Space) -> Perspective Division (Normalized Device Space) ->
-///           Viewport Transform (Screen Space).
 
     // convert mouse position from Screen Space to Normalized Device Space.
     float normMouseX = (2.f*mouse_x)/m_screen_width - 1.f;
