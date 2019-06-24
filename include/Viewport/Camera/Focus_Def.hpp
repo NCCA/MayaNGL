@@ -38,6 +38,7 @@ void Focus<CAM>::onSelected(const SEL &select_)
     lookAt.target = target_position;
     inverse.calcCurrent();
     lookAt.eye -= zoom * inverse.current;
+    lookAt.front = -inverse.current;
 }
 
 template<typename CAM>

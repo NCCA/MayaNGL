@@ -45,10 +45,10 @@ std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance
 }
 
 template<bool visualize_bv_and_ray>
-    template<typename S>
-void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_)
+    template<typename T>
+void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, T &&prim_, const vc::Transform &transform_)
 {
-    this->m_selectables.emplace(id_,SelectablePrim{std::forward<S>(prim_name_),prim_transform_});
+//    this->m_selectables.emplace(id_,SelectablePrim{std::move(prim_),transform_});
 }
 
 template<bool visualize_bv_and_ray>

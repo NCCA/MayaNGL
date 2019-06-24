@@ -6,8 +6,7 @@
 #include <QGuiApplication>
 
 
-NGLScene::NGLScene() : m_model(),
-                       m_view(),
+NGLScene::NGLScene() : m_view(),
                        m_projection(),
                        m_viewport(m_view,m_projection)
 {
@@ -32,25 +31,24 @@ void NGLScene::initializeGL()
                          m_viewport.getCamera().getTarget(),
                          m_viewport.getCamera().getUp());
 
-//    m_view = ngl::lookAt({0.f,3.f,28.f},
-//                         {0.f,0.f,0.f},
-//                         {0.f,1.f,0.f});
-
-    m_viewport.initialize(/*ngl::Vec3{0.f,3.f,28.f},ngl::Vec3{0.f,0.f,0.f},ngl::Vec3{0.f,1.f,0.f}*/);
+    m_viewport.initialize();
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
     shader->use(ngl::nglDiffuseShader);
     shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
+
+    m_obj_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj");
+    m_obj_mesh->createVAO();
 }
 
-void NGLScene::loadDiffuseShader()
+void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglDiffuseShader);
 
-    ngl::Mat4 MV = m_view * m_model;
+    ngl::Mat4 MV = m_view * mat_;
     ngl::Mat4 MVP = m_projection * MV;
     ngl::Mat3 normalMatrix = MV;
     normalMatrix.inverse().transpose();
@@ -73,20 +71,29 @@ void NGLScene::paintGL()
         m_model.translate(0.f,0.f,0.f);
         m_model.rotateY(45.f);
         m_model.scale(4.f,4.f,4.f);
-        loadDiffuseShader();
+        loadDiffuseShader(m_model);
         prim->draw( "teapot" );
         m_viewport.make_selectable(1,"teapot",m_model);
     }
 
-    m_model.identity();
+    m_transform.reset();
     {
-        m_model.translate(8.f,0.f,0.f);
-        m_model.rotateY(45.f);
-        m_model.rotateX(45.f);
-        m_model.scale(2.f,2.f,2.f);
-        loadDiffuseShader();
+        m_transform.setPosition(8.f,0.f,0.f);
+        m_transform.setRotation(0.f,45.f,0.f);
+        m_transform.setScale(2.f,2.f,2.f);
+        loadDiffuseShader(m_transform.getMatrix());
         prim->draw( "football" );
-        m_viewport.make_selectable(2,"football",m_model);
+        m_viewport.make_selectable(2,"football",m_transform);
+    }
+
+    m_obj_transform.reset();
+    {
+        m_obj_transform.setPosition(0.f,0.f,8.f);
+        m_obj_transform.setRotation(0.f,0.f,0.f);
+        m_obj_transform.setScale(3.f,3.f,3.f);
+        loadDiffuseShader(m_obj_transform.getMatrix());
+        m_obj_mesh->draw();
+        m_viewport.make_selectable(3,m_obj_mesh,m_obj_transform);
     }
 }
 

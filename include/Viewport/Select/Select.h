@@ -21,8 +21,8 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
                          /*const*/ vc::View &view_,
                          /*const*/ vc::Projection &projection_ );
 
-        template<typename S>
-        void make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_);
+        template<typename T>
+        void make_selectable(std::size_t id_, T &&prim_, const vc::Transform &transform_);
 
         void resize(int w_, int h_);
         void enableMultiSelection();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include "Viewport/Camera/Camera_Def.hpp"
 #include "Viewport/ProjectionText/ProjectionText.h"
 #include "Viewport/ViewAxis/ViewAxis.h"
@@ -48,8 +49,15 @@ class Viewport
         template< typename T, template<typename,typename = std::allocator<T>> class CNT >
         void initialize(const CNT<T> &lookAt_);
 
-        template<typename S>
-        void make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_);
+        template<typename PRIM>
+        void make_selectable(std::size_t id_, PRIM &&prim_, const vc::Transform &transform_);
+
+        template<typename PRIM, typename T, typename =  std::enable_if_t<
+                                                            std::is_same<
+                                                                decltype(std::declval<T>().getMatrix()),vc::Transform
+                                                                        >::value
+                                                                        >>
+        void make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_);
 
         void initialize();
         void resize(int w_, int h_);

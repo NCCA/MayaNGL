@@ -40,9 +40,9 @@ class Camera
         void focus(const SEL &select_);
 
         vc::Transform computeTransform();
+        void track();
         void pan();
         void dolly();
-        void track();
         void reset(const LookAt &lookAt_, View panel_=View::PERSPECTIVE);
         void front();
         void side();

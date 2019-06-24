@@ -61,7 +61,7 @@ void Base_Selection<false>::draw() const
 
     for (const auto &i : m_currently_selected)
     {
-        auto &&prim_name = m_selectables.at(i).name;
+        auto &&prim_name = m_selectables.at(i).prim;
         auto &&prim_transform = m_selectables.at(i).transform;
 
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );

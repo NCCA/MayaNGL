@@ -19,46 +19,6 @@ vc::Transform Camera::computeTransform()
     return m_dolly *  m_pan * m_track;
 }
 
-void Camera::pan()
-{
-    m_inverse.calcCurrent();
-    m_inverse.calcShadow();
-
-    vc::Rotation Ry = vc::Y_Matrix(vc::toRads(mouse.getDrag().m_x));
-    m_inverse.shadow = m_inverse.shadow*Ry;
-
-    auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
-    rotationAxis.normalize();
-
-    vc::Rotation Rx = vc::Axis_Matrix(vc::toRads(mouse.getDrag().m_y),rotationAxis);
-    vc::Rotation localR = Rx*Ry;
-
-    m_lookAt.eye -= m_lookAt.target;
-    m_lookAt.eye = m_lookAt.target + (m_lookAt.eye * localR);
-
-    m_pan *= localR.inverse();
-}
-
-void Camera::dolly()
-{
-    /*
-     * PROBLEM HERE: The position of the camera breaks after
-     *               going through the target position.
-    */
-    m_inverse.calcCurrent();
-
-    std::cout<< "DOLLY" <<std::endl;
-    std::cout<< "Eye = " << m_lookAt.eye <<std::endl;
-    std::cout<< "Inv = " << m_inverse.current <<std::endl<<std::endl;
-
-    auto mouse_move = mouse.getDrag().m_x  * Mouse::slowdown;
-    m_lookAt.eye -= mouse_move * m_inverse.current;
-
-    m_dolly.m_30 += mouse_move * m_inverse.original.m_x;
-    m_dolly.m_31 += mouse_move * m_inverse.original.m_y;
-    m_dolly.m_32 += mouse_move * m_inverse.original.m_z;
-}
-
 void Camera::track()
 {
     m_inverse.calcCurrent();
@@ -89,6 +49,43 @@ void Camera::track()
     m_track.m_30 += Tx;
     m_track.m_31 += Ty;
     m_track.m_32 += Tz;
+}
+
+void Camera::pan()
+{
+    m_inverse.calcCurrent();
+    m_inverse.calcShadow();
+
+    vc::Rotation Ry = vc::Y_Matrix(vc::toRads(mouse.getDrag().m_x));
+    m_inverse.shadow = m_inverse.shadow*Ry;
+
+    auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
+    rotationAxis.normalize();
+
+    vc::Rotation Rx = vc::Axis_Matrix(vc::toRads(mouse.getDrag().m_y),rotationAxis);
+    vc::Rotation localR = Rx*Ry;
+
+    m_lookAt.eye -= m_lookAt.target;
+    m_lookAt.eye = m_lookAt.target + (m_lookAt.eye * localR);
+    m_lookAt.front = m_lookAt.front * localR;
+
+    m_pan *= localR.inverse();
+}
+
+void Camera::dolly()
+{
+    m_inverse.calcCurrent();
+
+    auto mouse_move = mouse.getDrag().m_x  * Mouse::slowdown;
+
+    if (m_lookAt.front.dot(m_inverse.current) > 0.f)
+        m_lookAt.eye += mouse_move * m_inverse.current;
+    else
+        m_lookAt.eye -= mouse_move * m_inverse.current;
+
+    m_dolly.m_30 += mouse_move * m_inverse.original.m_x;
+    m_dolly.m_31 += mouse_move * m_inverse.original.m_y;
+    m_dolly.m_32 += mouse_move * m_inverse.original.m_z;
 }
 
 void Camera::reset(const LookAt &lookAt_, View panel_)

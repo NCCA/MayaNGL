@@ -77,7 +77,6 @@ void Viewport::keyPress(QKeyEvent *event_)
             m_camera.focus(m_select);
             m_mouse.reset();
             m_grid.reset();
-//            m_initial_view = ngl::lookAt(m_camera.getEye(),m_camera.getTarget(),m_camera.getUp());
             break;
 
         case Qt::Key_Space:

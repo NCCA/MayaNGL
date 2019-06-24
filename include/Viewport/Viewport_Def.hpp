@@ -24,8 +24,31 @@ void Viewport::initialize(const CNT<T> &lookAt_)
     this->initialize(lookAt_[0],lookAt_[1],lookAt_[2]);
 }
 
-template<typename S>
-void Viewport::make_selectable(std::size_t id_, S &&prim_name_, const vc::Transform &prim_transform_)
+template<typename PRIM>
+void Viewport::make_selectable(std::size_t id_, PRIM &&prim_, const vc::Transform &transform_)
 {
-    m_select.make_selectable(id_,std::forward<S>(prim_name_),prim_transform_);
+    m_select.make_selectable(id_,std::forward<PRIM>(prim_),transform_);
 }
+
+template<typename PRIM, typename T, typename>
+void Viewport::make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_)
+{
+    make_selectable(id_,std::forward<PRIM>(prim_),transform_.getMatrix());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
