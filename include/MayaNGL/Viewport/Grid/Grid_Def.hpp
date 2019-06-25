@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Grid/Grid.h"
+#include "MayaNGL/Viewport/Grid/Grid.h"
 
 
 template<typename CAM>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Common.h"
+#include "MayaNGL/Common.h"
 
 
 struct ViewAxis

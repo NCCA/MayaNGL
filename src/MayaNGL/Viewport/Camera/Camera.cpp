@@ -1,5 +1,5 @@
 
-#include "Viewport/Camera/Camera.h"
+#include "MayaNGL/Viewport/Camera/Camera.h"
 
 
 Camera::Camera( const Mouse &mouse_,

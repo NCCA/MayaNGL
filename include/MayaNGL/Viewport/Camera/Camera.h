@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Viewport/LookAt/LookAt.h"
-#include "Viewport/Camera/Inverse_Def.hpp"
-#include "Viewport/Mouse/Mouse.h"
-#include "Viewport/Camera/Focus_Def.hpp"
+#include "MayaNGL/Viewport/LookAt/LookAt.h"
+#include "MayaNGL/Viewport/Camera/Inverse_Def.hpp"
+#include "MayaNGL/Mouse/Mouse.h"
+#include "MayaNGL/Viewport/Camera/Focus_Def.hpp"
 
 
 class Camera

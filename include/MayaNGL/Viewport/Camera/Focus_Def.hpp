@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Camera/Focus.h"
+#include "MayaNGL/Viewport/Camera/Focus.h"
 
 
 template<typename CAM>

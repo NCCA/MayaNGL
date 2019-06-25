@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Common.h"
+#include "MayaNGL/Common/Common.h"
 
 
 class Mouse

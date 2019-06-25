@@ -1,8 +1,8 @@
 
-#include "Viewport/Common.h"
+#include "MayaNGL/Common/Common.h"
 
 
-namespace vc
+namespace mc
 {
 
     Generic<V3> toDegs(const Generic<V3> &num_)
@@ -40,6 +40,22 @@ namespace vc
                           (axis_.m_z*axis_.m_x*(1.f-cosf(angle_)))-(axis_.m_y*sinf(angle_)) , (axis_.m_z*axis_.m_y*(1.f-cosf(angle_)))+(axis_.m_x*sinf(angle_)) , cosf(angle_)+powf(axis_.m_z,2)*(1.f - cosf(angle_))              , 0.f,
                           0.f                                                               , 0.f                                                               , 0.f                                                              , 1.f };
     }
+
+
+
+    float LookAt::calcDist() const
+    {
+        return (target-eye).length();
+    }
+
+    Direction LookAt::calcDirection() const
+    {
+        auto dir = target-eye;
+        dir.normalize();
+        return dir;
+    }
+
+
 
     template<>
     Position intersect(const Ray &ray_, const Plane<true> &plane_)
@@ -103,7 +119,6 @@ namespace vc
         }
         return failed;
     }
-
 
 }
 

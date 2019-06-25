@@ -31,3 +31,15 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
 
         ~Select() noexcept = default;
 };
+
+
+
+template<typename PRIM>
+void make_selectable(std::size_t id_, PRIM &&prim_, const vc::Transform &transform_);
+
+template<typename PRIM, typename T, typename =  std::enable_if_t<
+                                                    std::is_same<
+                                                        decltype(std::declval<T>().getMatrix()),vc::Transform
+                                                                >::value
+                                                                >>
+void make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_);

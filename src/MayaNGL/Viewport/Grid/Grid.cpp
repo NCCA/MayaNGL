@@ -1,5 +1,5 @@
 
-#include "Viewport/Grid/Grid.h"
+#include "MayaNGL/Viewport/Grid/Grid.h"
 
 
 void Grid::loadLineColourShader() const

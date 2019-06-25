@@ -8,7 +8,7 @@
 
 NGLScene::NGLScene() : m_view(),
                        m_projection(),
-                       m_viewport(m_view,m_projection)
+                       m_maya(m_view,m_projection)
 {
     setTitle( "Maya-like Viewport using NGL" );
 }
@@ -16,7 +16,7 @@ NGLScene::NGLScene() : m_view(),
 void NGLScene::resizeGL(int w_, int h_)
 {
     m_projection = ngl::perspective(35.0f, static_cast<float>(w_)/h_, 0.1f, 200.0f );
-    m_viewport.resize(w_,h_);
+    m_maya.resize(w_,h_);
 }
 
 void NGLScene::initializeGL()
@@ -27,11 +27,15 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
-                         m_viewport.getCamera().getTarget(),
-                         m_viewport.getCamera().getUp());
+//    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
+//                         m_viewport.getCamera().getTarget(),
+//                         m_viewport.getCamera().getUp());
 
-    m_viewport.initialize();
+    m_view = ngl::lookAt(ngl::Vec3(28,21,28),
+                         ngl::Vec3::zero(),
+                         ngl::Vec3::up());
+
+    m_maya.initialize();
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
@@ -60,7 +64,7 @@ void NGLScene::paintGL()
     glViewport( 0, 0, width(), height());
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    m_viewport.update_draw();
+    m_maya.update_draw();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     m_model.identity();
@@ -70,7 +74,7 @@ void NGLScene::paintGL()
         m_model.scale(4.f,4.f,4.f);
         loadDiffuseShader(m_model);
         prim->draw( "teapot" );
-        m_viewport.make_selectable(1,"teapot",m_model);
+//        m_viewport.make_selectable(1,"teapot",m_model);
     }
 
     m_transform.reset();
@@ -80,7 +84,7 @@ void NGLScene::paintGL()
         m_transform.setScale(2.f,2.f,2.f);
         loadDiffuseShader(m_transform.getMatrix());
         prim->draw( "football" );
-        m_viewport.make_selectable(2,"football",m_transform);
+//        m_viewport.make_selectable(2,"football",m_transform);
     }
 }
 
@@ -96,19 +100,19 @@ void NGLScene::keyPressEvent(QKeyEvent *event_)
             break;
     }
 
-    m_viewport.keyPress(event_);
+    m_maya.keyPress(event_);
     update();
 }
 
 void NGLScene::mousePressEvent(QMouseEvent *event_)
 {
-    m_viewport.mousePress(event_);
+    m_maya.mousePress(event_);
     update();
 }
 
 void NGLScene::mouseMoveEvent(QMouseEvent *event_)
 {
-    m_viewport.mouseMove(event_);
+    m_maya.mouseMove(event_);
     update();
 }
 

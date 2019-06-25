@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Camera/Inverse.h"
+#include "MayaNGL/Viewport/Camera/Inverse.h"
 
 
 template<typename CAM>

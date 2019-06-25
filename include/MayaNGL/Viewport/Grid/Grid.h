@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/LookAt/LookAt.h"
+#include "MayaNGL/Viewport/LookAt/LookAt.h"
 
 
 class Grid

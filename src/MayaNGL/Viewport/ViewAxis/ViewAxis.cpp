@@ -1,5 +1,5 @@
 
-#include "Viewport/ViewAxis/ViewAxis.h"
+#include "MayaNGL/Viewport/ViewAxis/ViewAxis.h"
 
 
 ViewAxis::ViewAxis( const vc::View &view_ )

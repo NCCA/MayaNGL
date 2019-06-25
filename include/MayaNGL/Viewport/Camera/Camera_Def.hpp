@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Camera/Camera.h"
+#include "MayaNGL/Viewport/Camera/Camera.h"
 
 
 template<typename SEL>

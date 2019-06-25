@@ -1,4 +1,4 @@
-TARGET=Maya-like_Viewport_NGL
+TARGET = MayaNGL
 
 QT+=gui opengl core
 
@@ -17,33 +17,33 @@ OBJECTS_DIR = obj
 MOC_DIR = moc
 
 HEADERS += $$PWD/include/*.h \
-           $$PWD/include/Viewport/*.h* \
-           $$PWD/include/Viewport/Camera/*.h* \
-           $$PWD/include/Viewport/Grid/*.h* \
-           $$PWD/include/Viewport/LookAt/*.h* \
-           $$PWD/include/Viewport/Mouse/*.h* \
-           $$PWD/include/Viewport/ProjectionText/*.h* \
-           $$PWD/include/Viewport/Select/*.h* \
-           $$PWD/include/Viewport/ViewAxis/*.h* \
-           include/Viewport/Camera/Camera_Def.hpp
+           $$PWD/include/MayaNGL/*.h* \
+           $$PWD/include/MayaNGL/Common/*.h* \
+           $$PWD/include/MayaNGL/Mouse/*.h* \
+           $$PWD/include/MayaNGL/Viewport/*.h* #\
+           #$$PWD/include/MayaNGL/Viewport/Camera/*.h* \
+           #$$PWD/include/MayaNGL/Viewport/Grid/*.h* \
+           #$$PWD/include/MayaNGL/Viewport/ProjectionText/*.h* \
+           #$$PWD/include/MayaNGL/Viewport/ViewAxis/*.h* \
+           #$$PWD/include/MayaNGL/Selection/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
-           $$PWD/src/Viewport/*.cpp \
-           $$PWD/src/Viewport/Camera/*.cpp \
-           $$PWD/src/Viewport/Grid/*.cpp \
-           $$PWD/src/Viewport/Mouse/*.cpp \
-           $$PWD/src/Viewport/ProjectionText/*.cpp \
-           $$PWD/src/Viewport/Select/*.cpp \
-           $$PWD/src/Viewport/ViewAxis/*.cpp \
-           src/Viewport/LookAt/LookAt.cpp
+           $$PWD/src/MayaNGL/*.cpp \
+           $$PWD/src/MayaNGL/Common/*.cpp \
+           $$PWD/src/MayaNGL/Mouse/*.cpp \
+           $$PWD/src/MayaNGL/Viewport/*.cpp #\
+           #$$PWD/src/MayaNGL/Viewport/Camera/*.cpp \
+           #$$PWD/src/MayaNGL/Viewport/Grid/*.cpp \
+           #$$PWD/src/MayaNGL/Viewport/ProjectionText/*.cpp \
+           #$$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
+           #$$PWD/src/MayaNGL/Selection/*.cpp
 
-OTHER_FILES += $$PWD/shaders/Viewport/*.glsl \
+OTHER_FILES += $$PWD/shaders/MayaNGL/Viewport/*.glsl \
                README.md
 
 INCLUDEPATH += ./include
 
 DESTDIR = ./
-
 
 !equals(PWD, $${OUT_PWD}){
     copydata.commands = echo "creating destination dirs" ;

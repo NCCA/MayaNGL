@@ -44,8 +44,9 @@
     }                                                                                   \
 
 
-namespace vc //viewport common
+namespace mc //maya common
 {
+
     using V2 = ngl::Vec2;
     using V3 = ngl::Vec3;
     using V4 = ngl::Vec4;
@@ -67,10 +68,14 @@ namespace vc //viewport common
     template<typename T>
     using Generic = T;
 
+
+
+    static const Position default_eye = {28.f,21.f,28.f};
     static const Position failed = {-ngl::EPSILON,-ngl::EPSILON,-ngl::EPSILON};
     static constexpr float fov = 35.f;
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 200.f;
+
 
 
     struct Ray
@@ -97,6 +102,20 @@ namespace vc //viewport common
         Position position;
         float radius;
     };
+
+
+
+    struct LookAt
+    {
+        Position eye = default_eye;
+        Position target = Position::zero();
+        Direction up = Direction::up();
+        Direction front = glm::normalize((target-eye).toGLM());
+
+        float calcDist() const;
+        Direction calcDirection() const;
+    };
+
 
 
     template<typename T>
@@ -128,4 +147,5 @@ namespace vc //viewport common
     template<bool infinite = true>
     Position intersect(const Ray &ray_, const Plane<infinite> &plane_);
     Position intersect(const Ray &ray_, const Sphere &sphere_);
+
 }

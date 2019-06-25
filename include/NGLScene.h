@@ -7,7 +7,7 @@
 #include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include "Viewport/Viewport_Def.hpp"
+#include "MayaNGL/MayaNGL.h"
 
 
 class NGLScene : public QOpenGLWindow
@@ -21,7 +21,7 @@ class NGLScene : public QOpenGLWindow
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;
 
-        Viewport m_viewport;
+        MayaNGL m_maya;
 
     private:
         void loadDiffuseShader(const ngl::Mat4 &mat_);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/LookAt/LookAt.h"
+#include "MayaNGL/Viewport/LookAt/LookAt.h"
 
 
 template<bool visualize_bv_and_ray>
