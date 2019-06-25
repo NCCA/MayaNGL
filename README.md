@@ -18,7 +18,7 @@ This demo supports/displays the following:
 
 - Title text projection.
 
-- Valid with ngl::Mat4, ngl::Transformation and ngl::Obj.
+- Valid with ngl::VAOPrimitives using ngl::Mat4 and ngl::Transformation.
 
 - Object selection via ray casting.
 
@@ -29,21 +29,21 @@ This demo supports/displays the following:
 
 ## To Do:
 
-- Select: PCTS the SelectablePrim for ngl::Obj.
-
 - Handles: Create new Transformation handles for move, rotate, scale.
 
 - Viewport: Change mouse icon when <q,w,e,r> are pressed.
 
-- Select: Create a selection wrapper shader.
-
-- Refactor: Use ScreenSize type for width and height.
-
-- Select: Create other Bounding Volumes (Plane, Sphere, AABB, OBB, Cone, Convex Hull) and add it as a template arg to the make_selectable() function.
-
 
 ## Improvements:
 
+- Refactor: Use ScreenSize type for width and height.
+
 - Convert selected ids to std::set instead of std::vector???
+
+- Decouple Selection from Viewport.
+
+- Select: Create other Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add it as a template arg to the make_selectable() function.
+
+- Support ngl::Obj types with the Selection.
 
 - Replace the functions in the Common.h with native NGL functions.

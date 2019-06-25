@@ -38,9 +38,6 @@ void NGLScene::initializeGL()
     shader->use(ngl::nglDiffuseShader);
     shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
-
-    m_obj_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj");
-    m_obj_mesh->createVAO();
 }
 
 void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
@@ -84,16 +81,6 @@ void NGLScene::paintGL()
         loadDiffuseShader(m_transform.getMatrix());
         prim->draw( "football" );
         m_viewport.make_selectable(2,"football",m_transform);
-    }
-
-    m_obj_transform.reset();
-    {
-        m_obj_transform.setPosition(0.f,0.f,8.f);
-        m_obj_transform.setRotation(0.f,0.f,0.f);
-        m_obj_transform.setScale(3.f,3.f,3.f);
-        loadDiffuseShader(m_obj_transform.getMatrix());
-        m_obj_mesh->draw();
-        m_viewport.make_selectable(3,m_obj_mesh,m_obj_transform);
     }
 }
 

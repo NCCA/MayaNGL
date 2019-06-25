@@ -48,7 +48,7 @@ template<bool visualize_bv_and_ray>
     template<typename T>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, T &&prim_, const vc::Transform &transform_)
 {
-//    this->m_selectables.emplace(id_,SelectablePrim{std::move(prim_),transform_});
+    this->m_selectables.emplace(id_,SelectablePrim{std::forward<T>(prim_),transform_});
 }
 
 template<bool visualize_bv_and_ray>

@@ -1,9 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtx/perpendicular.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/vector_angle.hpp>
 #include <ngl/Vec2.h>
 #include <ngl/Vec3.h>
 #include <ngl/Mat3.h>
