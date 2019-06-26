@@ -42,7 +42,6 @@ namespace mc
     }
 
 
-
     float LookAt::calcDist() const
     {
         return (target-eye).length();

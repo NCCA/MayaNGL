@@ -1,20 +1,20 @@
 
-#include "MayaNGL/Viewport/Camera/Camera.h"
+#include "MayaNGL/Camera/Camera.h"
 
 
 Camera::Camera( const Mouse &mouse_,
-                const LookAt &lookAt_ )
+                const mc::LookAt &lookAt_ )
                 :
                 mouse(mouse_),
                 m_lookAt(lookAt_),
                 m_inverse(*this),
-                m_currentView(View::PERSPECTIVE),
+                m_currentView(mc::CamView::PERSPECTIVE),
                 m_track(),
                 m_dolly(),
                 m_pan()
 {;}
 
-vc::Transform Camera::computeTransform()
+mc::Transform Camera::computeTransform() const
 {
     return m_dolly *  m_pan * m_track;
 }
@@ -26,13 +26,14 @@ void Camera::track()
     auto horizontal_axis = m_lookAt.up.cross(m_inverse.shadow);
     horizontal_axis.normalize();
 
-    if (vc::absl(horizontal_axis) == vc::absl(m_inverse.current))
+    if (mc::absl(horizontal_axis) == mc::absl(m_inverse.current))
         horizontal_axis = m_inverse.shadow;
 
     auto vertical_axis = horizontal_axis.cross(m_inverse.current);
     vertical_axis.normalize();
 
-    auto mouse_move = mouse.getDrag() * Mouse::slowdown;
+    float dist_from_cam = m_lookAt.calcDist()*0.0025f;
+    auto mouse_move = mouse.getDrag() * dist_from_cam;
 
     auto Tx = mouse_move.m_x * horizontal_axis.m_x +  mouse_move.m_y * vertical_axis.m_x;
     auto Ty = mouse_move.m_y * vertical_axis.m_y;
@@ -56,14 +57,14 @@ void Camera::pan()
     m_inverse.calcCurrent();
     m_inverse.calcShadow();
 
-    vc::Rotation Ry = vc::Y_Matrix(vc::toRads(mouse.getDrag().m_x));
+    mc::Rotation Ry = mc::Y_Matrix(mc::toRads(mouse.getDrag().m_x));
     m_inverse.shadow = m_inverse.shadow*Ry;
 
     auto rotationAxis = m_lookAt.up.cross(m_inverse.shadow);
     rotationAxis.normalize();
 
-    vc::Rotation Rx = vc::Axis_Matrix(vc::toRads(mouse.getDrag().m_y),rotationAxis);
-    vc::Rotation localR = Rx*Ry;
+    mc::Rotation Rx = mc::Axis_Matrix(mc::toRads(mouse.getDrag().m_y),rotationAxis);
+    mc::Rotation localR = Rx*Ry;
 
     m_lookAt.eye -= m_lookAt.target;
     m_lookAt.eye = m_lookAt.target + (m_lookAt.eye * localR);
@@ -76,7 +77,8 @@ void Camera::dolly()
 {
     m_inverse.calcCurrent();
 
-    auto mouse_move = mouse.getDrag().m_x  * Mouse::slowdown;
+    float dist_from_cam = m_lookAt.calcDist()*0.005f;
+    auto mouse_move = mouse.getDrag().m_x  * dist_from_cam;
 
     if (m_lookAt.front.dot(m_inverse.current) > 0.f)
         m_lookAt.eye += mouse_move * m_inverse.current;
@@ -88,7 +90,7 @@ void Camera::dolly()
     m_dolly.m_32 += mouse_move * m_inverse.original.m_z;
 }
 
-void Camera::reset(const LookAt &lookAt_, View panel_)
+void Camera::reset(const mc::LookAt &lookAt_, mc::CamView panel_)
 {
     m_lookAt = lookAt_;
     m_currentView = panel_;
@@ -100,16 +102,16 @@ void Camera::reset(const LookAt &lookAt_, View panel_)
 
 void Camera::front()
 {
-    reset(LookAt{{0.f,0.f,28.f}},View::FRONT);
+    reset(mc::LookAt{{0.f,0.f,28.f}},mc::CamView::FRONT);
 }
 
 void Camera::side()
 {
-    reset(LookAt{{28.f,0.f,0.f}},View::SIDE);
+    reset(mc::LookAt{{28.f,0.f,0.f}},mc::CamView::SIDE);
 }
 
 void Camera::top()
 {
-    reset(LookAt{{0.f,28.f,0.f},vc::Position::zero(),vc::Direction::out()},View::TOP);
+    reset(mc::LookAt{{0.f,28.f,0.f},mc::Position::zero(),mc::Direction::out()},mc::CamView::TOP);
 }
 

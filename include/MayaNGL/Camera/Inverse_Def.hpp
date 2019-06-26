@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Viewport/Camera/Inverse.h"
+#include "Inverse.h"
 
 
 template<typename CAM>
@@ -13,7 +13,7 @@ Inverse<CAM>::Inverse( const CAM &cam_ )
 {;}
 
 template<typename CAM>
-vc::Direction Inverse<CAM>::calcCurrent()
+mc::Direction Inverse<CAM>::calcCurrent()
 {
     current = cam.getEye() - cam.getTarget();
     current.normalize();
@@ -21,10 +21,10 @@ vc::Direction Inverse<CAM>::calcCurrent()
 }
 
 template<typename CAM>
-vc::Direction Inverse<CAM>::calcShadow()
+mc::Direction Inverse<CAM>::calcShadow()
 {
-    auto shd = vc::Direction(current.m_x,0.f,current.m_z);
-    if (vc::round(shd,6) == vc::Direction::zero())
+    auto shd = mc::Direction(current.m_x,0.f,current.m_z);
+    if (mc::round(shd,6) == mc::Direction::zero())
         shd = cam.getUp().cross(current);
     return shd;
 }
@@ -36,3 +36,4 @@ void Inverse<CAM>::reset()
     original = current;
     shadow = calcShadow();
 }
+

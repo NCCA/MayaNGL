@@ -29,6 +29,12 @@ This demo supports/displays the following:
 
 ## To Do:
 
+- Support ngl::Obj types with the Selection.
+
+- Convert selected ids to std::set instead of std::vector???
+
+- Refactor: Use ScreenSize type for width and height.
+
 - Handles: Create new Transformation handles for move, rotate, scale.
 
 - Viewport: Change mouse icon when <q,w,e,r> are pressed.
@@ -36,14 +42,9 @@ This demo supports/displays the following:
 
 ## Improvements:
 
-- Refactor: Use ScreenSize type for width and height.
-
-- Convert selected ids to std::set instead of std::vector???
-
-- Decouple Selection from Viewport.
-
 - Select: Create other Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add it as a template arg to the make_selectable() function.
 
-- Support ngl::Obj types with the Selection.
-
 - Replace the functions in the Common.h with native NGL functions.
+
+
+

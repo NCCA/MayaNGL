@@ -1,26 +1,26 @@
 #pragma once
 
-#include "MayaNGL/Common.h"
+#include "MayaNGL/Common/Common.h"
 
 
-struct ViewAxis
+class ViewAxis
 {
     private:
-        typedef std::array<vc::Position,6> Vertices;
+        typedef std::array<mc::Position,6> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:
-        const vc::View &scene_view;
+        const mc::View &scene_view;
 
     private:
-        vc::Transform m_model;
-        vc::View m_view;
-        vc::Projection m_projection;
+        mc::Transform m_model;
+        mc::View m_view;
+        mc::Projection m_projection;
         Vertices m_coordinates;
         VAOPtr m_vao;
 
     public:
-        ViewAxis( const vc::View &view_ );
+        ViewAxis( const mc::View &view_ );
 
         void initialize();
         void resize(float aspectRatio_);

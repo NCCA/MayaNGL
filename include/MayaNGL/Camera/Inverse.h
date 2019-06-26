@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Common.h"
+#include "MayaNGL/Common/Common.h"
 
 
 template<typename CAM = class Camera>
@@ -11,14 +11,14 @@ class Inverse
 
     const CAM &cam;
 
-    vc::Direction current;
-    vc::Direction original;
-    vc::Direction shadow;
+    mc::Direction current;
+    mc::Direction original;
+    mc::Direction shadow;
 
     Inverse( const CAM &cam_ );
 
-    vc::Direction calcCurrent();
-    vc::Direction calcShadow();
+    mc::Direction calcCurrent();
+    mc::Direction calcShadow();
     void reset();
 
     ~Inverse() noexcept = default;

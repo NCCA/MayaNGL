@@ -1,5 +1,5 @@
 
-#include "MayaNGL/Viewport/Grid/Grid.h"
+#include "MayaNGL/Viewport/Grid/Grid_Def.hpp"
 
 
 void Grid::loadLineColourShader() const
@@ -10,8 +10,22 @@ void Grid::loadLineColourShader() const
     auto MVP = projection * view * m_model;
 
     shader->setUniform("MVP",MVP);
-    shader->setUniform("cam_eye",camera.eye);
+    shader->setUniform("cam_eye",lookAt.eye);
     shader->setUniform("enableViewAxisColours",false);
+}
+
+template<>
+void Grid::viewOrientation<mc::CamView::FRONT>()
+{
+    m_model.identity();
+    m_model.rotateX(90.f);
+}
+
+template<>
+void Grid::viewOrientation<mc::CamView::SIDE>()
+{
+    m_model.identity();
+    m_model.rotateZ(90.f);
 }
 
 void Grid::initialize()
@@ -22,9 +36,9 @@ void Grid::initialize()
     shader->attachShader( "LineColour_Vertex", ngl::ShaderType::VERTEX );
     shader->attachShader( "LineColour_Geometry", ngl::ShaderType::GEOMETRY );
     shader->attachShader( "LineColour_Fragment", ngl::ShaderType::FRAGMENT );
-    shader->loadShaderSource( "LineColour_Vertex", "shaders/Viewport/LineColour_Vertex.glsl" );
-    shader->loadShaderSource( "LineColour_Geometry", "shaders/Viewport/LineColour_Geometry.glsl" );
-    shader->loadShaderSource( "LineColour_Fragment", "shaders/Viewport/LineColour_Fragment.glsl" );
+    shader->loadShaderSource( "LineColour_Vertex", "shaders/MayaNGL/LineColour_Vertex.glsl" );
+    shader->loadShaderSource( "LineColour_Geometry", "shaders/MayaNGL/LineColour_Geometry.glsl" );
+    shader->loadShaderSource( "LineColour_Fragment", "shaders/MayaNGL/LineColour_Fragment.glsl" );
     shader->compileShader( "LineColour_Vertex" );
     shader->compileShader( "LineColour_Geometry" );
     shader->compileShader( "LineColour_Fragment" );
@@ -35,23 +49,6 @@ void Grid::initialize()
 
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
     grid->createLineGrid("Grid",24,24,24);
-}
-
-void Grid::reset()
-{
-    m_model.identity();
-}
-
-void Grid::front()
-{
-    m_model.identity();
-    m_model.rotateX(90.f);
-}
-
-void Grid::side()
-{
-    m_model.identity();
-    m_model.rotateZ(90.f);
 }
 
 void Grid::draw() const

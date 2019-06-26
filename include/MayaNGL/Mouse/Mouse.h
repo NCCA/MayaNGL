@@ -17,9 +17,6 @@ class Mouse
         Direction m_drag;
 
     public:
-        static constexpr float slowdown = 0.15f;
-
-    public:
         explicit Mouse() = default;
 
         GET_MEMBER(m_drag,Drag)

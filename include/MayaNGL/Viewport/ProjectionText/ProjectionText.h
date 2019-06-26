@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Common.h"
+#include "MayaNGL/Common/Common.h"
 
 
 class ProjectionText
@@ -12,12 +12,13 @@ class ProjectionText
         int m_screen_width;
         int m_screen_height;
         TextPtr m_label;
-
-    public:
-        std::string title;
+        std::string m_title;
 
     public:
         explicit ProjectionText();
+
+        template<mc::CamView>
+        void viewTitle();
 
         void initialize();
         void resize(int w_, int h_);

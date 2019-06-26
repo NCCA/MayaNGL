@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Viewport/Select/Select.h"
+#include "Select.h"
 
 
 template<bool visualize_bv_and_ray>
-Select<visualize_bv_and_ray>::Select( const LookAt &cam_lookAt_,
-                                      /*const*/ vc::View &view_,
-                                      /*const*/ vc::Projection &projection_ )
+    template<typename C>
+Select<visualize_bv_and_ray>::Select( /*const*/ mc::View &view_,
+                                      /*const*/ mc::Projection &projection_,
+                                      const C &camera_ )
                                       :
-                                      Base_Selection<visualize_bv_and_ray>(cam_lookAt_,view_,projection_),
+                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
                                       m_multi_selection(false)
 {;}
 
@@ -30,7 +31,7 @@ std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance
         auto &&prim = i.second;
 
         auto poi = this->clickedOnObject(prim);
-        if (!alreadySelected(id) && (poi != vc::failed))
+        if (!alreadySelected(id) && (poi != mc::failed))
         {
             auto dist = (poi-this->cam_lookAt.eye).lengthSquared();
             if (shortest_distance_ > dist)
@@ -46,7 +47,7 @@ std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance
 
 template<bool visualize_bv_and_ray>
     template<typename T>
-void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, T &&prim_, const vc::Transform &transform_)
+void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_)
 {
     this->m_selectables.emplace(id_,SelectablePrim{std::forward<T>(prim_),transform_});
 }
@@ -65,15 +66,15 @@ void Select<visualize_bv_and_ray>::enableMultiSelection()
 }
 
 template<bool visualize_bv_and_ray>
-vc::Position Select<visualize_bv_and_ray>::clickedOnObject(const SelectablePrim &selectable_) const
+mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const SelectablePrim &selectable_) const
 {
     auto &&transform = selectable_.transform;
 
-    auto pos = vc::Position{transform.m_30,transform.m_31,transform.m_32};
+    auto pos = mc::Position{transform.m_30,transform.m_31,transform.m_32};
     float rad = std::max({transform.m_00,transform.m_11,transform.m_22});
-    vc::Sphere bv {pos,rad};
+    mc::Sphere bv {pos,rad};
 
-    auto poi = vc::intersect(this->m_ray,bv);
+    auto poi = mc::intersect(this->m_ray,bv);
     return poi;
 }
 

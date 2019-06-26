@@ -3,16 +3,16 @@
 
 
 template<>
-Base_Selection<false>::Base_Selection( const LookAt &cam_lookAt_,
-                                       /*const*/ vc::View &view_,
-                                       /*const*/ vc::Projection &projection_ )
+Base_Selection<false>::Base_Selection( /*const*/ mc::View &view_,
+                                       /*const*/ mc::Projection &projection_,
+                                       const mc::LookAt &cam_lookAt_ )
                                        :
-                                       cam_lookAt(cam_lookAt_),
                                        view(view_),
                                        projection(projection_),
+                                       cam_lookAt(cam_lookAt_),
                                        m_screen_width(0),
                                        m_screen_height(0),
-                                       m_ray{cam_lookAt.eye,vc::Direction::zero()},
+                                       m_ray{cam_lookAt.eye,mc::Direction::zero()},
                                        m_selectables(),
                                        m_currently_selected()
 {;}
@@ -24,7 +24,7 @@ void Base_Selection<false>::initialize()
 template<>
 void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 {
-    using namespace vc;
+    using namespace mc;
 
     // convert mouse position from Screen Space to Normalized Device Space.
     float normMouseX = (2.f*mouse_x)/m_screen_width - 1.f;
@@ -75,11 +75,11 @@ void Base_Selection<false>::draw() const
 // ------------------------------------------------------------- //
 
 
-Base_Selection<true>::Base_Selection( const LookAt &cam_lookAt_,
-                                      /*const*/ vc::View &view_,
-                                      /*const*/ vc::Projection &projection_ )
+Base_Selection<true>::Base_Selection( /*const*/ mc::View &view_,
+                                      /*const*/ mc::Projection &projection_,
+                                      const mc::LookAt &cam_lookAt_ )
                                       :
-                                      Base_Selection<false>(cam_lookAt_,view_,projection_),
+                                      Base_Selection<false>(view_,projection_,cam_lookAt_),
                                       m_ray_end(Base_Selection<false>::cam_lookAt.eye),
                                       m_vtxs{{Base_Selection<false>::m_ray.position,m_ray_end}}
 {;}
@@ -97,7 +97,7 @@ void Base_Selection<true>::emitRay(int mouse_x, int mouse_y)
 {
     Base_Selection<false>::emitRay(mouse_x,mouse_y);
 
-    m_ray_end = this->m_ray.position + this->m_ray.direction * vc::far_clip;
+    m_ray_end = this->m_ray.position + this->m_ray.direction * mc::far_clip;
     m_vtxs = {{this->m_ray.position,m_ray_end}};
 }
 
@@ -117,7 +117,7 @@ void Base_Selection<true>::draw() const
     shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
 
     m_vao->bind();
-    m_vao->setData(ngl::AbstractVAO::VertexData(m_vtxs.size()*sizeof(vc::Position),m_vtxs[0].m_x));
+    m_vao->setData(ngl::AbstractVAO::VertexData(m_vtxs.size()*sizeof(mc::Position),m_vtxs[0].m_x));
     m_vao->setNumIndices(m_vtxs.size());
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
     m_vao->draw();

@@ -2,19 +2,19 @@
 #include "MayaNGL/Viewport/ViewAxis/ViewAxis.h"
 
 
-ViewAxis::ViewAxis( const vc::View &view_ )
+ViewAxis::ViewAxis( const mc::View &view_ )
                     :
                     scene_view(view_),
                     m_model(),
-                    m_view(ngl::lookAt(vc::Position::in(),vc::Position::zero(),vc::Direction::up())),
+                    m_view(ngl::lookAt(mc::Position::in(),mc::Position::zero(),mc::Direction::up())),
                     m_projection(),
                     m_coordinates{{
-                                      vc::Direction::zero(),
-                                      vc::Direction::right(),
-                                      vc::Direction::zero(),
-                                      vc::Direction::up(),
-                                      vc::Direction::zero(),
-                                      vc::Direction::in()
+                                      mc::Direction::zero(),
+                                      mc::Direction::right(),
+                                      mc::Direction::zero(),
+                                      mc::Direction::up(),
+                                      mc::Direction::zero(),
+                                      mc::Direction::in()
                                  }},
                     m_vao()
 {;}
@@ -23,7 +23,7 @@ void ViewAxis::initialize()
 {
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
     m_vao->bind();
-    m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(vc::Position),m_coordinates[0].m_x));
+    m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(mc::Position),m_coordinates[0].m_x));
     m_vao->setNumIndices(m_coordinates.size());
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
     m_vao->unbind();
@@ -32,9 +32,9 @@ void ViewAxis::initialize()
 void ViewAxis::resize(float aspectRatio_)
 {
     float zoom = 20.f;
-    m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,vc::near_clip,vc::far_clip);
+    m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,mc::near_clip,mc::far_clip);
 
-    auto bl = vc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
+    auto bl = mc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
     m_model.translate(bl.m_x,bl.m_y,bl.m_z);
 }
 

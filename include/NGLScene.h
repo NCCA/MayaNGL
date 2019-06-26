@@ -7,7 +7,7 @@
 #include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include "MayaNGL/MayaNGL.h"
+#include "MayaNGL/MayaNGL_Def.hpp"
 
 
 class NGLScene : public QOpenGLWindow

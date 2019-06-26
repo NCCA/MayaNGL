@@ -5,8 +5,32 @@
 ProjectionText::ProjectionText() : m_screen_width(0),
                                    m_screen_height(0),
                                    m_label(),
-                                   title("persp")
+                                   m_title("persp")
 {;}
+
+template<>
+void ProjectionText::viewTitle<mc::CamView::PERSPECTIVE>()
+{
+    m_title = "persp";
+}
+
+template<>
+void ProjectionText::viewTitle<mc::CamView::FRONT>()
+{
+    m_title = "front";
+}
+
+template<>
+void ProjectionText::viewTitle<mc::CamView::SIDE>()
+{
+    m_title = "side";
+}
+
+template<>
+void ProjectionText::viewTitle<mc::CamView::TOP>()
+{
+    m_title = "top";
+}
 
 void ProjectionText::initialize()
 {
@@ -23,5 +47,5 @@ void ProjectionText::resize(int w_, int h_)
 
 void ProjectionText::draw() const
 {
-    m_label->renderText(m_screen_width*0.5f-(title.length()*2.f),m_screen_height-25.f,title.c_str());
+    m_label->renderText(m_screen_width*0.5f-(m_title.length()*2.f),m_screen_height-25.f,m_title.c_str());
 }

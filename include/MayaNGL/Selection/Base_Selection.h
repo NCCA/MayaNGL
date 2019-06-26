@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Viewport/LookAt/LookAt.h"
+#include "MayaNGL/Common/Common.h"
 
 
 template<bool visualize_bv_and_ray>
@@ -10,7 +10,7 @@ class Base_Selection
         struct SelectablePrim
         {
             std::string prim;
-            vc::Transform transform;
+            mc::Transform transform;
         };
 
     private:
@@ -18,21 +18,21 @@ class Base_Selection
         typedef std::vector<std::size_t> Selections;
 
     protected:
-        const LookAt &cam_lookAt;
-        /*const*/ vc::View &view;
-        /*const*/ vc::Projection &projection;
+        /*const*/ mc::View &view;
+        /*const*/ mc::Projection &projection;
+        const mc::LookAt &cam_lookAt;
 
     protected:
         int m_screen_width;
         int m_screen_height;
-        vc::Ray m_ray;
+        mc::Ray m_ray;
         Selectables m_selectables;
         Selections m_currently_selected;
 
     public:
-        explicit Base_Selection( const LookAt &cam_lookAt_,
-                                 /*const*/ vc::View &view_,
-                                 /*const*/ vc::Projection &projection_ );
+        explicit Base_Selection( /*const*/ mc::View &view_,
+                                 /*const*/ mc::Projection &projection_,
+                                 const mc::LookAt &cam_lookAt_ );
 
         GET_MEMBER(m_selectables,AllSelectables)
         GET_MEMBER(m_currently_selected,CurrentlySelected)
@@ -52,18 +52,18 @@ template<>
 class Base_Selection<true> : public Base_Selection<false>
 {
     private:
-        typedef std::array<vc::Position,2> Vertices;
+        typedef std::array<mc::Position,2> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:
-        vc::Position m_ray_end;
+        mc::Position m_ray_end;
         Vertices m_vtxs;
         VAOPtr m_vao;
 
     public:
-        explicit Base_Selection( const LookAt &cam_lookAt_,
-                                 /*const*/ vc::View &view_,
-                                 /*const*/ vc::Projection &projection_ );
+        explicit Base_Selection( /*const*/ mc::View &view_,
+                                 /*const*/ mc::Projection &projection_,
+                                 const mc::LookAt &cam_lookAt_ );
 
         void initialize();
         void emitRay(int mouse_x, int mouse_y);

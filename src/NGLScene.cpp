@@ -27,13 +27,9 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-//    m_view = ngl::lookAt(m_viewport.getCamera().getEye(),
-//                         m_viewport.getCamera().getTarget(),
-//                         m_viewport.getCamera().getUp());
-
-    m_view = ngl::lookAt(ngl::Vec3(28,21,28),
-                         ngl::Vec3::zero(),
-                         ngl::Vec3::up());
+    m_view = ngl::lookAt(m_maya.getCamera().getEye(),
+                         m_maya.getCamera().getTarget(),
+                         m_maya.getCamera().getUp());
 
     m_maya.initialize();
 
@@ -64,7 +60,7 @@ void NGLScene::paintGL()
     glViewport( 0, 0, width(), height());
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    m_maya.update_draw();
+    m_maya.draw();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     m_model.identity();
@@ -74,7 +70,7 @@ void NGLScene::paintGL()
         m_model.scale(4.f,4.f,4.f);
         loadDiffuseShader(m_model);
         prim->draw( "teapot" );
-//        m_viewport.make_selectable(1,"teapot",m_model);
+        m_maya.make_selectable(1,"teapot",m_model);
     }
 
     m_transform.reset();

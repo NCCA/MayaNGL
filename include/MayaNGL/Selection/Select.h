@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Viewport/Select/Base_Selection.h"
+#include "Base_Selection.h"
 
 
 template<bool visualize_bv_and_ray = false>
@@ -17,29 +17,18 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
         std::size_t getSelectedId(float &shortest_distance_) const;
 
     public:
-        explicit Select( const LookAt &cam_lookAt_,
-                         /*const*/ vc::View &view_,
-                         /*const*/ vc::Projection &projection_ );
+        template<typename C>
+        explicit Select( /*const*/ mc::View &view_,
+                         /*const*/ mc::Projection &projection_,
+                         const C &camera_ );
 
         template<typename T>
-        void make_selectable(std::size_t id_, T &&prim_, const vc::Transform &transform_);
+        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_);
 
         void resize(int w_, int h_);
         void enableMultiSelection();
-        vc::Position clickedOnObject(const SelectablePrim &selectable_) const;
+        mc::Position clickedOnObject(const SelectablePrim &selectable_) const;
         void pick(int mouse_x, int mouse_y);
 
         ~Select() noexcept = default;
 };
-
-
-
-template<typename PRIM>
-void make_selectable(std::size_t id_, PRIM &&prim_, const vc::Transform &transform_);
-
-template<typename PRIM, typename T, typename =  std::enable_if_t<
-                                                    std::is_same<
-                                                        decltype(std::declval<T>().getMatrix()),vc::Transform
-                                                                >::value
-                                                                >>
-void make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_);

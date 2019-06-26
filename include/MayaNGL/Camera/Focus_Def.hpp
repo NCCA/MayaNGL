@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Viewport/Camera/Focus.h"
+#include "Focus.h"
 
 
 template<typename CAM>
@@ -23,8 +23,8 @@ void Focus<CAM>::onSelected(const SEL &select_)
     auto && inverse = camera.m_inverse;
 
     auto target_transform = selectables.at(currently_selected[0]).transform;
-    vc::Position target_position(target_transform.m_30,target_transform.m_31,target_transform.m_32);
-    vc::Size<> target_size(target_transform.m_00,target_transform.m_11,target_transform.m_22);
+    mc::Position target_position(target_transform.m_30,target_transform.m_31,target_transform.m_32);
+    mc::Size<> target_size(target_transform.m_00,target_transform.m_11,target_transform.m_22);
 
     auto axis = lookAt.target-target_position;
     float dist = axis.length();
@@ -42,12 +42,12 @@ void Focus<CAM>::onSelected(const SEL &select_)
 }
 
 template<typename CAM>
-vc::Position Focus<CAM>::track(float dist_, vc::Position &axis_)
+mc::Position Focus<CAM>::track(float dist_, mc::Position &axis_)
 {
     if (dist_ < ngl::EPSILON)
-        return vc::Position::zero();
+        return mc::Position::zero();
 
-    auto && track = camera.m_track;
+    auto &&track = camera.m_track;
 
     axis_.normalize();
     auto transform = dist_*axis_;
@@ -60,14 +60,14 @@ vc::Position Focus<CAM>::track(float dist_, vc::Position &axis_)
 }
 
 template<typename CAM>
-vc::Rotation Focus<CAM>::pan(float dist_, const vc::Position &target_pos_)
+mc::Rotation Focus<CAM>::pan(float dist_, const mc::Position &target_pos_)
 {
     if (dist_ < ngl::EPSILON)
-        return vc::Rotation();
+        return mc::Rotation();
 
-    auto && lookAt = camera.m_lookAt;
-    auto && inverse = camera.m_inverse;
-    auto && pan = camera.m_pan;
+    auto &&lookAt = camera.m_lookAt;
+    auto &&inverse = camera.m_inverse;
+    auto &&pan = camera.m_pan;
 
     inverse.calcCurrent();
     inverse.calcShadow();
@@ -76,24 +76,23 @@ vc::Rotation Focus<CAM>::pan(float dist_, const vc::Position &target_pos_)
     auto phi = asin((target_pos_.m_y-lookAt.eye.m_y)/rotation_dist);
     auto theta = asin((target_pos_.m_x-lookAt.eye.m_x)/(rotation_dist*cos(phi)));
 
-    vc::Rotation Ry = vc::Y_Matrix(theta);
+    mc::Rotation Ry = mc::Y_Matrix(theta);
     inverse.shadow = inverse.shadow*Ry;
     auto rotationAxis = lookAt.up.cross(inverse.shadow);
     rotationAxis.normalize();
-    vc::Rotation Rx = vc::Axis_Matrix(phi*0.5f,rotationAxis);
-    vc::Rotation localR = Rx*Ry;
+    mc::Rotation Rx = mc::Axis_Matrix(phi*0.5f,rotationAxis);
+    mc::Rotation localR = Rx*Ry;
 
     pan *= localR.inverse();
-
     return localR;
 }
 
 template<typename CAM>
-float Focus<CAM>::dolly(const vc::Position &target_pos_, const vc::Size<> &target_size_)
+float Focus<CAM>::dolly(const mc::Position &target_pos_, const mc::Size<> &target_size_)
 {
-    auto && lookAt = camera.m_lookAt;
-    auto && inverse = camera.m_inverse;
-    auto && dolly = camera.m_dolly;
+    auto &&lookAt = camera.m_lookAt;
+    auto &&inverse = camera.m_inverse;
+    auto &&dolly = camera.m_dolly;
 
     auto t_dir = (lookAt.eye-target_pos_);
     t_dir.normalize();

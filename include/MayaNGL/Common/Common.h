@@ -75,6 +75,7 @@ namespace mc //maya common
     static constexpr float fov = 35.f;
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 200.f;
+    enum class CamView {PERSPECTIVE,FRONT,SIDE,TOP};
 
 
 

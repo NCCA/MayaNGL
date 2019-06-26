@@ -20,25 +20,25 @@ HEADERS += $$PWD/include/*.h \
            $$PWD/include/MayaNGL/*.h* \
            $$PWD/include/MayaNGL/Common/*.h* \
            $$PWD/include/MayaNGL/Mouse/*.h* \
-           $$PWD/include/MayaNGL/Viewport/*.h* #\
-           #$$PWD/include/MayaNGL/Viewport/Camera/*.h* \
-           #$$PWD/include/MayaNGL/Viewport/Grid/*.h* \
-           #$$PWD/include/MayaNGL/Viewport/ProjectionText/*.h* \
-           #$$PWD/include/MayaNGL/Viewport/ViewAxis/*.h* \
-           #$$PWD/include/MayaNGL/Selection/*.h*
+           $$PWD/include/MayaNGL/Camera/*.h* \
+           $$PWD/include/MayaNGL/Viewport/*.h* \
+           $$PWD/include/MayaNGL/Viewport/Grid/*.h* \
+           $$PWD/include/MayaNGL/Viewport/ProjectionText/*.h* \
+           $$PWD/include/MayaNGL/Viewport/ViewAxis/*.h* \
+           $$PWD/include/MayaNGL/Selection/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/*.cpp \
            $$PWD/src/MayaNGL/Common/*.cpp \
            $$PWD/src/MayaNGL/Mouse/*.cpp \
-           $$PWD/src/MayaNGL/Viewport/*.cpp #\
-           #$$PWD/src/MayaNGL/Viewport/Camera/*.cpp \
-           #$$PWD/src/MayaNGL/Viewport/Grid/*.cpp \
-           #$$PWD/src/MayaNGL/Viewport/ProjectionText/*.cpp \
-           #$$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
-           #$$PWD/src/MayaNGL/Selection/*.cpp
+           $$PWD/src/MayaNGL/Camera/*.cpp \
+           $$PWD/src/MayaNGL/Viewport/*.cpp \
+           $$PWD/src/MayaNGL/Viewport/Grid/*.cpp \
+           $$PWD/src/MayaNGL/Viewport/ProjectionText/*.cpp \
+           $$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
+           $$PWD/src/MayaNGL/Selection/*.cpp
 
-OTHER_FILES += $$PWD/shaders/MayaNGL/Viewport/*.glsl \
+OTHER_FILES += $$PWD/shaders/MayaNGL/*.glsl \
                README.md
 
 INCLUDEPATH += ./include
