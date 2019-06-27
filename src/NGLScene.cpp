@@ -6,7 +6,8 @@
 #include <QGuiApplication>
 
 
-NGLScene::NGLScene() : m_view(),
+NGLScene::NGLScene() : m_mesh("models_textures/fish.obj"),
+                       m_view(),
                        m_projection(),
                        m_maya(m_view,m_projection)
 {
@@ -38,6 +39,8 @@ void NGLScene::initializeGL()
     shader->use(ngl::nglDiffuseShader);
     shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
+
+    m_mesh.createVAO();
 }
 
 void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
@@ -80,6 +83,16 @@ void NGLScene::paintGL()
         m_transform.setScale(2.f,2.f,2.f);
         loadDiffuseShader(m_transform.getMatrix());
         prim->draw( "football" );
+//        m_viewport.make_selectable(2,"football",m_transform);
+    }
+
+    m_transform.reset();
+    {
+        m_transform.setPosition(0.f,0.f,8.f);
+        m_transform.setRotation(0.f,0.f,0.f);
+        m_transform.setScale(3.f,3.f,3.f);
+        loadDiffuseShader(m_transform.getMatrix());
+        m_mesh.draw();
 //        m_viewport.make_selectable(2,"football",m_transform);
     }
 }

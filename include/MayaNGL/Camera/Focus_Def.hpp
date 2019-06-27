@@ -13,32 +13,32 @@ template<typename CAM>
     template<typename SEL>
 void Focus<CAM>::onSelected(const SEL &select_)
 {
-    auto &&selectables = select_.getAllSelectables();
-    auto &&currently_selected = select_.getCurrentlySelected();
+//    auto &&selectables = select_.getAllSelectables();
+//    auto &&currently_selected = select_.getCurrentlySelected();
 
-    if (currently_selected.empty())
-        return;
+//    if (currently_selected.empty())
+//        return;
 
-    auto && lookAt = camera.m_lookAt;
-    auto && inverse = camera.m_inverse;
+//    auto && lookAt = camera.m_lookAt;
+//    auto && inverse = camera.m_inverse;
 
-    auto target_transform = selectables.at(currently_selected[0]).transform;
-    mc::Position target_position(target_transform.m_30,target_transform.m_31,target_transform.m_32);
-    mc::Size<> target_size(target_transform.m_00,target_transform.m_11,target_transform.m_22);
+//    auto target_transform = selectables.at(currently_selected[0]).transform;
+//    mc::Position target_position(target_transform.m_30,target_transform.m_31,target_transform.m_32);
+//    mc::Size<> target_size(target_transform.m_00,target_transform.m_11,target_transform.m_22);
 
-    auto axis = lookAt.target-target_position;
-    float dist = axis.length();
+//    auto axis = lookAt.target-target_position;
+//    float dist = axis.length();
 
-    auto translate = this->track(dist,axis);
-    auto rotate = this->pan(dist,target_position);
-    auto zoom = this->dolly(target_position,target_size);
+//    auto translate = this->track(dist,axis);
+//    auto rotate = this->pan(dist,target_position);
+//    auto zoom = this->dolly(target_position,target_size);
 
-    lookAt.eye -= translate + target_position;
-    lookAt.eye = target_position + (lookAt.eye * rotate);
-    lookAt.target = target_position;
-    inverse.calcCurrent();
-    lookAt.eye -= zoom * inverse.current;
-    lookAt.front = -inverse.current;
+//    lookAt.eye -= translate + target_position;
+//    lookAt.eye = target_position + (lookAt.eye * rotate);
+//    lookAt.target = target_position;
+//    inverse.calcCurrent();
+//    lookAt.eye -= zoom * inverse.current;
+//    lookAt.front = -inverse.current;
 }
 
 template<typename CAM>

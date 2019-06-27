@@ -14,8 +14,8 @@ class MayaNGL
         mc::View &view;
         mc::Projection &projection;
 
+    private:
         mc::LookAt m_initial_lookAt;
-
         Mouse m_mouse;
         Camera m_camera;
         Viewport m_viewport;

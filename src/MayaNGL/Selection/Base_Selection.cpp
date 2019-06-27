@@ -13,7 +13,6 @@ Base_Selection<false>::Base_Selection( /*const*/ mc::View &view_,
                                        m_screen_width(0),
                                        m_screen_height(0),
                                        m_ray{cam_lookAt.eye,mc::Direction::zero()},
-                                       m_selectables(),
                                        m_currently_selected()
 {;}
 
@@ -51,24 +50,8 @@ void Base_Selection<false>::draw() const
     if (m_currently_selected.empty())
         return;
 
-    ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use(ngl::nglColourShader);
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-
-    for (const auto &i : m_currently_selected)
-    {
-        auto &&prim_name = m_selectables.at(i).prim;
-        auto &&prim_transform = m_selectables.at(i).transform;
-
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-        auto MVP = projection * view * prim_transform;
-        shader->setUniform("MVP",MVP);
-        shader->setUniform("Colour",ngl::Vec4(0.263f,1.f,0.639f,1.f));
-        prim->draw(prim_name);
-
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    }
+//    for (auto &&i : m_currently_selected)
+//        m_selectables
 }
 
 
@@ -123,20 +106,20 @@ void Base_Selection<true>::draw() const
     m_vao->draw();
     m_vao->unbind();
 
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    for (const auto &i : m_currently_selected)
-    {
-        auto &&prim_transform = m_selectables.at(i).transform;
+//    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+//    for (const auto &i : m_currently_selected)
+//    {
+//        auto &&prim_transform = m_selectables.at(i).transform;
 
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+//        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-        auto MVP = projection * view * prim_transform;
-        shader->setUniform("MVP",MVP);
-        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
-        prim->draw("BV");
+//        auto MVP = projection * view * prim_transform;
+//        shader->setUniform("MVP",MVP);
+//        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
+//        prim->draw("BV");
 
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    }
+//        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+//    }
 }
 
 

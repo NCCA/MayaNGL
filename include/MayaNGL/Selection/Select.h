@@ -6,8 +6,34 @@
 template<bool visualize_bv_and_ray = false>
 struct Select final : Base_Selection<visualize_bv_and_ray>
 {
-    private:
-        typedef typename Base_Selection<visualize_bv_and_ray>::SelectablePrim SelectablePrim;
+
+    struct SelectablePrim
+    {
+        std::string primitive;
+        mc::Transform transform;
+
+        void draw() const
+        {
+            ngl::ShaderLib *shader = ngl::ShaderLib::instance();
+            shader->use(ngl::nglColourShader);
+            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+//                auto MVP = projection * view * transform;
+//                shader->setUniform("MVP",MVP);
+            shader->setUniform("Colour",ngl::Vec4(0.263f,1.f,0.639f,1.f));
+            prim->draw(primitive);
+
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        }
+    };
+
+
+    typedef std::unordered_map<std::size_t,SelectablePrim> Selectables;
+
+    Selectables m_selectables;
+
 
     private:
         bool m_multi_selection;
@@ -23,7 +49,10 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
                          const C &camera_ );
 
         template<typename T>
-        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_);
+        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_)
+        {
+//            m_selectables.emplace(id_,SelectablePrim{std::forward<T>(prim_),transform_});
+        }
 
         void resize(int w_, int h_);
         void enableMultiSelection();
@@ -32,3 +61,7 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
 
         ~Select() noexcept = default;
 };
+
+
+// variant using void pointers = https://rextester.com/YPB83425
+// variant using unique pointers = https://rextester.com/FVWQ1000

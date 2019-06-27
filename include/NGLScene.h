@@ -4,6 +4,7 @@
 #include <ngl/Vec3.h>
 #include <ngl/Mat4.h>
 #include <ngl/Transformation.h>
+#include <ngl/Obj.h>
 #include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -17,6 +18,7 @@ class NGLScene : public QOpenGLWindow
     private:
         ngl::Mat4 m_model;
         ngl::Transformation m_transform;
+        ngl::Obj m_mesh;
 
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;

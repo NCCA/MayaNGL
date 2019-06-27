@@ -6,15 +6,7 @@
 template<bool visualize_bv_and_ray>
 class Base_Selection
 {
-    protected:
-        struct SelectablePrim
-        {
-            std::string prim;
-            mc::Transform transform;
-        };
-
     private:
-        typedef std::unordered_map<std::size_t,SelectablePrim> Selectables;
         typedef std::vector<std::size_t> Selections;
 
     protected:
@@ -26,7 +18,6 @@ class Base_Selection
         int m_screen_width;
         int m_screen_height;
         mc::Ray m_ray;
-        Selectables m_selectables;
         Selections m_currently_selected;
 
     public:
@@ -34,7 +25,6 @@ class Base_Selection
                                  /*const*/ mc::Projection &projection_,
                                  const mc::LookAt &cam_lookAt_ );
 
-        GET_MEMBER(m_selectables,AllSelectables)
         GET_MEMBER(m_currently_selected,CurrentlySelected)
 
         void initialize();

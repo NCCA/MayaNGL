@@ -19,8 +19,8 @@
 # shadow build directories
 build-*
 Makefile
-*.Debug
-*.Release
+*.*ebug
+*.*elease
 
 # qt files
 *.pro.user*
