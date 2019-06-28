@@ -63,5 +63,5 @@ struct Select final : Base_Selection<visualize_bv_and_ray>
 };
 
 
-// variant using void pointers = https://rextester.com/YPB83425
-// variant using unique pointers = https://rextester.com/FVWQ1000
+// variant using void pointers = https://rextester.com/RQIADU87576
+// variant using unique pointers = https://rextester.com/JZMKX39544

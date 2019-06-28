@@ -83,7 +83,7 @@ void NGLScene::paintGL()
         m_transform.setScale(2.f,2.f,2.f);
         loadDiffuseShader(m_transform.getMatrix());
         prim->draw( "football" );
-//        m_viewport.make_selectable(2,"football",m_transform);
+//        m_maya.make_selectable(2,"football",m_transform);
     }
 
     m_transform.reset();
@@ -93,7 +93,7 @@ void NGLScene::paintGL()
         m_transform.setScale(3.f,3.f,3.f);
         loadDiffuseShader(m_transform.getMatrix());
         m_mesh.draw();
-//        m_viewport.make_selectable(2,"football",m_transform);
+//        m_maya.make_selectable(2,m_mesh,m_transform);
     }
 }
 
