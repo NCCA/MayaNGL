@@ -10,7 +10,8 @@ Select<visualize_bv_and_ray>::Select( /*const*/ mc::View &view_,
                                       const C &camera_ )
                                       :
                                       Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
-                                      m_multi_selection(false)
+                                      m_multi_selection(false),
+                                      m_selectables()
 {;}
 
 template<bool visualize_bv_and_ray>
@@ -59,7 +60,7 @@ void Select<visualize_bv_and_ray>::enableMultiSelection()
 }
 
 template<bool visualize_bv_and_ray>
-mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const SelectablePrim &selectable_) const
+mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const VariantPrim &selectable_) const
 {
 //    auto &&transform = selectable_.transform;
 
@@ -74,7 +75,7 @@ mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const SelectablePrim 
 template<bool visualize_bv_and_ray>
 void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
 {
-    std::cout<< "selectabes = " << m_selectables.size() <<std::endl;
+//    std::cout<< "selectabes = " << m_selectables.size() <<std::endl;
 
 //    if (this->m_selectables.empty())
 //        return;
