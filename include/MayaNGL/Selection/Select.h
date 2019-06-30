@@ -25,10 +25,7 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
                          const C &camera_ );
 
         template<typename T>
-        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_)
-        {
-            m_selectables.emplace(id_, VariantPrim{std::forward<T>(prim_),transform_});
-        }
+        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_);
 
         void resize(int w_, int h_);
         void enableMultiSelection();

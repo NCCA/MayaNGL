@@ -16,16 +16,17 @@ class VariantPrim
         struct Generic : Base
         {
             const T primitive;
-            const mc::Transform &transform;
 
-            Generic( T &&primitive_,
-                     const mc::Transform &transform_ );
+            Generic( T &&primitive_ );
 
-            void draw(const mc::View &view_, const mc::Projection &projection_) const override;
+            void draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const override;
         };
 
+    public:
+        const mc::Transform &transform;
+
     private:
-        std::unique_ptr<Base> impl = nullptr;
+        std::unique_ptr<Base> m_prim_ptr = nullptr;
 
     public:
         template<typename T, typename = std::enable_if_t<!std::is_trivially_constructible<T>::value>>

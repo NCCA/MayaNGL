@@ -5,10 +5,11 @@
 VariantPrim::VariantPrim( std::string &&val_,
                           const mc::Transform &transform_ )
                           :
-                          impl{std::make_unique<Generic<>>(std::move(val_),transform_)}
+                          transform(transform_),
+                          m_prim_ptr{std::make_unique<Generic<>>(std::move(val_))}
 {;}
 
-void VariantPrim::draw(const mc::View &view_, const mc::Projection &projection_) const
+void VariantPrim::draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const
 {
-    impl->draw(view_,projection_);
+    m_prim_ptr->draw(view_,projection_);
 }
