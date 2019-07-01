@@ -3,8 +3,8 @@
 
 
 template<>
-Base_Selection<false>::Base_Selection( /*const*/ mc::View &view_,
-                                       /*const*/ mc::Projection &projection_,
+Base_Selection<false>::Base_Selection( const mc::View &view_,
+                                       const mc::Projection &projection_,
                                        const mc::LookAt &cam_lookAt_ )
                                        :
                                        view(view_),
@@ -13,6 +13,7 @@ Base_Selection<false>::Base_Selection( /*const*/ mc::View &view_,
                                        m_screen_width(0),
                                        m_screen_height(0),
                                        m_ray{cam_lookAt.eye,mc::Direction::zero()},
+                                       m_selectables(),
                                        m_currently_selected()
 {;}
 
@@ -33,7 +34,7 @@ void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
     Generic<V4> clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
 
     // convert the clip coordinates to Eye Space.
-    Generic<V4> eye_coordinates = clip_coordinates * projection.inverse();
+    Generic<V4> eye_coordinates = clip_coordinates * const_cast<mc::Projection &>(projection).inverse();
     eye_coordinates.m_z = -1.f;
     eye_coordinates.m_w = 0.f;
 
@@ -50,16 +51,19 @@ void Base_Selection<false>::draw() const
     if (m_currently_selected.empty())
         return;
 
-//    for (auto &&i : m_currently_selected)
-//        m_selectables
+    for (const auto &i : m_currently_selected)
+    {
+        auto &&vprim = m_selectables.at(i);
+        vprim.draw(view,projection);
+    }
 }
 
 
 // ------------------------------------------------------------- //
 
 
-Base_Selection<true>::Base_Selection( /*const*/ mc::View &view_,
-                                      /*const*/ mc::Projection &projection_,
+Base_Selection<true>::Base_Selection( const mc::View &view_,
+                                      const mc::Projection &projection_,
                                       const mc::LookAt &cam_lookAt_ )
                                       :
                                       Base_Selection<false>(view_,projection_,cam_lookAt_),
@@ -72,7 +76,7 @@ void Base_Selection<true>::initialize()
     Base_Selection<false>::initialize();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    prim->createSphere("BV",1.f,10);
+    prim->createSphere("BV",1.f,12);
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 }
 
@@ -106,20 +110,20 @@ void Base_Selection<true>::draw() const
     m_vao->draw();
     m_vao->unbind();
 
-//    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-//    for (const auto &i : m_currently_selected)
-//    {
-//        auto &&prim_transform = m_selectables.at(i).transform;
+    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
-//        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    for (const auto &i : m_currently_selected)
+    {
+        auto &&vprim_transform = m_selectables.at(i).getTransform();
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-//        auto MVP = projection * view * prim_transform;
-//        shader->setUniform("MVP",MVP);
-//        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
-//        prim->draw("BV");
+        auto MVP = projection * view * vprim_transform;
+        shader->setUniform("MVP",MVP);
+        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
+        prim->draw("BV");
 
-//        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-//    }
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    }
 }
 
 

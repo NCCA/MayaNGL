@@ -41,7 +41,7 @@ class MayaNGL
                                                                 decltype(std::declval<T>().getMatrix()),mc::Transform
                                                                         >::value
                                                                         >>
-        void make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_);
+        void make_selectable(std::size_t id_, PRIM &&prim_, T &transform_);
 
         template<typename PRIM>
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);

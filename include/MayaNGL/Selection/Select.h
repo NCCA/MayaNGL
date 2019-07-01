@@ -1,6 +1,5 @@
 #pragma once
 
-#include "VariantPrim_Def.hpp"
 #include "Base_Selection.h"
 
 
@@ -8,11 +7,7 @@ template<bool visualize_bv_and_ray = false>
 class Select final : public Base_Selection<visualize_bv_and_ray>
 {
     private:
-        typedef std::unordered_map<std::size_t,VariantPrim> Selectables;
-
-    private:
         bool m_multi_selection;
-        Selectables m_selectables;
 
     private:
         bool alreadySelected(std::size_t id_) const;
@@ -20,12 +15,12 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
 
     public:
         template<typename C>
-        explicit Select( /*const*/ mc::View &view_,
-                         /*const*/ mc::Projection &projection_,
+        explicit Select( const mc::View &view_,
+                         const mc::Projection &projection_,
                          const C &camera_ );
 
-        template<typename T>
-        void make_selectable(std::size_t id_, T &&prim_, const mc::Transform &transform_);
+        template<typename PRIM>
+        void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
 
         void resize(int w_, int h_);
         void enableMultiSelection();

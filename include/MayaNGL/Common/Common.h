@@ -11,6 +11,7 @@
 #include <ngl/Text.h>
 #include <ngl/NGLStream.h>
 #include <math.h>
+#include <cxxabi.h>
 
 
 /*
@@ -34,6 +35,10 @@
  * (11) ngl::Mat4::scale does not work properly.
  * (12) Why isn't ngl::Vec3 * working with ngl::AbstractVAO in the
  *      Base_Selection class.
+ * (13) UB when passing an ngl::Transformation as a templated function
+ *      argument. This is because the function getMatrix() returns a
+ *      copy and not a const&, which means that the local object returned
+ *      by getMatrix() gets deleted at the end of scope.
 */
 
 
@@ -148,5 +153,12 @@ namespace mc //maya common
     template<bool infinite = true>
     Position intersect(const Ray &ray_, const Plane<infinite> &plane_);
     Position intersect(const Ray &ray_, const Sphere &sphere_);
+
+    template<typename T>
+    static std::string demangle_typename()
+    {
+        int status = 0;
+        return abi::__cxa_demangle(typeid(T).name(),0,0,&status);
+    }
 
 }

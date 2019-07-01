@@ -24,9 +24,9 @@ void MayaNGL::initialize(const T &eye_, const T &target_, const T &up_)
 }
 
 template<typename PRIM, typename T, typename>
-void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, /*const*/ T &transform_)
+void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, T &transform_)
 {
-    make_selectable(id_,std::forward<PRIM>(prim_),transform_.getMatrix());
+    this->make_selectable(id_,std::forward<PRIM>(prim_), transform_.getMatrix());
 }
 
 template<typename PRIM>

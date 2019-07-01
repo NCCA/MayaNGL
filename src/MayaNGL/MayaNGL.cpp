@@ -18,8 +18,6 @@ void MayaNGL::initialize()
 {
     m_viewport.initialize();
     m_select.initialize();
-
-    std::cout<<std::flush;
     m_viewport.setView<mc::CamView::PERSPECTIVE>();
 }
 

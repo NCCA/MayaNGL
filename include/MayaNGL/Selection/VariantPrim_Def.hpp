@@ -14,39 +14,36 @@ void VariantPrim::Generic<T>::draw(const mc::Transform &transform_, const mc::Vi
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglColourShader);
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     auto MVP = projection_ * view_ * transform_;
     shader->setUniform("MVP",MVP);
     shader->setUniform("Colour",ngl::Vec4(0.263f,1.f,0.639f,1.f));
-    prim->draw(primitive);
+
+    std::cout<< mc::demangle_typename<T>() <<std::endl;
+
+    dP(std::is_base_of<ngl::AbstractMesh,T>());
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 }
+
+template<>
+void VariantPrim::Generic<ngl::Obj>::draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const;
 
 template<typename T, typename>
 VariantPrim::VariantPrim( T *const val_,
                           const mc::Transform &transform_ )
                           :
-                          transform(transform_),
-                          m_prim_ptr{std::make_unique<Generic<const T *>>(val_)}
-{;}
-
-template<typename T>
-VariantPrim::VariantPrim( T &val_,
-                          const mc::Transform &transform_ )
-                          :
-                          transform(transform_),
-                          m_prim_ptr{std::make_unique<Generic<const T &>>(val_)}
+                          m_prim_ptr{std::make_unique<Generic<const T *>>(val_)},
+                          m_transform(transform_)
 {;}
 
 template<typename T>
 VariantPrim::VariantPrim( T &&val_,
                           const mc::Transform &transform_ )
                           :
-                          transform(transform_),
-                          m_prim_ptr{std::make_unique<Generic<T>>(std::forward<T>(val_))}
+                          m_prim_ptr{std::make_unique<Generic<T>>(std::forward<T>(val_))},
+                          m_transform(transform_)
 {;}
 
