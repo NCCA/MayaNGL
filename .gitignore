@@ -45,6 +45,7 @@ release/
 *.exe
 *.out
 *.app
+MayaNGL
 
 # temp files under linux
 *.~*
