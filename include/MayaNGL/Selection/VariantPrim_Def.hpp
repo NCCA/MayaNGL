@@ -23,7 +23,9 @@ void VariantPrim::Generic<T>::draw(const mc::Transform &transform_, const mc::Vi
 
     std::cout<< mc::demangle_typename<T>() <<std::endl;
 
-    dP(std::is_base_of<ngl::AbstractMesh,T>());
+    typedef typename std::remove_reference<std::remove_const<T>::type>::type Type;
+
+    dP(std::is_same<Type,ngl::Obj>());
 
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 }

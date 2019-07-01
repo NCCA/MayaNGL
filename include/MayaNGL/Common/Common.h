@@ -158,7 +158,7 @@ namespace mc //maya common
     static std::string demangle_typename()
     {
         int status = 0;
-        return abi::__cxa_demangle(typeid(T).name(),0,0,&status);
+        return abi::__cxa_demangle(typeid(T).name(),nullptr,nullptr,&status);
     }
 
 }
