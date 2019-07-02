@@ -32,7 +32,7 @@ class VariantPrim
                 primitive.draw();
             }
 
-            /// go here: https://rextester.com/DVZQ65441
+            /// https://rextester.com/GOF94946
 
             void draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const override;
         };

@@ -40,6 +40,11 @@ void VariantPrim::Generic<T>::draw(const mc::Transform &transform_, const mc::Vi
 template<>
 void VariantPrim::Generic<ngl::Obj>::draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const;
 
+
+
+
+
+
 template<typename T, typename>
 VariantPrim::VariantPrim( T *val_,
                           const mc::Transform &transform_ )
