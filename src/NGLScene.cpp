@@ -6,7 +6,8 @@
 #include <QGuiApplication>
 
 
-NGLScene::NGLScene() : m_mesh("models_textures/fish.obj"),
+NGLScene::NGLScene() : m_airplane_mesh("models_textures/airplane.obj"),
+                       m_fish_mesh(),
                        m_view(),
                        m_projection(),
                        m_maya(m_view,m_projection)
@@ -40,7 +41,9 @@ void NGLScene::initializeGL()
     shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
     shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
 
-    m_mesh.createVAO();
+    m_airplane_mesh.createVAO();
+    m_fish_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj","models_textures/fish.jpg");
+    m_fish_mesh->createVAO();
 }
 
 void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
@@ -102,8 +105,18 @@ void NGLScene::paintGL()
         m_transform.setRotation(0.f,0.f,0.f);
         m_transform.setScale(3.f,3.f,3.f);
         loadDiffuseShader(m_transform.getMatrix());
-        m_mesh.draw();
-        m_maya.make_selectable(4,m_mesh,m_transform);
+        m_airplane_mesh.draw();
+        m_maya.make_selectable(4,m_airplane_mesh,m_transform);
+    }
+
+    m_transform.reset();
+    {
+        m_transform.setPosition(0.f,0.f,-8.f);
+        m_transform.setRotation(0.f,0.f,0.f);
+        m_transform.setScale(3.f,3.f,3.f);
+        loadDiffuseShader(m_transform.getMatrix());
+        m_fish_mesh->draw();
+//        m_maya.make_selectable(5,m_fish_mesh,m_transform);
     }
 }
 

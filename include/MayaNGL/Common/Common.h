@@ -111,6 +111,26 @@ namespace mc //maya common
 
 
 
+    template <typename T>
+    struct remove_smart_ptr
+    {
+        typedef T type;
+    };
+
+    template <typename T>
+    struct remove_smart_ptr<T*>
+    {
+       typedef T type;
+    };
+
+    template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
+    struct remove_smart_ptr< SmPtr<T> >
+    {
+       typedef T type;
+    };
+
+
+
     struct LookAt
     {
         Position eye = default_eye;

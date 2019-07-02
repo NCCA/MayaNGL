@@ -18,7 +18,9 @@ class NGLScene : public QOpenGLWindow
     private:
         ngl::Mat4 m_model;
         ngl::Transformation m_transform;
-        ngl::Obj m_mesh;
+
+        ngl::Obj m_airplane_mesh;
+        std::unique_ptr<ngl::Obj> m_fish_mesh;
 
         ngl::Mat4 m_view;
         ngl::Mat4 m_projection;

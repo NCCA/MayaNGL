@@ -1,7 +1,6 @@
 #pragma once
 
 #include "MayaNGL/Common/Common.h"
-#include <ngl/Obj.h>
 
 
 class VariantPrim
@@ -13,25 +12,27 @@ class VariantPrim
             virtual ~Base() noexcept = default;
         };
 
-        template<typename T = std::string>
+        template<typename T>
         struct Generic : Base
         {
-            const T primitive;
+            T primitive;
 
             Generic( T &&primitive_ );
 
             void dP(std::false_type) const
             {
                 std::cout<< "false_type" <<std::endl;
-//                ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-//                prim->draw(primitive);
+                ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+                prim->draw(primitive);
             }
 
             void dP(std::true_type) const
             {
                 std::cout<< "true_type" <<std::endl;
-//                primitive.draw();
+                primitive.draw();
             }
+
+            /// go here: https://rextester.com/DVZQ65441
 
             void draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const override;
         };
@@ -42,7 +43,7 @@ class VariantPrim
 
     public:
         template<typename T, typename = std::enable_if_t<!std::is_trivially_constructible<T>::value>>
-        VariantPrim( T *const val_,
+        VariantPrim( T *val_,
                      const mc::Transform &transform_ );
 
         template<typename T>
