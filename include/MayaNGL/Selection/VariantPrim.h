@@ -6,48 +6,36 @@
 class VariantPrim
 {
     private:
-        struct Base
-        {
-            virtual void draw(const mc::Transform &, const mc::View &, const mc::Projection &) const = 0;
-            virtual ~Base() noexcept = default;
-        };
+        struct Base;
+
+        template<typename T, template<typename> class Gen>
+        struct Base_Generic;
 
         template<typename T>
-        struct Generic : Base
-        {
-            T primitive;
-
-            Generic( T &&primitive_ );
-
-            void dP(std::false_type) const
-            {
-                std::cout<< "false_type" <<std::endl;
-                ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-                prim->draw(primitive);
-            }
-
-            void dP(std::true_type) const
-            {
-                std::cout<< "true_type" <<std::endl;
-                primitive.draw();
-            }
-
-            /// https://rextester.com/GOF94946
-
-            void draw(const mc::Transform &transform_, const mc::View &view_, const mc::Projection &projection_) const override;
-        };
+        struct Generic;
 
     private:
         std::unique_ptr<Base> m_prim_ptr = nullptr;
         mc::Transform m_transform;
 
+    private:
+        template<typename T>
+        using sfinae_type = std::enable_if_t<!std::is_trivially_constructible<T>::value>;
+
     public:
-        template<typename T, typename = std::enable_if_t<!std::is_trivially_constructible<T>::value>>
-        VariantPrim( T *val_,
+        template<typename T, typename = sfinae_type<T>>
+        VariantPrim( T *primitive_,
                      const mc::Transform &transform_ );
 
-        template<typename T>
-        VariantPrim( T &&val_,
+        template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
+        VariantPrim( const SmPtr<T> &val_,
+                     const mc::Transform &transform_ );
+
+        template<typename T, typename = sfinae_type<T>>
+        VariantPrim( const T &val_,
+                     const mc::Transform &transform_ );
+
+        VariantPrim( std::string &&val_,
                      const mc::Transform &transform_ );
 
         GET_MEMBER(m_transform,Transform)

@@ -28,7 +28,9 @@ class NGLScene : public QOpenGLWindow
         MayaNGL m_maya;
 
     private:
-        void loadDiffuseShader(const ngl::Mat4 &mat_);
+        template<bool using_texture = false>
+        void loadDiffTexShader(const ngl::Mat4 &mat_);
+
         void keyPressEvent(QKeyEvent *event_ = nullptr) override;
         void mousePressEvent(QMouseEvent *event_ = nullptr) override;
         void mouseMoveEvent(QMouseEvent *event_ = nullptr) override;

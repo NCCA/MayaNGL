@@ -11,14 +11,16 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_mouse(),
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
-                  m_select(view,projection,m_camera)
-{;}
+                  m_select(view,projection,m_camera),
+                  m_handle(view,projection)
+{}
 
 void MayaNGL::initialize()
 {
     m_viewport.initialize();
     m_select.initialize();
     m_viewport.setView<mc::CamView::PERSPECTIVE>();
+    m_handle.initialize();
 }
 
 void MayaNGL::resize(int w_, int h_)
@@ -31,6 +33,7 @@ void MayaNGL::draw()
 {
     m_viewport.update_draw();
     m_select.draw();
+    m_handle.draw();
 }
 
 void MayaNGL::keyPress(QKeyEvent *event_)

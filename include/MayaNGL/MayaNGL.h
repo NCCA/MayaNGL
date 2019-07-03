@@ -20,6 +20,7 @@ class MayaNGL
         Camera m_camera;
         Viewport m_viewport;
         Select<true> m_select;
+        TransformHandle m_handle;
 
     public:
         explicit MayaNGL( mc::View &view_,

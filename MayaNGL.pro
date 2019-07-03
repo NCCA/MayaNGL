@@ -39,7 +39,8 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
            $$PWD/src/MayaNGL/Selection/*.cpp
 
-OTHER_FILES += $$PWD/shaders/MayaNGL/*.glsl \
+OTHER_FILES += $$PWD/shaders/*.glsl \
+               $$PWD/shaders/MayaNGL/*.glsl \
                README.md
 
 INCLUDEPATH += ./include

@@ -37,16 +37,35 @@ void NGLScene::initializeGL()
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
+    shader->createShaderProgram("DiffTexShader");
+    shader->attachShader("DiffTexVertex",ngl::ShaderType::VERTEX);
+    shader->attachShader("DiffTexFragment",ngl::ShaderType::FRAGMENT);
+    shader->loadShaderSource("DiffTexVertex","shaders/DiffTexVertex.glsl");
+    shader->loadShaderSource("DiffTexFragment","shaders/DiffTexFragment.glsl");
+    shader->compileShader("DiffTexVertex");
+    shader->compileShader("DiffTexFragment");
+    shader->attachShaderToProgram("DiffTexShader","DiffTexVertex");
+    shader->attachShaderToProgram("DiffTexShader","DiffTexFragment");
+    shader->linkProgramObject("DiffTexShader");
+
+    auto lightPos = ngl::Vec3(0.f, 3.f, 6.f);
+    auto lightDiffuse = ngl::Vec4(1.f, 1.f, 1.f, 1.f);
+
+    shader->use("DiffTexShader");
+    shader->setUniform("lightPos",lightPos);
+    shader->setUniform("lightDiffuse",lightDiffuse);
+
     shader->use(ngl::nglDiffuseShader);
-    shader->setUniform("lightPos",ngl::Vec3(0.0, 3.0f, 6.0f));
-    shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
+    shader->setUniform("lightPos",lightPos);
+    shader->setUniform("lightDiffuse",lightDiffuse);
 
     m_airplane_mesh.createVAO();
     m_fish_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj","models_textures/fish.jpg");
     m_fish_mesh->createVAO();
 }
 
-void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
+template<>
+void NGLScene::loadDiffTexShader<false>(const ngl::Mat4 &mat_)
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglDiffuseShader);
@@ -59,6 +78,21 @@ void NGLScene::loadDiffuseShader(const ngl::Mat4 &mat_)
     shader->setUniform("MVP",MVP);
     shader->setUniform("normalMatrix",normalMatrix);
     shader->setUniform("Colour",0.7f,0.7f,0.7f,1.0f);
+}
+
+template<>
+void NGLScene::loadDiffTexShader<true>(const ngl::Mat4 &mat_)
+{
+    ngl::ShaderLib *shader = ngl::ShaderLib::instance();
+    shader->use("DiffTexShader");
+
+    ngl::Mat4 MV = m_view * mat_;
+    ngl::Mat4 MVP = m_projection * MV;
+    ngl::Mat3 normalMatrix = MV;
+    normalMatrix.inverse().transpose();
+
+    shader->setUniform("MVP",MVP);
+    shader->setUniform("normalMatrix",normalMatrix);
 }
 
 void NGLScene::paintGL()
@@ -74,7 +108,7 @@ void NGLScene::paintGL()
         m_model.translate(0.f,0.f,0.f);
         m_model.rotateY(45.f);
         m_model.scale(4.f,4.f,4.f);
-        loadDiffuseShader(m_model);
+        loadDiffTexShader<false>(m_model);
         prim->draw( "teapot" );
         m_maya.make_selectable(1,"teapot",m_model);
     }
@@ -84,7 +118,7 @@ void NGLScene::paintGL()
         m_transform.setPosition(8.f,0.f,0.f);
         m_transform.setRotation(0.f,45.f,0.f);
         m_transform.setScale(2.f,2.f,2.f);
-        loadDiffuseShader(m_transform.getMatrix());
+        loadDiffTexShader<false>(m_transform.getMatrix());
         prim->draw( "football" );
         m_maya.make_selectable(2,"football",m_transform);
     }
@@ -94,7 +128,7 @@ void NGLScene::paintGL()
         m_model.translate(-8.f,0.f,0.f);
         m_model.rotateZ(70.f);
         m_model.scale(3.f,3.f,3.f);
-        loadDiffuseShader(m_model);
+        loadDiffTexShader<false>(m_model);
         prim->draw( "cube" );
         m_maya.make_selectable(3,"cube",m_model);
     }
@@ -104,7 +138,7 @@ void NGLScene::paintGL()
         m_transform.setPosition(0.f,0.f,8.f);
         m_transform.setRotation(0.f,0.f,0.f);
         m_transform.setScale(3.f,3.f,3.f);
-        loadDiffuseShader(m_transform.getMatrix());
+        loadDiffTexShader<false>(m_transform.getMatrix());
         m_airplane_mesh.draw();
         m_maya.make_selectable(4,m_airplane_mesh,m_transform);
     }
@@ -114,9 +148,9 @@ void NGLScene::paintGL()
         m_transform.setPosition(0.f,0.f,-8.f);
         m_transform.setRotation(0.f,0.f,0.f);
         m_transform.setScale(3.f,3.f,3.f);
-        loadDiffuseShader(m_transform.getMatrix());
+        loadDiffTexShader<true>(m_transform.getMatrix());
         m_fish_mesh->draw();
-//        m_maya.make_selectable(5,m_fish_mesh,m_transform);
+        m_maya.make_selectable(5,m_fish_mesh,m_transform);
     }
 }
 

@@ -27,6 +27,9 @@ class Base_Selection
                                  const mc::Projection &projection_,
                                  const mc::LookAt &cam_lookAt_ );
 
+        GET_MEMBER(m_selectables,AllSelectables)
+        GET_MEMBER(m_currently_selected,CurrentlySelected)
+
         void initialize();
         void emitRay(int mouse_x, int mouse_y);
         void draw() const;

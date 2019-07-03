@@ -57,7 +57,6 @@ namespace mc //maya common
     using V4 = ngl::Vec4;
     using M4 = ngl::Mat4;
 
-    using ScreenSize = V2;
     using Position = V3;
     using Direction = V3;
     using Translation = M4;
