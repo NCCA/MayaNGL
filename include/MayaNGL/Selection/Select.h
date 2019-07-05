@@ -15,6 +15,7 @@ struct TransformHandle
         const mc::Projection &projection;
 
     private:
+        mc::Transform m_scene_model;
         mc::Transform m_model;
         mc::View m_view;
         Vertices m_coordinates;
@@ -26,15 +27,16 @@ struct TransformHandle
                          :
                          scene_view(view_),
                          projection(projection_),
+                         m_scene_model(),
                          m_model(),
                          m_view(ngl::lookAt(mc::Position::in(),mc::Position::zero(),mc::Direction::up())),
                          m_coordinates{{
                                            mc::Direction::zero(),
-                                           mc::Direction::right()*0.1f,
+                                           mc::Direction::right()*0.08f,
                                            mc::Direction::zero(),
-                                           mc::Direction::up()*0.1f,
+                                           mc::Direction::up()*0.08f,
                                            mc::Direction::zero(),
-                                           mc::Direction::in()*0.1f
+                                           mc::Direction::in()*0.08f
                                       }},
                          m_vao()
         {;}
@@ -47,6 +49,9 @@ struct TransformHandle
             m_vao->setNumIndices(m_coordinates.size());
             m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
             m_vao->unbind();
+
+            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+            prim->createCone("arrow_head",0.005f,0.02f,20,1);
         }
 
         void loadLineColourShader()
@@ -54,9 +59,9 @@ struct TransformHandle
             ngl::ShaderLib *shader = ngl::ShaderLib::instance();
             shader->use(ngl::nglColourShader);
 
-            m_model = scene_view;
-            m_model.translate(0.f,0.f,0.f);
-            auto MVP = projection * m_view * m_model;
+            m_scene_model = scene_view;
+            m_scene_model.translate(0.f,0.f,0.f);
+            auto MVP = projection * m_view * m_scene_model * m_model;
 
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
@@ -64,10 +69,18 @@ struct TransformHandle
 
         void draw()
         {
+            m_model.translate(0.f,0.f,0.f);
             loadLineColourShader();
             m_vao->bind();
             m_vao->draw();
             m_vao->unbind();
+
+
+            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+
+            m_model.translate(0.f,0.f,0.06f);
+            loadLineColourShader();
+            prim->draw("arrow_head");
         }
 
         ~TransformHandle() noexcept = default;
