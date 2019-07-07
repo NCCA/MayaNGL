@@ -29,8 +29,7 @@ This demo supports/displays the following:
 
 ## To Do:
 
-- Handles: Create new Transformation handles for move, rotate, scale.
-
+- Handles: Create new transformation handles for moving selected objects.
 
 
 ## Improvements:
@@ -38,6 +37,8 @@ This demo supports/displays the following:
 - Select: Create more Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add them as a template arg to the make_selectable() function.
 
 - Replace the functions in the Common.h with native NGL functions.
+
+- Handles: Create transformation handles for rotatiting and scaling selected objects.
 
 - Application: Create the demo as a gui to change mouse icon when <q,w,e,r> are pressed.
 

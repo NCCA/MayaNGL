@@ -4,86 +4,103 @@
 
 
 
-struct TransformHandle
+struct Gizmo
 {
     private:
-        typedef std::array<mc::Position,6> Vertices;
+        typedef std::array<mc::Position,2> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:
-        const mc::View &scene_view;
+        const mc::View &view;
         const mc::Projection &projection;
+        const mc::Direction &cam_inverse;
 
     private:
-        mc::Transform m_scene_model;
         mc::Transform m_model;
-        mc::View m_view;
-        Vertices m_coordinates;
         VAOPtr m_vao;
 
     public:
-        TransformHandle( const mc::View &view_,
-                         const mc::Projection &projection_ )
-                         :
-                         scene_view(view_),
-                         projection(projection_),
-                         m_scene_model(),
-                         m_model(),
-                         m_view(ngl::lookAt(mc::Position::in(),mc::Position::zero(),mc::Direction::up())),
-                         m_coordinates{{
-                                           mc::Direction::zero(),
-                                           mc::Direction::right()*0.08f,
-                                           mc::Direction::zero(),
-                                           mc::Direction::up()*0.08f,
-                                           mc::Direction::zero(),
-                                           mc::Direction::in()*0.08f
-                                      }},
-                         m_vao()
+        Gizmo( const mc::View &view_,
+               const mc::Projection &projection_,
+               const mc::Direction &cam_inverse_)
+               :
+               view(view_),
+               projection(projection_),
+               cam_inverse(cam_inverse_),
+               m_model(),
+               m_vao()
         {;}
 
         void initialize()
         {
             m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
-            m_vao->bind();
-            m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(mc::Position),m_coordinates[0].m_x));
-            m_vao->setNumIndices(m_coordinates.size());
-            m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-            m_vao->unbind();
 
             ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-            prim->createCone("arrow_head",0.005f,0.02f,20,1);
+            prim->createCone("arrow_head",0.2f,0.6f,10,1);
+            prim->createTrianglePlane("central",0.25f,0.25f,1,1,cam_inverse);
         }
 
-        void loadLineColourShader()
+        void loadLineColourShader(mc::Colour &&colour_)
         {
             ngl::ShaderLib *shader = ngl::ShaderLib::instance();
             shader->use(ngl::nglColourShader);
 
-            m_scene_model = scene_view;
-            m_scene_model.translate(0.f,0.f,0.f);
-            auto MVP = projection * m_view * m_scene_model * m_model;
+            auto MVP = projection * view * m_model;
 
             shader->setUniform("MVP",MVP);
-            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
+            shader->setUniform("Colour",std::move(colour_));
+        }
+
+        void drawLine(mc::Direction &&dir_)
+        {
+            Vertices vtxs = {{ mc::Direction::zero(), std::move(dir_) }};
+            m_vao->bind();
+            m_vao->setData(ngl::AbstractVAO::VertexData(vtxs.size()*sizeof(mc::Position),vtxs[0].m_x));
+            m_vao->setNumIndices(vtxs.size());
+            m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+            m_vao->draw();
+            m_vao->unbind();
         }
 
         void draw()
         {
-            m_model.translate(0.f,0.f,0.f);
-            loadLineColourShader();
-            m_vao->bind();
-            m_vao->draw();
-            m_vao->unbind();
-
+            glClear(GL_DEPTH_BUFFER_BIT);
 
             ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
-            m_model.translate(0.f,0.f,0.06f);
-            loadLineColourShader();
-            prim->draw("arrow_head");
+            m_model.identity();
+                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
+                drawLine(mc::Direction::right()*3.f);
+                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
+                drawLine(mc::Direction::up()*3.f);
+                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
+                drawLine(mc::Direction::in()*3.f);
+
+            m_model.identity();
+                m_model.translate(3.f,0.f,0.f);
+                m_model.rotateY(90.f);
+                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
+                prim->draw("arrow_head");
+
+            m_model.identity();
+                m_model.translate(0.f,3.f,0.f);
+                m_model.rotateX(-90.f);
+                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
+                prim->draw("arrow_head");
+
+            m_model.identity();
+                m_model.translate(0.f,0.f,3.f);
+                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
+                prim->draw("arrow_head");
+
+            m_model.identity();
+//                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+                loadLineColourShader(mc::Colour(1.f,1.f,0.f,1.f));
+                prim->draw("central");
+//                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         }
 
-        ~TransformHandle() noexcept = default;
+        ~Gizmo() noexcept = default;
 };
 
 

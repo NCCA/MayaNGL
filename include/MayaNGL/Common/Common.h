@@ -39,6 +39,8 @@
  *      argument. This is because the function getMatrix() returns a
  *      copy and not a const&, which means that the local object returned
  *      by getMatrix() gets deleted at the end of scope.
+ * (14) Bug with Mat4::rotateX(90.f) and then Mat4::rotateY(0.f). RotateY
+ *      seems to affect the transformation even when it's set to 0.
 */
 
 
@@ -59,6 +61,7 @@ namespace mc //maya common
 
     using Position = V3;
     using Direction = V3;
+    using Colour = V4;
     using Translation = M4;
     using Rotation = M4;
     using Model = M4;

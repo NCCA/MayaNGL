@@ -20,7 +20,7 @@ class MayaNGL
         Camera m_camera;
         Viewport m_viewport;
         Select<true> m_select;
-        TransformHandle m_handle;
+        Gizmo m_gizmo;
 
     public:
         explicit MayaNGL( mc::View &view_,
@@ -50,6 +50,7 @@ class MayaNGL
         void initialize();
         void resize(int w_, int h_);
         void draw();
+        void draw_gizmos();
 
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);
