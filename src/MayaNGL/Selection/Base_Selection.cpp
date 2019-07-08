@@ -24,22 +24,20 @@ void Base_Selection<false>::initialize()
 template<>
 void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 {
-    using namespace mc;
-
     // convert mouse position from Screen Space to Normalized Device Space.
     float normMouseX = (2.f*mouse_x)/m_screen_width - 1.f;
     float normMouseY = 1.f - (2.f*mouse_y)/m_screen_height;
 
     // create vector on Clip Space using -1 on the z-depth.
-    Generic<V4> clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
+    mc::V4 clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
 
     // convert the clip coordinates to Eye Space.
-    Generic<V4> eye_coordinates = clip_coordinates * const_cast<mc::Projection &>(projection).inverse();
+    mc::V4 eye_coordinates = clip_coordinates * const_cast<mc::Projection &>(projection).inverse();
     eye_coordinates.m_z = -1.f;
     eye_coordinates.m_w = 0.f;
 
     // convert the eye coordinates to World Space.
-    Generic<V4> world_coordinates = eye_coordinates * view;
+    mc::V4 world_coordinates = eye_coordinates * view;
     m_ray.position = cam_lookAt.eye;
     m_ray.direction = world_coordinates.toVec3();
     m_ray.direction.normalize();

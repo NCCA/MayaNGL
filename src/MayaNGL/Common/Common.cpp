@@ -5,27 +5,35 @@
 namespace mc
 {
 
-    Generic<V3> toDegs(const Generic<V3> &num_)
+    V3 toDegs(const V3 &num_)
     {
-        return Generic<V3>{toDegs(num_.m_x),toDegs(num_.m_y),toDegs(num_.m_z)};
+        return V3{toDegs(num_.m_x),toDegs(num_.m_y),toDegs(num_.m_z)};
     }
 
-    Generic<V3> toRads(const Generic<V3> &num_)
+    V3 toRads(const V3 &num_)
     {
-        return Generic<V3>{toRads(num_.m_x),toRads(num_.m_y),toRads(num_.m_z)};
+        return V3{toRads(num_.m_x),toRads(num_.m_y),toRads(num_.m_z)};
     }
 
-    Generic<V3> absl(const Generic<V3> &num_)
+    V3 absl(const V3 &num_)
     {
-        return Generic<V3>{fabs(num_.m_x),fabs(num_.m_y),fabs(num_.m_z)};
+        return V3{fabs(num_.m_x),fabs(num_.m_y),fabs(num_.m_z)};
     }
 
-    Generic<V3> round(const Generic<V3> &num_, unsigned precision_)
+    V3 round(const V3 &num_, unsigned precision_)
     {
-        return Generic<V3>{round(num_.m_x,precision_),round(num_.m_y,precision_),round(num_.m_z,precision_)};
+        return V3{round(num_.m_x,precision_),round(num_.m_y,precision_),round(num_.m_z,precision_)};
     }
 
-    Generic<M4> Y_Matrix(float angle_)
+    M4 X_Matrix(float angle_)
+    {
+        return glm::mat4{ 1.f, 0.f        , 0.f        , 0.f,
+                          0.f, cos(angle_),-sin(angle_), 0.f,
+                          0.f, sin(angle_), cos(angle_), 0.f,
+                          0.f, 0.f        , 0.f        , 1.f };
+    }
+
+    M4 Y_Matrix(float angle_)
     {
         return glm::mat4{ cosf(angle_), 0.f, sinf(angle_), 0.f,
                           0.f         , 1.f, 0.f         , 0.f,
@@ -33,7 +41,7 @@ namespace mc
                           0.f         , 0.f, 0.f         , 1.f };
     }
 
-    Generic<M4> Axis_Matrix(float angle_, const Direction &axis_)
+    M4 Axis_Matrix(float angle_, const Direction &axis_)
     {
         return glm::mat4{ cosf(angle_)+powf(axis_.m_x,2)*(1.f-cosf(angle_))                 , (axis_.m_x*axis_.m_y*(1.f-cosf(angle_)))-(axis_.m_z*sinf(angle_)) , (axis_.m_x*axis_.m_z*(1.f-cosf(angle_)))+(axis_.m_y*sinf(angle_)), 0.f,
                           (axis_.m_y*axis_.m_x*(1.f-cosf(angle_)))+(axis_.m_z*sinf(angle_)) , cosf(angle_)+powf(axis_.m_y,2)*(1.f - cosf(angle_))               , (axis_.m_y*axis_.m_z*(1.f-cosf(angle_)))-(axis_.m_x*sinf(angle_)), 0.f,

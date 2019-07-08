@@ -12,8 +12,8 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
                   m_select(view,projection,m_camera),
-                  m_gizmo(view,projection,m_camera.getInvDirection())
-{}
+                  m_gizmo(view,projection,m_camera)
+{;}
 
 void MayaNGL::initialize()
 {
@@ -117,15 +117,8 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
 
             case Qt::RightButton:
                 m_camera.dolly();
-//                if (m_camera.getCurrentView() != mc::CamView::PERSPECTIVE)
-//                { //--------------- this needs work ---------------
-//                    std::cout<< m_orthographic_zoom <<std::endl;
-//                    if ((m_orthographic_zoom < 0.1f) && (m_mouse.getDrag().m_x > 0.f))
-//                        std::cout<< "that's it!" <<std::endl;
-//                    else
-//                        m_orthographic_zoom -= m_mouse.getDrag().m_x * Mouse::slowdown;
-//                    goOrtho();
-//                } //-----------------------------------------------
+                if (m_camera.getCurrentView() != mc::CamView::PERSPECTIVE)
+                    m_viewport.orthoZoom(m_mouse.getDrag());
                 break;
 
             default:

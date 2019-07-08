@@ -72,10 +72,6 @@ namespace mc //maya common
     template<typename T = V3>
     using Size = T;
 
-    template<typename T>
-    using Generic = T;
-
-
 
     static const Position default_eye = {28.f,21.f,28.f};
     static const Position failed = {-ngl::EPSILON,-ngl::EPSILON,-ngl::EPSILON};
@@ -164,13 +160,14 @@ namespace mc //maya common
         return floor((num_ * pow(10.f,precision_)) + 0.5f) / pow(10.f,precision_);
     }
 
-    Generic<V3> toDegs(const Generic<V3> &num_);
-    Generic<V3> toRads(const Generic<V3> &num_);
-    Generic<V3> absl(const Generic<V3> &num_);
-    Generic<V3> round(const Generic<V3> &num_, unsigned precision_);
+    V3 toDegs(const V3 &num_);
+    V3 toRads(const V3 &num_);
+    V3 absl(const V3 &num_);
+    V3 round(const V3 &num_, unsigned precision_);
 
-    Generic<M4> Y_Matrix(float angle_);
-    Generic<M4> Axis_Matrix(float angle_, const Direction &axis_);
+    M4 X_Matrix(float angle_);
+    M4 Y_Matrix(float angle_);
+    M4 Axis_Matrix(float angle_, const Direction &axis_);
 
     template<bool infinite = true>
     Position intersect(const Ray &ray_, const Plane<infinite> &plane_);

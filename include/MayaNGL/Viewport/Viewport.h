@@ -37,6 +37,7 @@ class Viewport
         void initialize();
         void resize(int w_, int h_);
         void update_draw();
+        void orthoZoom(const mc::V2 &mouseDrag_);
 
         ~Viewport() noexcept = default;
 };

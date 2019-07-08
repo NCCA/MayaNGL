@@ -32,6 +32,7 @@ class Camera
         GET_MEMBER(m_lookAt,LookAt)
         GET_MEMBER(m_currentView,CurrentView)
         GET_MEMBER(m_inverse.current,InvDirection)
+        GET_MEMBER(m_inverse.shadow,InvShadow)
 
         template<typename SEL>
         void focus(const SEL &select_);

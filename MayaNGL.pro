@@ -26,7 +26,8 @@ HEADERS += $$PWD/include/*.h \
            $$PWD/include/MayaNGL/Viewport/Grid/*.h* \
            $$PWD/include/MayaNGL/Viewport/ProjectionText/*.h* \
            $$PWD/include/MayaNGL/Viewport/ViewAxis/*.h* \
-           $$PWD/include/MayaNGL/Selection/*.h*
+           $$PWD/include/MayaNGL/Selection/*.h* \
+           $$PWD/include/MayaNGL/Gizmo/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/*.cpp \

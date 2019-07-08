@@ -71,3 +71,14 @@ void Viewport::setView<mc::CamView::PERSPECTIVE>()
     m_initial_view = ngl::lookAt(camera.getEye(),camera.getTarget(),camera.getUp());
 }
 
+void Viewport::orthoZoom(const ngl::Vec2 &mouseDrag_)
+{
+    if (!((m_orthographic_zoom < 0.1f) && (mouseDrag_.m_x > 0.f)))
+        m_orthographic_zoom -= mouseDrag_.m_x * 0.05f;
+    goOrtho();
+}
+
+
+
+
+

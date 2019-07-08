@@ -3,6 +3,7 @@
 #include "Mouse/Mouse.h"
 #include "Viewport/Viewport_Def.hpp"
 #include "Selection/Select_Def.hpp"
+#include "Gizmo/Gizmo.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
