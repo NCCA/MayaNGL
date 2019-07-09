@@ -102,13 +102,13 @@ void NGLScene::paintGL()
 
     m_maya.draw();
 
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    m_model.identity();
-    {
-        loadDiffTexShader<false>(m_model);
-        prim->draw( "teapot" );
-        m_maya.make_selectable(1,"teapot",m_model);
-    }
+//    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+//    m_model.identity();
+//    {
+//        loadDiffTexShader<false>(m_model);
+//        prim->draw( "teapot" );
+//        m_maya.make_selectable(1,"teapot",m_model);
+//    }
 
 //    m_transform.reset();
 //    {
