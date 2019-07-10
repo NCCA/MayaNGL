@@ -41,6 +41,8 @@
  *      by getMatrix() gets deleted at the end of scope.
  * (14) Bug with Mat4::rotateX(90.f) and then Mat4::rotateY(0.f). RotateY
  *      seems to affect the transformation even when it's set to 0.
+ * (15) Issue when rotating the Triangle Plane about the Arbitrary Axis.
+ *      Seems like it's also rotating about the local Z-axis.
 */
 
 
