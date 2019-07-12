@@ -17,6 +17,7 @@ MayaNGL::MayaNGL( mc::View &view_,
 
 void MayaNGL::initialize()
 {
+    mc::initializeAdditionalShaders();
     m_viewport.initialize();
     m_select.initialize();
     m_viewport.setView<mc::CamView::PERSPECTIVE>();

@@ -17,7 +17,6 @@ struct Gizmo
     private:
         mc::Transform m_model;
         VAOPtr m_vao;
-        mc::View m_view;
 
     public:
         Gizmo( const mc::View &view_,
@@ -35,9 +34,9 @@ struct Gizmo
         {
             m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 
-            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-            prim->createCone("arrow_head",0.2f,0.7f,10,1);
-            prim->createDisk("central",0.5f,4);
+//            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+//            prim->createCone("arrow_head",0.2f,0.7f,10,1);
+//            prim->createDisk("central",0.5f,4);
         }
 
         void loadLineColourShader(mc::Colour &&colour_)
@@ -67,57 +66,61 @@ struct Gizmo
         {
             glClear(GL_DEPTH_BUFFER_BIT);
 
+            auto average_dist = ((view.m_30+view.m_31+view.m_32)/3)*(-0.25f);
+
+            m_model.identity();
+                m_model.scale(average_dist,average_dist,average_dist);
+                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
+                drawLine(mc::Direction::right());
+                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
+                drawLine(mc::Direction::up());
+                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
+                drawLine(mc::Direction::in());
+
             ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+//            m_model.identity();
+//                m_model.translate(3.f,0.f,0.f);
+//                m_model.rotateY(90.f);
+//                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
+//                prim->draw("arrow_head");
 
-            m_model.identity();
-                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
-                drawLine(mc::Direction::right()*3.f);
-                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
-                drawLine(mc::Direction::up()*3.f);
-                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
-                drawLine(mc::Direction::in()*3.f);
+//            m_model.identity();
+//                m_model.translate(0.f,3.f,0.f);
+//                m_model.rotateX(-90.f);
+//                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
+//                prim->draw("arrow_head");
 
-            m_model.identity();
-                m_model.translate(3.f,0.f,0.f);
-                m_model.rotateY(90.f);
-                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
-                prim->draw("arrow_head");
-
-            m_model.identity();
-                m_model.translate(0.f,3.f,0.f);
-                m_model.rotateX(-90.f);
-                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
-                prim->draw("arrow_head");
-
-            m_model.identity();
-                m_model.translate(0.f,0.f,3.f);
-                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
-                prim->draw("arrow_head");
+//            m_model.identity();
+//                m_model.translate(0.f,0.f,3.f);
+//                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
+//                prim->draw("arrow_head");
 
 
-            m_model.identity();
-                auto &&direction = camera.getInvDirection();
-                auto &&shadow = camera.getInvShadow();
+//            m_model.identity();
+//                auto &&direction = camera.getInvDirection();
+//                auto &&shadow = camera.getInvShadow();
 
-                mc::Rotation Rz;
-                Rz.rotateZ(45.f);
+//                mc::Rotation Rz;
+//                Rz.rotateZ(45.f);
 
-                auto theta = atan2(direction.m_x,direction.m_z);
-                mc::Rotation Ry = mc::Y_Matrix(-theta);
+//                auto theta = atan2(direction.m_x,direction.m_z);
+//                mc::Rotation Ry = mc::Y_Matrix(-theta);
 
-                auto rotationAxis = camera.getUp().cross(shadow);
-                rotationAxis.normalize();
-                auto phi = atan2(rotationAxis.dot(direction.cross(shadow)) , direction.dot(shadow));
-                mc::Rotation Rx = mc::Axis_Matrix(phi,rotationAxis);
+//                auto rotationAxis = camera.getUp().cross(shadow);
+//                rotationAxis.normalize();
+//                auto phi = atan2(rotationAxis.dot(direction.cross(shadow)) , direction.dot(shadow));
+//                mc::Rotation Rx = mc::Axis_Matrix(phi,rotationAxis);
 
-                m_model = Rx * Ry * Rz;
+//                mc::Rotation R = Rx * Ry * Rz;
+//                mc::Size<float> S = 1.f;
 
-                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-                loadLineColourShader(mc::Colour(1.f,1.f,0.f,1.f));
-                prim->draw("central");
-                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+//                m_model = S * R;
+//                m_model.translate(0.f,0.f,0.f);
 
-
+//                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+//                loadLineColourShader(mc::Colour(1.f,1.f,0.f,1.f));
+//                prim->draw("central");
+//                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         }
 
         ~Gizmo() noexcept = default;

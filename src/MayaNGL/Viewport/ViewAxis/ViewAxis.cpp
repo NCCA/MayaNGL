@@ -41,14 +41,16 @@ void ViewAxis::resize(float aspectRatio_)
 void ViewAxis::loadLineColourShader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use("LineColour");
+    shader->use(mc::AxisShader);
+//    shader->use(ngl::nglColourShader);
 
     auto rot = scene_view;
     rot.translate(0.f,0.f,0.f);
     auto MVP = m_projection * m_view * m_model * rot;
 
     shader->setUniform("MVP",MVP);
-    shader->setUniform("enableViewAxisColours",true);
+//    shader->setUniform("Colour",mc::Colour(1.f,1.f,1.f,1.f));
+//    shader->setUniform("enableViewAxisColours",true);
 }
 
 void ViewAxis::draw() const

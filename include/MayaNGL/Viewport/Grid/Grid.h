@@ -14,7 +14,7 @@ class Grid
         mc::Transform m_model;
 
     private:
-        void loadLineColourShader() const;
+        void loadShader() const;
 
     public:
         template<typename C>

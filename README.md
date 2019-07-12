@@ -42,4 +42,6 @@ This demo supports/displays the following:
 
 - Application: Create the demo as a gui to change mouse icon when <q,w,e,r> are pressed.
 
+- Multi Thread
+
 

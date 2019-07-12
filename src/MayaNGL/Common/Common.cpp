@@ -62,6 +62,41 @@ namespace mc
         return dir;
     }
 
+    void initializeAdditionalShaders()
+    {
+        ngl::ShaderLib *shader = ngl::ShaderLib::instance();
+
+        shader->createShaderProgram( LineShader );
+        shader->attachShader( "LineShader_Vertex", ngl::ShaderType::VERTEX );
+        shader->attachShader( "LineShader_Geometry", ngl::ShaderType::GEOMETRY );
+        shader->attachShader( "LineShader_Fragment", ngl::ShaderType::FRAGMENT );
+        shader->loadShaderSource( "LineShader_Vertex", "shaders/MayaNGL/LineShader_Vertex.glsl" );
+        shader->loadShaderSource( "LineShader_Geometry", "shaders/MayaNGL/LineShader_Geometry.glsl" );
+        shader->loadShaderSource( "LineShader_Fragment", "shaders/MayaNGL/LineShader_Fragment.glsl" );
+        shader->compileShader( "LineShader_Vertex" );
+        shader->compileShader( "LineShader_Geometry" );
+        shader->compileShader( "LineShader_Fragment" );
+        shader->attachShaderToProgram( LineShader, "LineShader_Vertex" );
+        shader->attachShaderToProgram( LineShader, "LineShader_Geometry" );
+        shader->attachShaderToProgram( LineShader, "LineShader_Fragment" );
+        shader->linkProgramObject( LineShader );
+
+        shader->createShaderProgram( AxisShader );
+        shader->attachShader( "AxisShader_Vertex", ngl::ShaderType::VERTEX );
+        shader->attachShader( "AxisShader_Geometry", ngl::ShaderType::GEOMETRY );
+        shader->attachShader( "AxisShader_Fragment", ngl::ShaderType::FRAGMENT );
+        shader->loadShaderSource( "AxisShader_Vertex", "shaders/MayaNGL/AxisShader_Vertex.glsl" );
+        shader->loadShaderSource( "AxisShader_Geometry", "shaders/MayaNGL/AxisShader_Geometry.glsl" );
+        shader->loadShaderSource( "AxisShader_Fragment", "shaders/MayaNGL/AxisShader_Fragment.glsl" );
+        shader->compileShader( "AxisShader_Vertex" );
+        shader->compileShader( "AxisShader_Geometry" );
+        shader->compileShader( "AxisShader_Fragment" );
+        shader->attachShaderToProgram( AxisShader, "AxisShader_Vertex" );
+        shader->attachShaderToProgram( AxisShader, "AxisShader_Geometry" );
+        shader->attachShaderToProgram( AxisShader, "AxisShader_Fragment" );
+        shader->linkProgramObject( AxisShader );
+    }
+
 
 
     template<>
