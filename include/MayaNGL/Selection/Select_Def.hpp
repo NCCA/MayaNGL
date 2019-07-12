@@ -9,7 +9,7 @@ Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
                                       const C &camera_ )
                                       :
-                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
+                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_),
                                       m_multi_selection(false)
 {;}
 
@@ -94,7 +94,7 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
     float shortest_distance = maxf;
     std::size_t selected_id = getSelectedId(shortest_distance);
 
-    if (!alreadySelected(selected_id) && (shortest_distance != maxf))
+    if (!alreadySelected(selected_id) && (shortest_distance < maxf))
         this->m_currently_selected.emplace_back(selected_id);
 
     m_multi_selection = false;

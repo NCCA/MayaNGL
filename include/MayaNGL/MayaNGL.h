@@ -3,7 +3,6 @@
 #include "Mouse/Mouse.h"
 #include "Viewport/Viewport_Def.hpp"
 #include "Selection/Select_Def.hpp"
-#include "Gizmo/Gizmo.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -21,7 +20,6 @@ class MayaNGL
         Camera m_camera;
         Viewport m_viewport;
         Select<true> m_select;
-        Gizmo m_gizmo;
 
     public:
         explicit MayaNGL( mc::View &view_,

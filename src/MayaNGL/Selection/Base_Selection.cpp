@@ -5,21 +5,24 @@
 template<>
 Base_Selection<false>::Base_Selection( const mc::View &view_,
                                        const mc::Projection &projection_,
-                                       const mc::LookAt &cam_lookAt_ )
+                                       const Camera &camera_  )
                                        :
                                        view(view_),
                                        projection(projection_),
-                                       cam_lookAt(cam_lookAt_),
+                                       cam_lookAt(camera_.getLookAt()),
                                        m_screen_width(0),
                                        m_screen_height(0),
                                        m_ray{cam_lookAt.eye,mc::Direction::zero()},
                                        m_selectables(),
-                                       m_currently_selected()
+                                       m_currently_selected(),
+                                       m_gizmo(view,projection,camera_)
 {;}
 
 template<>
 void Base_Selection<false>::initialize()
-{;}
+{
+    m_gizmo.initialize();
+}
 
 template<>
 void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
@@ -54,6 +57,8 @@ void Base_Selection<false>::draw() const
         auto &&vprim = m_selectables.at(i);
         vprim.draw(view,projection);
     }
+
+    m_gizmo.draw();
 }
 
 
@@ -62,9 +67,9 @@ void Base_Selection<false>::draw() const
 
 Base_Selection<true>::Base_Selection( const mc::View &view_,
                                       const mc::Projection &projection_,
-                                      const mc::LookAt &cam_lookAt_ )
+                                      const Camera &camera_ )
                                       :
-                                      Base_Selection<false>(view_,projection_,cam_lookAt_),
+                                      Base_Selection<false>(view_,projection_,camera_),
                                       m_ray_end(Base_Selection<false>::cam_lookAt.eye),
                                       m_vtxs{{Base_Selection<false>::m_ray.position,m_ray_end}}
 {;}
