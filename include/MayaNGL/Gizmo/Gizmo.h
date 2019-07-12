@@ -6,7 +6,7 @@
 struct Gizmo
 {
     private:
-        typedef std::array<mc::Position,2> Vertices;
+        typedef std::array<mc::Position,6> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
 
     private:
@@ -16,6 +16,7 @@ struct Gizmo
 
     private:
         mc::Transform m_model;
+        Vertices m_coordinates;
         VAOPtr m_vao;
 
     public:
@@ -27,40 +28,40 @@ struct Gizmo
                projection(projection_),
                camera(camera_),
                m_model(),
+               m_coordinates{{
+                                 mc::Direction::zero(),
+                                 mc::Direction::right(),
+                                 mc::Direction::zero(),
+                                 mc::Direction::up(),
+                                 mc::Direction::zero(),
+                                 mc::Direction::in()
+                            }},
                m_vao()
         {;}
 
         void initialize()
         {
             m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
+            m_vao->bind();
+            m_vao->setData(ngl::AbstractVAO::VertexData(m_coordinates.size()*sizeof(mc::Position),m_coordinates[0].m_x));
+            m_vao->setNumIndices(m_coordinates.size());
+            m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+            m_vao->unbind();
 
 //            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 //            prim->createCone("arrow_head",0.2f,0.7f,10,1);
 //            prim->createDisk("central",0.5f,4);
         }
 
-        void loadLineColourShader(mc::Colour &&colour_)
+        void loadShader()
         {
             ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-            shader->use(ngl::nglColourShader);
+            shader->use(mc::AxisShader);
 
             auto MVP = projection * view * m_model;
 
             shader->setUniform("MVP",MVP);
-            shader->setUniform("Colour",std::move(colour_));
         }
-
-        void drawLine(mc::Direction &&dir_)
-        {
-            Vertices vtxs = {{ mc::Direction::zero(), std::move(dir_) }};
-            m_vao->bind();
-            m_vao->setData(ngl::AbstractVAO::VertexData(vtxs.size()*sizeof(mc::Position),vtxs[0].m_x));
-            m_vao->setNumIndices(vtxs.size());
-            m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-            m_vao->draw();
-            m_vao->unbind();
-        }
-
 
         void draw()
         {
@@ -70,14 +71,12 @@ struct Gizmo
 
             m_model.identity();
                 m_model.scale(average_dist,average_dist,average_dist);
-                loadLineColourShader(mc::Colour(1.f,0.f,0.f,1.f));
-                drawLine(mc::Direction::right());
-                loadLineColourShader(mc::Colour(0.f,1.f,0.f,1.f));
-                drawLine(mc::Direction::up());
-                loadLineColourShader(mc::Colour(0.f,0.f,1.f,1.f));
-                drawLine(mc::Direction::in());
+                loadShader();
+                m_vao->bind();
+                m_vao->draw();
+                m_vao->unbind();
 
-            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
+//            ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 //            m_model.identity();
 //                m_model.translate(3.f,0.f,0.f);
 //                m_model.rotateY(90.f);

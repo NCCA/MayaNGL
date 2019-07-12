@@ -80,9 +80,9 @@ namespace mc //maya common
     static const Position failed = {-ngl::EPSILON,-ngl::EPSILON,-ngl::EPSILON};
     static constexpr float fov = 35.f;
     static constexpr float near_clip = 0.1f;
-    static constexpr float far_clip = 200.f;
+    static constexpr float far_clip = 1000.f;
     enum class CamView {PERSPECTIVE,FRONT,SIDE,TOP};
-    constexpr auto LineShader = "LineShader";
+    constexpr auto GridShader = "GridShader";
     constexpr auto AxisShader = "AxisShader";
 
 

@@ -5,13 +5,12 @@
 void Grid::loadShader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use(mc::LineShader);
+    shader->use(mc::GridShader);
 
     auto MVP = projection * view * m_model;
 
     shader->setUniform("MVP",MVP);
     shader->setUniform("cam_eye",lookAt.eye);
-    shader->setUniform("enableViewAxisColours",false);
 }
 
 template<>

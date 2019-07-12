@@ -66,20 +66,20 @@ namespace mc
     {
         ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
-        shader->createShaderProgram( LineShader );
-        shader->attachShader( "LineShader_Vertex", ngl::ShaderType::VERTEX );
-        shader->attachShader( "LineShader_Geometry", ngl::ShaderType::GEOMETRY );
-        shader->attachShader( "LineShader_Fragment", ngl::ShaderType::FRAGMENT );
-        shader->loadShaderSource( "LineShader_Vertex", "shaders/MayaNGL/LineShader_Vertex.glsl" );
-        shader->loadShaderSource( "LineShader_Geometry", "shaders/MayaNGL/LineShader_Geometry.glsl" );
-        shader->loadShaderSource( "LineShader_Fragment", "shaders/MayaNGL/LineShader_Fragment.glsl" );
-        shader->compileShader( "LineShader_Vertex" );
-        shader->compileShader( "LineShader_Geometry" );
-        shader->compileShader( "LineShader_Fragment" );
-        shader->attachShaderToProgram( LineShader, "LineShader_Vertex" );
-        shader->attachShaderToProgram( LineShader, "LineShader_Geometry" );
-        shader->attachShaderToProgram( LineShader, "LineShader_Fragment" );
-        shader->linkProgramObject( LineShader );
+        shader->createShaderProgram( GridShader );
+        shader->attachShader( "GridShader_Vertex", ngl::ShaderType::VERTEX );
+        shader->attachShader( "GridShader_Geometry", ngl::ShaderType::GEOMETRY );
+        shader->attachShader( "GridShader_Fragment", ngl::ShaderType::FRAGMENT );
+        shader->loadShaderSource( "GridShader_Vertex", "shaders/MayaNGL/GridShader_Vertex.glsl" );
+        shader->loadShaderSource( "GridShader_Geometry", "shaders/MayaNGL/GridShader_Geometry.glsl" );
+        shader->loadShaderSource( "GridShader_Fragment", "shaders/MayaNGL/GridShader_Fragment.glsl" );
+        shader->compileShader( "GridShader_Vertex" );
+        shader->compileShader( "GridShader_Geometry" );
+        shader->compileShader( "GridShader_Fragment" );
+        shader->attachShaderToProgram( GridShader, "GridShader_Vertex" );
+        shader->attachShaderToProgram( GridShader, "GridShader_Geometry" );
+        shader->attachShaderToProgram( GridShader, "GridShader_Fragment" );
+        shader->linkProgramObject( GridShader );
 
         shader->createShaderProgram( AxisShader );
         shader->attachShader( "AxisShader_Vertex", ngl::ShaderType::VERTEX );

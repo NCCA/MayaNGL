@@ -24,7 +24,7 @@ class ViewAxis
 
         void initialize();
         void resize(float aspectRatio_);
-        void loadLineColourShader() const;
+        void loadShader() const;
         void draw() const;
 
         ~ViewAxis() noexcept = default;

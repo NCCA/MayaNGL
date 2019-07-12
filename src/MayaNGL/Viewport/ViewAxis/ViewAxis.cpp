@@ -34,28 +34,25 @@ void ViewAxis::resize(float aspectRatio_)
     float zoom = 20.f;
     m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,mc::near_clip,mc::far_clip);
 
-    auto bl = mc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
-    m_model.translate(bl.m_x,bl.m_y,bl.m_z);
+    auto pos = mc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
+    m_model.translate(pos.m_x,pos.m_y,pos.m_z);
 }
 
-void ViewAxis::loadLineColourShader() const
+void ViewAxis::loadShader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(mc::AxisShader);
-//    shader->use(ngl::nglColourShader);
 
     auto rot = scene_view;
     rot.translate(0.f,0.f,0.f);
     auto MVP = m_projection * m_view * m_model * rot;
 
     shader->setUniform("MVP",MVP);
-//    shader->setUniform("Colour",mc::Colour(1.f,1.f,1.f,1.f));
-//    shader->setUniform("enableViewAxisColours",true);
 }
 
 void ViewAxis::draw() const
 {
-    loadLineColourShader();
+    loadShader();
     m_vao->bind();
     m_vao->draw();
     m_vao->unbind();
