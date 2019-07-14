@@ -11,6 +11,7 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_mouse(),
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
+                  m_gizmo(view,projection,m_camera),
                   m_select(view,projection,m_camera)
 {;}
 
@@ -18,6 +19,7 @@ void MayaNGL::initialize()
 {
     mc::initializeAdditionalShaders();
     m_viewport.initialize();
+    m_gizmo.initialize();
     m_select.initialize();
     m_viewport.setView<mc::CamView::PERSPECTIVE>();
 }

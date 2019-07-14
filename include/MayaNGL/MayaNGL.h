@@ -2,6 +2,7 @@
 
 #include "Mouse/Mouse.h"
 #include "Viewport/Viewport_Def.hpp"
+#include "MayaNGL/Gizmo/Gizmo.h"
 #include "Selection/Select_Def.hpp"
 
 #include <QKeyEvent>
@@ -19,6 +20,7 @@ class MayaNGL
         Mouse m_mouse;
         Camera m_camera;
         Viewport m_viewport;
+        Gizmo m_gizmo;
         Select<true> m_select;
 
     public:
@@ -49,7 +51,10 @@ class MayaNGL
         void initialize();
         void resize(int w_, int h_);
         void draw();
-        void draw_gizmos();
+        void draw_gizmos()
+        {
+            m_gizmo.draw();
+        }
 
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);

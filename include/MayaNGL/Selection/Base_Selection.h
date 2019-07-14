@@ -1,7 +1,6 @@
 #pragma once
 
 #include "VariantPrim_Def.hpp"
-#include "MayaNGL/Gizmo/Gizmo.h"
 
 
 template<bool visualize_bv_and_ray>
@@ -22,12 +21,11 @@ class Base_Selection
         mc::Ray m_ray;
         Selectables m_selectables;
         Selections m_currently_selected;
-        Gizmo m_gizmo;
 
     public:
         explicit Base_Selection( const mc::View &view_,
                                  const mc::Projection &projection_,
-                                 const Camera &camera_  );
+                                 const mc::LookAt &cam_lookAt_ );
 
         GET_MEMBER(m_selectables,AllSelectables)
         GET_MEMBER(m_currently_selected,CurrentlySelected)
@@ -58,7 +56,7 @@ class Base_Selection<true> : public Base_Selection<false>
     public:
         explicit Base_Selection( const mc::View &view_,
                                  const mc::Projection &projection_,
-                                 const Camera &camera_ );
+                                 const mc::LookAt &cam_lookAt_ );
 
         void initialize();
         void emitRay(int mouse_x, int mouse_y);

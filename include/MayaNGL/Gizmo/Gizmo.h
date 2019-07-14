@@ -3,7 +3,7 @@
 #include "MayaNGL/Camera/Camera_Def.hpp"
 
 
-struct Gizmo
+class Gizmo
 {
     private:
         typedef std::array<mc::Position,6> Vertices;
@@ -76,7 +76,7 @@ struct Gizmo
             shader->setUniform("Colour",std::move(colour_));
         }
 
-        void draw() const // make this draw on top of everything!
+        void draw() const
         {
             glClear(GL_DEPTH_BUFFER_BIT);
 

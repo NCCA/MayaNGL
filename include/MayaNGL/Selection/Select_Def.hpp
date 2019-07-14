@@ -9,7 +9,7 @@ Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
                                       const C &camera_ )
                                       :
-                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_),
+                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
                                       m_multi_selection(false)
 {;}
 
