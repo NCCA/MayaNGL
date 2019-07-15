@@ -12,7 +12,7 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
                   m_gizmo(view,projection,m_camera),
-                  m_select(view,projection,m_camera)
+                  m_select(view,projection,m_camera,m_gizmo)
 {;}
 
 void MayaNGL::initialize()
@@ -34,6 +34,12 @@ void MayaNGL::draw()
 {
     m_viewport.update_draw();
     m_select.draw();
+}
+
+void MayaNGL::draw_gizmo()
+{
+    if (m_gizmo.display)
+        m_gizmo.draw();
 }
 
 void MayaNGL::keyPress(QKeyEvent *event_)

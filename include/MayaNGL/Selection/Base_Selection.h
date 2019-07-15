@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include "VariantPrim_Def.hpp"
 

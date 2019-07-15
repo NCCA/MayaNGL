@@ -23,6 +23,8 @@ class VariantPrim
         using sfinae_type = std::enable_if_t<!std::is_trivially_constructible<T>::value>;
 
     public:
+        VariantPrim() = default;
+
         template<typename T, typename = sfinae_type<T>>
         VariantPrim( T *primitive_,
                      const mc::Transform &transform_ );

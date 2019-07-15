@@ -51,10 +51,7 @@ class MayaNGL
         void initialize();
         void resize(int w_, int h_);
         void draw();
-        void draw_gizmos()
-        {
-            m_gizmo.draw();
-        }
+        void draw_gizmo();
 
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);

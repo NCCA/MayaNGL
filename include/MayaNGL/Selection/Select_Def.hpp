@@ -4,12 +4,13 @@
 
 
 template<bool visualize_bv_and_ray>
-    template<typename C>
 Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
-                                      const C &camera_ )
+                                      const Camera &camera_,
+                                      Gizmo &gizmo_ )
                                       :
                                       Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
+                                      m_gizmo(gizmo_),
                                       m_multi_selection(false)
 {;}
 
@@ -90,12 +91,19 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
 
     this->emitRay(mouse_x,mouse_y);
 
-    auto &&maxf = std::numeric_limits<float>::max();
+    auto maxf = std::numeric_limits<float>::max();
     float shortest_distance = maxf;
     std::size_t selected_id = getSelectedId(shortest_distance);
 
     if (!alreadySelected(selected_id) && (shortest_distance < maxf))
         this->m_currently_selected.emplace_back(selected_id);
+
+    m_gizmo.display = false;
+    if (!this->m_currently_selected.empty())
+    {
+        m_gizmo.display = true;
+        m_gizmo.position = mc::Position::up();
+    }
 
     m_multi_selection = false;
 }

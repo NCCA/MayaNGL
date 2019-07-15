@@ -38,7 +38,8 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/Viewport/Grid/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ProjectionText/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
-           $$PWD/src/MayaNGL/Selection/*.cpp
+           $$PWD/src/MayaNGL/Selection/*.cpp \
+           $$PWD/src/MayaNGL/Gizmo/*.cpp
 
 OTHER_FILES += $$PWD/shaders/*.glsl \
                $$PWD/shaders/MayaNGL/*.glsl \

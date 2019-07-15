@@ -150,7 +150,7 @@ void NGLScene::paintGL()
 //        m_maya.make_selectable(5,m_fish_mesh,m_transform);
 //    }
 
-    m_maya.draw_gizmos();
+    m_maya.draw_gizmo();
 }
 
 void NGLScene::keyPressEvent(QKeyEvent *event_)
