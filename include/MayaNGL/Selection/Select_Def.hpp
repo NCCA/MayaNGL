@@ -91,18 +91,29 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
 
     this->emitRay(mouse_x,mouse_y);
 
-    auto maxf = std::numeric_limits<float>::max();
+    auto &&maxf = std::numeric_limits<float>::max();
     float shortest_distance = maxf;
     std::size_t selected_id = getSelectedId(shortest_distance);
+    bool something_selected = (shortest_distance < maxf);
 
-    if (!alreadySelected(selected_id) && (shortest_distance < maxf))
+    // I need to work out how to select the gizmo controller
+    // and move the selected object.
+
+    if (!alreadySelected(selected_id) && something_selected)
         this->m_currently_selected.emplace_back(selected_id);
 
-    m_gizmo.display = false;
-    if (!this->m_currently_selected.empty())
+    if (this->m_currently_selected.empty())
+        m_gizmo.display = false;
+    else
     {
+        if (something_selected)
+        {
+            auto objpos = this->m_selectables.at(selected_id).getTransform();
+            m_gizmo.position.m_x = objpos.m_30;
+            m_gizmo.position.m_y = objpos.m_31;
+            m_gizmo.position.m_z = objpos.m_32;
+        }
         m_gizmo.display = true;
-        m_gizmo.position = mc::Position::up();
     }
 
     m_multi_selection = false;

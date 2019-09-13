@@ -51,8 +51,8 @@ void Base_Selection<false>::draw() const
 
     for (const auto &i : m_currently_selected)
     {
-        auto &&vprim = m_selectables.at(i);
-        vprim.draw(view,projection);
+        auto &&prim = m_selectables.at(i);
+        prim.draw(view,projection);
     }
 }
 
@@ -112,10 +112,10 @@ void Base_Selection<true>::draw() const
 
     for (const auto &i : m_currently_selected)
     {
-        auto &&vprim_transform = m_selectables.at(i).getTransform();
+        auto &&prim_transform = m_selectables.at(i).getTransform();
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-        auto MVP = projection * view * vprim_transform;
+        auto MVP = projection * view * prim_transform;
         shader->setUniform("MVP",MVP);
         shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
         prim->draw("BV");

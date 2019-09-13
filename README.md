@@ -32,7 +32,7 @@ This demo supports/displays the following:
 - Handles: Create new transformation handles for moving selected objects.
 
 
-## Improvements:
+## Future Work:
 
 - Select: Create more Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add them as a template arg to the make_selectable() function.
 
@@ -41,7 +41,3 @@ This demo supports/displays the following:
 - Handles: Create transformation handles for rotatiting and scaling selected objects.
 
 - Application: Create the demo as a gui to change mouse icon when <q,w,e,r> are pressed.
-
-- Multi Thread
-
-

@@ -110,15 +110,15 @@ void NGLScene::paintGL()
         m_maya.make_selectable(1,"teapot",m_model);
     }
 
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(8.f,0.f,0.f);
-//        m_transform.setRotation(0.f,45.f,0.f);
-//        m_transform.setScale(2.f,2.f,2.f);
-//        loadDiffTexShader<false>(m_transform.getMatrix());
-//        prim->draw( "football" );
-//        m_maya.make_selectable(2,"football",m_transform);
-//    }
+    m_transform.reset();
+    {
+        m_transform.setPosition(8.f,0.f,0.f);
+        m_transform.setRotation(0.f,45.f,0.f);
+        m_transform.setScale(1.5f,1.5f,1.5f);
+        loadDiffTexShader<false>(m_transform.getMatrix());
+        prim->draw( "football" );
+        m_maya.make_selectable(2,"football",m_transform);
+    }
 
 //    m_model.identity();
 //    {
