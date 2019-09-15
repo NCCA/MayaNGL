@@ -22,7 +22,7 @@ bool Select<visualize_bv_and_ray>::alreadySelected(std::size_t id_) const
 }
 
 template<bool visualize_bv_and_ray>
-std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance_) const
+std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance_)
 {
     std::size_t selected_id = 0;
 
@@ -68,7 +68,7 @@ void Select<visualize_bv_and_ray>::enableMultiSelection()
 }
 
 template<bool visualize_bv_and_ray>
-mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const VariantPrim &selectable_) const
+mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const VariantPrim &selectable_)
 {
     auto &&transform = selectable_.getTransform();
 
@@ -86,20 +86,27 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
     if (this->m_selectables.empty())
         return;
 
-    if (!m_multi_selection)
-        this->m_currently_selected.clear();
-
     this->emitRay(mouse_x,mouse_y);
 
     auto &&maxf = std::numeric_limits<float>::max();
     float shortest_distance = maxf;
+
+
+    if (m_gizmo.display)
+    {
+        static int i=0;
+        std::cout<< "check handle first: "<<i++ <<std::endl;
+    }
+
+
+
+    if (!m_multi_selection)
+        this->m_currently_selected.clear();
+
     std::size_t selected_id = getSelectedId(shortest_distance);
     bool something_selected = (shortest_distance < maxf);
 
-    // I need to work out how to select the gizmo controller
-    // and move the selected object.
-
-    if (!alreadySelected(selected_id) && something_selected)
+    if (something_selected)
         this->m_currently_selected.emplace_back(selected_id);
 
     if (this->m_currently_selected.empty())
@@ -109,9 +116,7 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
         if (something_selected)
         {
             auto objpos = this->m_selectables.at(selected_id).getTransform();
-            m_gizmo.position.m_x = objpos.m_30;
-            m_gizmo.position.m_y = objpos.m_31;
-            m_gizmo.position.m_z = objpos.m_32;
+            m_gizmo.setPosition(objpos .m_30,objpos.m_31,objpos.m_32);
         }
         m_gizmo.display = true;
     }

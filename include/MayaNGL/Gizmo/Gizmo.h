@@ -15,6 +15,7 @@ class Gizmo
         const Camera &camera;
 
     private:
+        mc::Position position;
         mutable mc::Transform m_model;
         Vertices m_coordinates;
         VAOPtr m_vao;
@@ -25,7 +26,6 @@ class Gizmo
 
     public:
         bool display;
-        mc::Position position;
 
     public:
         Gizmo( const mc::View &view_,
@@ -33,7 +33,21 @@ class Gizmo
                const Camera &camera_ );
 
         void initialize();
+        void setPosition(float x_, float y_, float z_);
         void draw() const;
+
+        mc::Position clickedOnHandle(const mc::Ray &mouse_)
+        {
+//            auto &&transform = selectable_.getTransform();
+
+//            auto pos = mc::Position{transform.m_30,transform.m_31,transform.m_32};
+//            float rad = std::max({transform.m_00,transform.m_11,transform.m_22});
+//            mc::Sphere bv {pos,rad};
+
+//            auto poi = mc::intersect(this->m_ray,bv);
+//            return poi;
+            return mc::Position::zero();
+        }
 
         ~Gizmo() noexcept = default;
 };

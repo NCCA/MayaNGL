@@ -13,7 +13,7 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
 
     private:
         bool alreadySelected(std::size_t id_) const;
-        std::size_t getSelectedId(float &shortest_distance_) const;
+        std::size_t getSelectedId(float &shortest_distance_);
 
     public:
         explicit Select( const mc::View &view_,
@@ -26,7 +26,7 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
 
         void resize(int w_, int h_);
         void enableMultiSelection();
-        mc::Position clickedOnObject(const VariantPrim &selectable_) const;
+        mc::Position clickedOnObject(const VariantPrim &selectable_);
         void pick(int mouse_x, int mouse_y);
 
         ~Select() noexcept = default;

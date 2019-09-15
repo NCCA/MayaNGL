@@ -9,6 +9,7 @@ Gizmo::Gizmo( const mc::View &view_,
               view(view_),
               projection(projection_),
               camera(camera_),
+              position(mc::Position::zero()),
               m_model(),
               m_coordinates{{
                                 mc::Direction(0.2f,0.f,0.f),
@@ -19,8 +20,7 @@ Gizmo::Gizmo( const mc::View &view_,
                                 mc::Direction::in()
                            }},
               m_vao(),
-              display(false),
-              position(mc::Position::zero())
+              display(false)
 {;}
 
 void Gizmo::initialize()
@@ -35,6 +35,13 @@ void Gizmo::initialize()
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     prim->createCone("arrow_head",0.2f,0.7f,10,1);
     prim->createDisk("central",0.5f,4);
+}
+
+void Gizmo::setPosition(float x_, float y_, float z_)
+{
+    position.m_x = x_;
+    position.m_y = y_;
+    position.m_z = z_;
 }
 
 void Gizmo::loadShader() const
