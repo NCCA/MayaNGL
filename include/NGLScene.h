@@ -34,6 +34,7 @@ class NGLScene : public QOpenGLWindow
         void keyPressEvent(QKeyEvent *event_ = nullptr) override;
         void mousePressEvent(QMouseEvent *event_ = nullptr) override;
         void mouseMoveEvent(QMouseEvent *event_ = nullptr) override;
+        void mouseReleaseEvent(QMouseEvent *event_ = nullptr) override;
 
     public:
         NGLScene();

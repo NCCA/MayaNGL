@@ -38,12 +38,13 @@ class Gizmo
         void setPosition(float x_, float y_, float z_);
         void draw();
 
-        mc::Position clickedOnHandle(const mc::Ray &mouse_)
+        bool clickedOnHandle(const mc::Ray &mouse_)
         {
             mc::Ray up_handle{position,ngl::Vec3::up(),average_dist+(uniform_scale*0.7f)};
-
             auto poi = mc::intersect(mouse_,up_handle);
-            return poi;
+            if (poi != mc::failed)
+                return true;
+            return false;
         }
 
         ~Gizmo() noexcept = default;

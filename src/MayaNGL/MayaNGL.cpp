@@ -82,21 +82,17 @@ void MayaNGL::keyPress(QKeyEvent *event_)
 
 void MayaNGL::mousePress(QMouseEvent *event_)
 {
-    switch(event_->buttons())
+    if(event_->modifiers() & Qt::AltModifier)
     {
-        case Qt::LeftButton:
-            if(event_->modifiers() & Qt::AltModifier)
-            {
+        switch(event_->button())
+        {
+            case Qt::LeftButton:
                 m_mouse.setAnchor(event_->x(),event_->y());
                 break;
-            }
-            if(event_->modifiers() & Qt::ShiftModifier)
-                m_select.enableMultiSelection();
-            m_select.pick(event_->x(),event_->y());
-            break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 }
 
@@ -127,7 +123,24 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
                 break;
         }
     }
+
 }
 
+void MayaNGL::mouseRelease(QMouseEvent *event_)
+{
+    switch(event_->button())
+    {
+        case Qt::LeftButton:
+            if(event_->modifiers() & Qt::AltModifier)
+                break;
+            if(event_->modifiers() & Qt::ShiftModifier)
+                m_select.enableMultiSelection();
+            m_select.pick(event_->x(),event_->y());
+            break;
+
+        default:
+            break;
+    }
+}
 
 

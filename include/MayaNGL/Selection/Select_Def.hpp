@@ -88,20 +88,11 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
 
     this->emitRay(mouse_x,mouse_y);
 
-    auto &&maxf = std::numeric_limits<float>::max();
-    float shortest_distance = maxf;
-
-
-    if (m_gizmo.display)
-    {
-        std::cout<< "check handle first" <<std::endl;
-
-        m_gizmo.clickedOnHandle(this->m_ray);
-    }
-
     if (!m_multi_selection)
         this->m_currently_selected.clear();
 
+    auto &&maxf = std::numeric_limits<float>::max();
+    float shortest_distance = maxf;
     std::size_t selected_id = getSelectedId(shortest_distance);
     bool something_selected = (shortest_distance < maxf);
 

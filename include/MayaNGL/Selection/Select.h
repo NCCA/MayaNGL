@@ -29,5 +29,15 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
         mc::Position clickedOnObject(const VariantPrim &selectable_);
         void pick(int mouse_x, int mouse_y);
 
+        void pick2()
+        {
+            if (m_gizmo.display)
+            {
+                if (m_gizmo.clickedOnHandle(this->m_ray))
+                    std::cout<< "clicked on handle" <<std::endl;
+            }
+
+        }
+
         ~Select() noexcept = default;
 };

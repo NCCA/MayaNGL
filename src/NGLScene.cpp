@@ -181,6 +181,13 @@ void NGLScene::mouseMoveEvent(QMouseEvent *event_)
     update();
 }
 
+void NGLScene::mouseReleaseEvent(QMouseEvent *event_)
+{
+    m_maya.mouseRelease(event_);
+    update();
+}
+
+
 
 
 

@@ -56,6 +56,7 @@ class MayaNGL
         void keyPress(QKeyEvent *event_);
         void mousePress(QMouseEvent *event_);
         void mouseMove(QMouseEvent *event_);
+        void mouseRelease(QMouseEvent *event_);
 
         ~MayaNGL() noexcept = default;
 };
