@@ -10,6 +10,8 @@ Gizmo::Gizmo( const mc::View &view_,
               projection(projection_),
               camera(camera_),
               position(mc::Position::zero()),
+              average_dist(0.f),
+              uniform_scale(1.f),
               m_model(),
               m_coordinates{{
                                 mc::Direction(0.2f,0.f,0.f),
@@ -65,12 +67,12 @@ void Gizmo::loadShader(mc::Colour &&colour_) const
     shader->setUniform("Colour",std::move(colour_));
 }
 
-void Gizmo::draw() const
+void Gizmo::draw()
 {
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    auto average_dist = ((view.m_30+view.m_31+view.m_32)/3)*(-0.25f);
-    mc::Size<float> uniform_scale = average_dist*0.25f;
+    average_dist = ((view.m_30+view.m_31+view.m_32)/3)*(-0.25f);
+    uniform_scale = average_dist*0.25f;
 
     m_model.identity();
     {

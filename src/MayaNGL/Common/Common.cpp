@@ -162,6 +162,29 @@ namespace mc
         return failed;
     }
 
+    Position intersect(const Ray &ray_, const Ray &ray2_)
+    {
+        auto &&r1_pos = ray_.position;
+        auto &&r1_dir = ray_.direction;
+        auto &&r2_pos = ray2_.position;
+        auto &&r2_dir = ray2_.direction;
+        auto &&r2_len = ray2_.length;
+
+        auto t = ((r1_pos-r2_pos).cross(r1_dir)).length() / (r2_dir.cross(r1_dir)).length();
+        auto s = ((r2_pos-r1_pos).cross(r2_dir)).length() / (r1_dir.cross(r2_dir)).length();
+
+        if (t < far_clip && s < far_clip)
+        {
+            Position reql = r2_pos+(t*r2_dir);
+            Position leql = r1_pos+(s*r1_dir);
+            float dist = (reql-leql).length();
+
+            if ((dist<=0.25f) && (reql.length()<r2_len))
+                return reql;
+        }
+        return failed;
+    }
+
 }
 
 

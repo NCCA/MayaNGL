@@ -91,6 +91,7 @@ namespace mc //maya common
     {
         Position position;
         Direction direction;
+        float length=0.f;
     };
 
     template<bool infinite = true>
@@ -179,6 +180,7 @@ namespace mc //maya common
     template<bool infinite = true>
     Position intersect(const Ray &ray_, const Plane<infinite> &plane_);
     Position intersect(const Ray &ray_, const Sphere &sphere_);
+    Position intersect(const Ray &ray_, const Ray &ray2_);
 
     template<typename T>
     static std::string demangle_typename()

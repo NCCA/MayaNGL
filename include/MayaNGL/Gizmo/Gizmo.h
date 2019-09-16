@@ -16,7 +16,9 @@ class Gizmo
 
     private:
         mc::Position position;
-        mutable mc::Transform m_model;
+        mc::Size<float> average_dist;
+        mc::Size<float> uniform_scale;
+        mc::Transform m_model;
         Vertices m_coordinates;
         VAOPtr m_vao;
 
@@ -34,19 +36,14 @@ class Gizmo
 
         void initialize();
         void setPosition(float x_, float y_, float z_);
-        void draw() const;
+        void draw();
 
         mc::Position clickedOnHandle(const mc::Ray &mouse_)
         {
-//            auto &&transform = selectable_.getTransform();
+            mc::Ray up_handle{position,ngl::Vec3::up(),average_dist+(uniform_scale*0.7f)};
 
-//            auto pos = mc::Position{transform.m_30,transform.m_31,transform.m_32};
-//            float rad = std::max({transform.m_00,transform.m_11,transform.m_22});
-//            mc::Sphere bv {pos,rad};
-
-//            auto poi = mc::intersect(this->m_ray,bv);
-//            return poi;
-            return mc::Position::zero();
+            auto poi = mc::intersect(mouse_,up_handle);
+            return poi;
         }
 
         ~Gizmo() noexcept = default;

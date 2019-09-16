@@ -94,11 +94,10 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
 
     if (m_gizmo.display)
     {
-        static int i=0;
-        std::cout<< "check handle first: "<<i++ <<std::endl;
+        std::cout<< "check handle first" <<std::endl;
+
+        m_gizmo.clickedOnHandle(this->m_ray);
     }
-
-
 
     if (!m_multi_selection)
         this->m_currently_selected.clear();
