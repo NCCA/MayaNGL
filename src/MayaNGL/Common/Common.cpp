@@ -168,7 +168,6 @@ namespace mc
         auto &&r1_dir = ray_.direction;
         auto &&r2_pos = ray2_.position;
         auto &&r2_dir = ray2_.direction;
-        auto &&r2_len = ray2_.length;
 
         auto t = ((r1_pos-r2_pos).cross(r1_dir)).length() / (r2_dir.cross(r1_dir)).length();
         auto s = ((r2_pos-r1_pos).cross(r2_dir)).length() / (r1_dir.cross(r2_dir)).length();
@@ -179,7 +178,7 @@ namespace mc
             Position leql = r1_pos+(s*r1_dir);
             float dist = (reql-leql).length();
 
-            if ((dist<=0.25f) && (reql.length()<r2_len))
+            if (dist<=0.25f)
                 return reql;
         }
         return failed;

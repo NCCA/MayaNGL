@@ -42,6 +42,10 @@ class VariantPrim
 
         GET_MEMBER(m_transform,Transform)
 
+        void setTransform(const mc::Transform &transform_)
+        {
+            m_transform = transform_;
+        }
         void draw(const mc::View &view_, const mc::Projection &projection_) const;
 };
 

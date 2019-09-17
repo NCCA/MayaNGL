@@ -8,7 +8,7 @@ template<bool visualize_bv_and_ray = false>
 class Select final : public Base_Selection<visualize_bv_and_ray>
 {
     private:
-        Gizmo &m_gizmo;
+//        Gizmo &m_gizmo;
         bool m_multi_selection;
 
     private:
@@ -18,8 +18,8 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
     public:
         explicit Select( const mc::View &view_,
                          const mc::Projection &projection_,
-                         const Camera &camera_,
-                         Gizmo &gizmo_ );
+                         const Camera &camera_/*,
+                         Gizmo &gizmo_ */);
 
         template<typename PRIM>
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
@@ -27,17 +27,7 @@ class Select final : public Base_Selection<visualize_bv_and_ray>
         void resize(int w_, int h_);
         void enableMultiSelection();
         mc::Position clickedOnObject(const VariantPrim &selectable_);
-        void pick(int mouse_x, int mouse_y);
-
-        void pick2()
-        {
-            if (m_gizmo.display)
-            {
-                if (m_gizmo.clickedOnHandle(this->m_ray))
-                    std::cout<< "clicked on handle" <<std::endl;
-            }
-
-        }
+        void pick();
 
         ~Select() noexcept = default;
 };

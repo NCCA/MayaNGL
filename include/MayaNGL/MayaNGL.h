@@ -20,8 +20,8 @@ class MayaNGL
         Mouse m_mouse;
         Camera m_camera;
         Viewport m_viewport;
-        Gizmo m_gizmo;
         Select<true> m_select;
+        Gizmo m_gizmo;
 
     public:
         explicit MayaNGL( mc::View &view_,
@@ -47,6 +47,16 @@ class MayaNGL
 
         template<typename PRIM>
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
+
+        template<typename PRIM, typename T, typename =  std::enable_if_t<
+                                                            std::is_same<
+                                                                decltype(std::declval<T>().getMatrix()),mc::Transform
+                                                                        >::value
+                                                                        >>
+        void make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, T &transform_);
+
+        template<typename PRIM>
+        void make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_);
 
         void initialize();
         void resize(int w_, int h_);

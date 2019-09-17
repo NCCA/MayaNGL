@@ -29,6 +29,7 @@ class Base_Selection
 
         GET_MEMBER(m_selectables,AllSelectables)
         GET_MEMBER(m_currently_selected,CurrentlySelected)
+        GET_MEMBER(m_ray,Ray)
 
         void initialize();
         void emitRay(int mouse_x, int mouse_y);

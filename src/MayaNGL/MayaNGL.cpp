@@ -11,8 +11,8 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_mouse(),
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
-                  m_gizmo(view,projection,m_camera),
-                  m_select(view,projection,m_camera,m_gizmo)
+                  m_select(view,projection,m_camera),
+                  m_gizmo(view,projection,m_camera)
 {;}
 
 void MayaNGL::initialize()
@@ -82,16 +82,17 @@ void MayaNGL::keyPress(QKeyEvent *event_)
 
 void MayaNGL::mousePress(QMouseEvent *event_)
 {
-    if(event_->modifiers() & Qt::AltModifier)
+    bool lmb = (event_->button() == Qt::LeftButton);
+    if (lmb)
     {
-        switch(event_->button())
-        {
-            case Qt::LeftButton:
-                m_mouse.setAnchor(event_->x(),event_->y());
-                break;
+        m_mouse.setAnchor(event_->x(),event_->y());
 
-            default:
-                break;
+        bool alt = (event_->modifiers() & Qt::AltModifier);
+        if (!alt)
+        {
+            m_select.emitRay(event_->x(),event_->y());
+            if (m_gizmo.display)
+                m_gizmo.handle_selected = m_gizmo.clickedOnHandle(m_select.getRay());
         }
     }
 }
@@ -100,7 +101,8 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
 {
     m_mouse.setTransform(event_->x(),event_->y());
 
-    if(event_->modifiers() & Qt::AltModifier)
+    bool alt = (event_->modifiers() & Qt::AltModifier);
+    if (alt)
     {
         switch(event_->buttons())
         {
@@ -123,23 +125,30 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
                 break;
         }
     }
-
+    else
+    {
+        if (m_gizmo.handle_selected)
+        {
+            m_gizmo.dragY(m_mouse.getDrag().m_y);
+        }
+    }
 }
 
 void MayaNGL::mouseRelease(QMouseEvent *event_)
 {
-    switch(event_->button())
-    {
-        case Qt::LeftButton:
-            if(event_->modifiers() & Qt::AltModifier)
-                break;
-            if(event_->modifiers() & Qt::ShiftModifier)
-                m_select.enableMultiSelection();
-            m_select.pick(event_->x(),event_->y());
-            break;
+    bool alt = (event_->modifiers() & Qt::AltModifier);
+    bool lmb = (event_->button() == Qt::LeftButton);
 
-        default:
-            break;
+    if (m_gizmo.handle_selected)
+    {
+        m_gizmo.handle_selected = false;
+    }
+    else if (!alt && lmb)
+    {
+        bool shft = (event_->modifiers() == Qt::ShiftModifier);
+        if(shft)
+            m_select.enableMultiSelection();
+        m_select.pick();
     }
 }
 

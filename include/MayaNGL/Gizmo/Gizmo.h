@@ -13,6 +13,7 @@ class Gizmo
         const mc::View &view;
         const mc::Projection &projection;
         const Camera &camera;
+        mc::Transform *object_model;
 
     private:
         mc::Position position;
@@ -28,6 +29,7 @@ class Gizmo
 
     public:
         bool display;
+        bool handle_selected;
 
     public:
         Gizmo( const mc::View &view_,
@@ -38,13 +40,44 @@ class Gizmo
         void setPosition(float x_, float y_, float z_);
         void draw();
 
+        void show()
+        {
+            display = true;
+        }
+
+        void hide()
+        {
+            display = false;
+        }
+
+        void make_moveable(mc::Transform &transform_)
+        {
+            object_model = &transform_;
+            setPosition(object_model->m_30,object_model->m_31,object_model->m_32);
+        }
+
         bool clickedOnHandle(const mc::Ray &mouse_)
         {
-            mc::Ray up_handle{position,ngl::Vec3::up(),average_dist+(uniform_scale*0.7f)};
+            float handle_length = position.m_y+average_dist+(uniform_scale*0.7f);
+            mc::Ray up_handle{position,ngl::Vec3::up()};
             auto poi = mc::intersect(mouse_,up_handle);
-            if (poi != mc::failed)
+            if ((poi != mc::failed) && (poi.m_y < handle_length))
                 return true;
             return false;
+        }
+
+        void dragX(float x_)
+        {
+            position.m_x += x_;
+        }
+        void dragY(float y_)
+        {
+            position.m_y -= y_*0.08f;
+            object_model->m_31 = position.m_y;
+        }
+        void dragZ(float z_)
+        {
+            position.m_z += z_;
         }
 
         ~Gizmo() noexcept = default;

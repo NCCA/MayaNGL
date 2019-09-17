@@ -34,3 +34,22 @@ void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform
 {
     m_select.make_selectable(id_,std::forward<PRIM>(prim_),transform_);
 }
+
+template<typename PRIM, typename T, typename>
+void MayaNGL::make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, T &transform_)
+{
+    this->make_selectable_and_moveable(id_,std::forward<PRIM>(prim_), transform_.getMatrix());
+}
+
+template<typename PRIM>
+void MayaNGL::make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_)
+{
+    m_select.make_selectable(id_,std::forward<PRIM>(prim_),transform_);
+    m_gizmo.make_moveable(transform_);
+
+//    if (m_select.getCurrentlySelected().empty())
+//        m_gizmo.hide();
+//    else
+//        m_gizmo.show();
+}
+

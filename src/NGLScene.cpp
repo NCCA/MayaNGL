@@ -103,11 +103,12 @@ void NGLScene::paintGL()
     m_maya.draw();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    m_model.identity();
+
+    // This is a moveable object, so there's no point in reseting the model matrix.
     {
         loadDiffTexShader<false>(m_model);
         prim->draw( "teapot" );
-        m_maya.make_selectable(1,"teapot",m_model);
+        m_maya.make_selectable_and_moveable(1,"teapot",m_model);
     }
 
     m_transform.reset();

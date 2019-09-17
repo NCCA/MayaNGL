@@ -91,7 +91,6 @@ namespace mc //maya common
     {
         Position position;
         Direction direction;
-        float length=0.f;
     };
 
     template<bool infinite = true>

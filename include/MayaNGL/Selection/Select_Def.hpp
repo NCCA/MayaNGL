@@ -6,11 +6,11 @@
 template<bool visualize_bv_and_ray>
 Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
-                                      const Camera &camera_,
-                                      Gizmo &gizmo_ )
+                                      const Camera &camera_/*,
+                                      Gizmo &gizmo_ */)
                                       :
                                       Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
-                                      m_gizmo(gizmo_),
+//                                      m_gizmo(gizmo_),
                                       m_multi_selection(false)
 {;}
 
@@ -81,12 +81,10 @@ mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const VariantPrim &se
 }
 
 template<bool visualize_bv_and_ray>
-void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
+void Select<visualize_bv_and_ray>::pick()
 {
     if (this->m_selectables.empty())
         return;
-
-    this->emitRay(mouse_x,mouse_y);
 
     if (!m_multi_selection)
         this->m_currently_selected.clear();
@@ -99,17 +97,17 @@ void Select<visualize_bv_and_ray>::pick(int mouse_x, int mouse_y)
     if (something_selected)
         this->m_currently_selected.emplace_back(selected_id);
 
-    if (this->m_currently_selected.empty())
-        m_gizmo.display = false;
-    else
-    {
-        if (something_selected)
-        {
-            auto objpos = this->m_selectables.at(selected_id).getTransform();
-            m_gizmo.setPosition(objpos .m_30,objpos.m_31,objpos.m_32);
-        }
-        m_gizmo.display = true;
-    }
+//    if (this->m_currently_selected.empty())
+//        m_gizmo.display = false;
+//    else
+//    {
+//        if (something_selected)
+//        {
+//            auto objpos = this->m_selectables.at(selected_id).getTransform();
+//            m_gizmo.setPosition(objpos.m_30,objpos.m_31,objpos.m_32);
+//        }
+//        m_gizmo.display = true;
+//    }
 
     m_multi_selection = false;
 }
