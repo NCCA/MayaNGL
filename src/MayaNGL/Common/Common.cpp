@@ -1,5 +1,5 @@
 
-#include "MayaNGL/Common/Common.h"
+#include "MayaNGL/Common/Common_Def.hpp"
 
 
 namespace mc
@@ -97,8 +97,6 @@ namespace mc
         shader->linkProgramObject( AxisShader );
     }
 
-
-
     template<>
     Position intersect(const Ray &ray_, const Plane<true> &plane_)
     {
@@ -116,15 +114,20 @@ namespace mc
     template<>
     Position intersect(const Ray &ray_, const Plane<false> &plane_)
     {
+        auto &&r_pos = ray_.position;
+        auto &&r_dir = ray_.direction;
         auto &&p_pos = plane_.position;
-        auto &&p_size = plane_.size;
+        auto &&p_nrm = plane_.normal;
+        auto &&p_rot = plane_.orientation;
+        auto &&p_crn = plane_.corners;
 
-        auto poi = intersect<true>(ray_, plane_);
-        if (poi != failed)
+        float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
+        if (t>=0)
         {
-            Position top_left = {p_pos.m_x-p_size.m_x,p_pos.m_y+p_size.m_y,p_pos.m_z};
-            Position top_right = {p_pos.m_x+p_size.m_x,p_pos.m_y+p_size.m_y,p_pos.m_z};
-            Position bottom_right = {p_pos.m_x+p_size.m_x,p_pos.m_y-p_size.m_y,p_pos.m_z};
+            Position poi = (r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon());
+            Position top_left = p_crn[0] * p_rot;
+            Position top_right = p_crn[1] * p_rot;
+            Position bottom_right = p_crn[3] * p_rot;
 
             auto TR_POI = poi-top_right;
             auto TR_BR = bottom_right-top_right;

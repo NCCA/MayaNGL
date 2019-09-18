@@ -12,19 +12,17 @@ This demo supports/displays the following:
 
 - Camera focus on target object. (Shortcuts: f = focus on selected object, SPACE = reset to origin)
 
-- Maya-like grid.
-
-- Mouse controls.
+- Grid.
 
 - Title text projection.
 
-- Valid with ngl::VAOPrimitives using ngl::Mat4 and ngl::Transformation.
+- Valid with ngl::VAOPrimitives and ngl::Obj using ngl::Mat4 and ngl::Transformation.
 
 - Object selection via ray casting. (Visualize the ray and object intersection by setting "Select<true> m_select;" in MayaNGL.h)
 
-- Maya-like view axis.
+- View axis.
 
-- Transformation Gizmo to translate. (Shortcuts: q = select, w = translate)
+- Gizmo to translate.
 
 
 ## Future Work:

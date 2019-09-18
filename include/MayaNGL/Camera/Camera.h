@@ -10,6 +10,9 @@ class Camera
     private:
         friend Focus<Camera>;
 
+    public:
+        typedef std::array<mc::Direction,2> LocalHVAxis;
+
     private:
         const Mouse &mouse;
 
@@ -34,10 +37,12 @@ class Camera
         GET_MEMBER(m_inverse.current,InvDirection)
         GET_MEMBER(m_inverse.shadow,InvShadow)
 
+        LocalHVAxis calc_local_HV_axis() const;
+        mc::Transform computeTransform() const;
+
         template<typename SEL>
         void focus(const SEL &select_);
 
-        mc::Transform computeTransform() const;
         void track();
         void pan();
         void dolly();

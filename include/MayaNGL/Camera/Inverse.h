@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MayaNGL/Common/Common.h"
+#include "MayaNGL/Common/Common_Def.hpp"
 
 
 template<typename CAM = class Camera>

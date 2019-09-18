@@ -14,15 +14,8 @@ Camera::Camera( const Mouse &mouse_,
                 m_pan()
 {;}
 
-mc::Transform Camera::computeTransform() const
+Camera::LocalHVAxis Camera::calc_local_HV_axis() const
 {
-    return m_dolly *  m_pan * m_track;
-}
-
-void Camera::track()
-{
-    m_inverse.calcCurrent();
-
     auto horizontal_axis = m_lookAt.up.cross(m_inverse.shadow);
     horizontal_axis.normalize();
 
@@ -32,12 +25,26 @@ void Camera::track()
     auto vertical_axis = horizontal_axis.cross(m_inverse.current);
     vertical_axis.normalize();
 
+    return LocalHVAxis{{horizontal_axis,vertical_axis}};
+}
+
+mc::Transform Camera::computeTransform() const
+{
+    return m_dolly *  m_pan * m_track;
+}
+
+void Camera::track()
+{
+    m_inverse.calcCurrent();
+
+    auto hv_axis = calc_local_HV_axis();
+
     float dist_from_cam = m_lookAt.calcDist()*0.0025f;
     auto mouse_move = mouse.getDrag() * dist_from_cam;
 
-    auto Tx = mouse_move.m_x * horizontal_axis.m_x +  mouse_move.m_y * vertical_axis.m_x;
-    auto Ty = mouse_move.m_y * vertical_axis.m_y;
-    auto Tz = mouse_move.m_x * horizontal_axis.m_z +  mouse_move.m_y * vertical_axis.m_z;
+    auto Tx = mouse_move.m_x * hv_axis[0].m_x +  mouse_move.m_y * hv_axis[1].m_x;
+    auto Ty = mouse_move.m_y * hv_axis[1].m_y;
+    auto Tz = mouse_move.m_x * hv_axis[0].m_z +  mouse_move.m_y * hv_axis[1].m_z;
 
     m_lookAt.eye.m_x -= Tx;
     m_lookAt.eye.m_y -= Ty;

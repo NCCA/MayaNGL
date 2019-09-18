@@ -129,7 +129,7 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
     {
         if (m_gizmo.is_selected())
         {
-            m_gizmo.dragOnAxis(m_mouse.getDrag());
+            m_gizmo.drag_on_axis(m_mouse.getDrag());
             auto last_elem = m_select.getCurrentlySelected().back();
             m_select.setPrimTransform(last_elem,*m_gizmo.getObjectTransform());
         }
