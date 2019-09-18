@@ -9,7 +9,7 @@ Gizmo::Gizmo( const mc::View &view_,
               view(view_),
               projection(projection_),
               camera(camera_),
-              object_model(nullptr),
+              m_object_model(nullptr),
               position(mc::Position::zero()),
               average_dist(0.f),
               uniform_scale(1.f),
@@ -22,8 +22,7 @@ Gizmo::Gizmo( const mc::View &view_,
                                 mc::Direction(0.f,0.f,0.2f),
                                 mc::Direction::in()
                            }},
-              m_vao(),
-              display(false)
+              m_vao()
 {;}
 
 void Gizmo::initialize()

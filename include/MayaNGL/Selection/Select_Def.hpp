@@ -6,11 +6,9 @@
 template<bool visualize_bv_and_ray>
 Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
-                                      const Camera &camera_/*,
-                                      Gizmo &gizmo_ */)
+                                      const Camera &camera_ )
                                       :
                                       Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
-//                                      m_gizmo(gizmo_),
                                       m_multi_selection(false)
 {;}
 
@@ -48,10 +46,10 @@ std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance
 
 template<bool visualize_bv_and_ray>
     template<typename PRIM>
-void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_)
+void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
     if (this->m_selectables.find(id_) == this->m_selectables.cend())
-        this->m_selectables.emplace(id_, VariantPrim{std::forward<PRIM>(prim_),transform_});
+        this->m_selectables.emplace(id_, VariantPrim{std::forward<PRIM>(prim_),transform_,is_moveable_});
 }
 
 template<bool visualize_bv_and_ray>
@@ -97,23 +95,5 @@ void Select<visualize_bv_and_ray>::pick()
     if (something_selected)
         this->m_currently_selected.emplace_back(selected_id);
 
-//    if (this->m_currently_selected.empty())
-//        m_gizmo.display = false;
-//    else
-//    {
-//        if (something_selected)
-//        {
-//            auto objpos = this->m_selectables.at(selected_id).getTransform();
-//            m_gizmo.setPosition(objpos.m_30,objpos.m_31,objpos.m_32);
-//        }
-//        m_gizmo.display = true;
-//    }
-
     m_multi_selection = false;
 }
-
-
-
-
-
-

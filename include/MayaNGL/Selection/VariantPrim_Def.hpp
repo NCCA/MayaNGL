@@ -90,24 +90,30 @@ struct VariantPrim::Generic<T*> : Base_Generic<T*,Generic>
 
 template<typename T, typename>
 VariantPrim::VariantPrim( T *primitive_,
-                          const mc::Transform &transform_ )
+                          const mc::Transform &transform_,
+                          bool is_moveable_ )
                           :
+                          m_is_moveable(is_moveable_),
                           m_prim_ptr{std::make_unique<Generic<T*>>(primitive_)},
                           m_transform(transform_)
 {;}
 
 template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
 VariantPrim::VariantPrim( const SmPtr<T> &val_,
-                          const mc::Transform &transform_ )
+                          const mc::Transform &transform_,
+                          bool is_moveable_ )
                           :
+                          m_is_moveable(is_moveable_),
                           m_prim_ptr{std::make_unique<Generic<T*>>(val_.get())},
                           m_transform(transform_)
 {;}
 
 template<typename T, typename>
 VariantPrim::VariantPrim( const T &val_,
-                          const mc::Transform &transform_ )
+                          const mc::Transform &transform_,
+                          bool is_moveable_ )
                           :
+                          m_is_moveable(is_moveable_),
                           m_prim_ptr{std::make_unique<Generic<const T &>>(val_)},
                           m_transform(transform_)
 {;}

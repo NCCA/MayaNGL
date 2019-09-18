@@ -23,6 +23,12 @@ class Base_Selection
         Selections m_currently_selected;
 
     public:
+        void setPrimTransform(std::size_t id_, const mc::Transform &transform_)
+        {
+            m_selectables.at(id_).setTransform(transform_);
+        }
+
+    public:
         explicit Base_Selection( const mc::View &view_,
                                  const mc::Projection &projection_,
                                  const mc::LookAt &cam_lookAt_ );

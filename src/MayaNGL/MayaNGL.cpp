@@ -38,7 +38,7 @@ void MayaNGL::draw()
 
 void MayaNGL::draw_gizmo()
 {
-    if (m_gizmo.display)
+    if (m_gizmo.is_enabled())
         m_gizmo.draw();
 }
 
@@ -91,8 +91,8 @@ void MayaNGL::mousePress(QMouseEvent *event_)
         if (!alt)
         {
             m_select.emitRay(event_->x(),event_->y());
-            if (m_gizmo.display)
-                m_gizmo.handle_selected = m_gizmo.clickedOnHandle(m_select.getRay());
+            if (m_gizmo.is_enabled())
+                m_gizmo.findSelectedHandle(m_select.getRay());
         }
     }
 }
@@ -127,9 +127,11 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
     }
     else
     {
-        if (m_gizmo.handle_selected)
+        if (m_gizmo.is_selected())
         {
-            m_gizmo.dragY(m_mouse.getDrag().m_y);
+            m_gizmo.dragOnAxis(m_mouse.getDrag());
+            auto last_elem = m_select.getCurrentlySelected().back();
+            m_select.setPrimTransform(last_elem,*m_gizmo.getObjectTransform());
         }
     }
 }
@@ -139,16 +141,26 @@ void MayaNGL::mouseRelease(QMouseEvent *event_)
     bool alt = (event_->modifiers() & Qt::AltModifier);
     bool lmb = (event_->button() == Qt::LeftButton);
 
-    if (m_gizmo.handle_selected)
-    {
-        m_gizmo.handle_selected = false;
-    }
-    else if (!alt && lmb)
+    if (!alt && lmb)
     {
         bool shft = (event_->modifiers() == Qt::ShiftModifier);
         if(shft)
             m_select.enableMultiSelection();
-        m_select.pick();
+
+        if (!m_gizmo.is_selected())
+        {
+            m_gizmo.hide();
+            m_select.pick();
+        }
+
+        m_gizmo.deselect();
+        if (!m_select.getCurrentlySelected().empty())
+        {
+            auto last_elem = m_select.getCurrentlySelected().back();
+            auto is_selected_moveable = m_select.getAllSelectables().at(last_elem).getIsMoveable();
+            if (is_selected_moveable)
+                m_gizmo.show();
+        }
     }
 }
 

@@ -15,6 +15,7 @@ class VariantPrim
         struct Generic;
 
     private:
+        bool m_is_moveable;
         std::unique_ptr<Base> m_prim_ptr = nullptr;
         mc::Transform m_transform;
 
@@ -27,25 +28,27 @@ class VariantPrim
 
         template<typename T, typename = sfinae_type<T>>
         VariantPrim( T *primitive_,
-                     const mc::Transform &transform_ );
+                     const mc::Transform &transform_,
+                     bool is_moveable_ = false );
 
         template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
         VariantPrim( const SmPtr<T> &val_,
-                     const mc::Transform &transform_ );
+                     const mc::Transform &transform_,
+                     bool is_moveable_ = false );
 
         template<typename T, typename = sfinae_type<T>>
         VariantPrim( const T &val_,
-                     const mc::Transform &transform_ );
+                     const mc::Transform &transform_,
+                     bool is_moveable_ = false );
 
         VariantPrim( std::string &&val_,
-                     const mc::Transform &transform_ );
+                     const mc::Transform &transform_,
+                     bool is_moveable_ = false );
 
+        GET_MEMBER(m_is_moveable,IsMoveable)
         GET_MEMBER(m_transform,Transform)
 
-        void setTransform(const mc::Transform &transform_)
-        {
-            m_transform = transform_;
-        }
+        void setTransform(const mc::Transform &transform_);
         void draw(const mc::View &view_, const mc::Projection &projection_) const;
 };
 
