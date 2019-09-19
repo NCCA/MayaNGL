@@ -28,16 +28,39 @@ namespace mc //maya common
     template<>
     struct Plane<false> : Plane<true>
     {
-        typedef std::array<Position,4> Corners;
+        typedef std::array<Position,4> Points;
 
         Size<V2> size;
         Rotation orientation;
-        Corners corners = {{
-                               {position.m_x-size.m_x,position.m_y+size.m_y,position.m_z}, // TL
-                               {position.m_x+size.m_x,position.m_y+size.m_y,position.m_z}, // TR
-                               {position.m_x-size.m_x,position.m_y-size.m_y,position.m_z}, // BL
-                               {position.m_x+size.m_x,position.m_y-size.m_y,position.m_z}  // BR
-                          }};
+        Points corners;
+
+        Plane( const Position &position_,
+               const Direction &normal_,
+               const Size<V2> &size_,
+               const Rotation &orientation_ )
+               :
+               Plane<true>{position_,normal_},
+               size(size_),
+               orientation(orientation_),
+               corners(initCorners())
+        {;}
+
+        Points initCorners()
+        {
+            Points tmp = {{
+                            {this->position.m_x-size.m_x,this->position.m_y+size.m_y,this->position.m_z}, // TL
+                            {this->position.m_x+size.m_x,this->position.m_y+size.m_y,this->position.m_z}, // TR
+                            {this->position.m_x-size.m_x,this->position.m_y-size.m_y,this->position.m_z}, // BL
+                            {this->position.m_x+size.m_x,this->position.m_y-size.m_y,this->position.m_z}  // BR
+                         }};
+
+            for (auto &&i : tmp)
+                i = i * orientation;
+
+            return tmp;
+        }
+
+        ~Plane() noexcept = default;
     };
 
 

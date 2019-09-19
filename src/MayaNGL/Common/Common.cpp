@@ -107,7 +107,7 @@ namespace mc
 
         float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
         if (t>=0)
-            return r_pos+(t*r_dir);
+            return r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon();
         return failed;
     }
 
@@ -118,24 +118,32 @@ namespace mc
         auto &&r_dir = ray_.direction;
         auto &&p_pos = plane_.position;
         auto &&p_nrm = plane_.normal;
-        auto &&p_rot = plane_.orientation;
         auto &&p_crn = plane_.corners;
 
         float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
-        if (t>=0)
+        if (t>=0.f)
         {
-            Position poi = (r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon());
-            Position top_left = p_crn[0] * p_rot;
-            Position top_right = p_crn[1] * p_rot;
-            Position bottom_right = p_crn[3] * p_rot;
+            Position poi = r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon();
+            Position top_left = p_crn[0];
+            Position top_right = p_crn[1];
+            Position bottom_right = p_crn[3];
 
             auto TR_POI = poi-top_right;
             auto TR_BR = bottom_right-top_right;
             auto TR_TL = top_left-top_right;
 
-            if  ( ( (TR_POI.dot(TR_BR) >= 0.f) && (TR_POI.dot(TR_BR) <= TR_BR.dot(TR_BR)) ) &&
+            std::cout<< "intersecting plane" <<std::endl;
+
+            std::cout<< "poi =\t" << poi <<std::endl;
+            std::cout<< "t_l =\t" << top_left <<std::endl;
+            std::cout<< "t_r =\t" << top_right <<std::endl;
+            std::cout<< "b_r =\t" << bottom_right <<std::endl;
+
+            // something wrong here...
+            if  ( ( (TR_POI.dot(TR_BR) >= 0.f) && (TR_POI.dot(TR_BR) <= TR_BR.dot(TR_BR)) ) ||
                   ( (TR_POI.dot(TR_TL) >= 0.f) && (TR_POI.dot(TR_TL) <= TR_TL.dot(TR_TL)) ) )
             {
+                std::cout<< "intersecting central handle" <<std::endl;
                 return poi;
             }
             return failed;

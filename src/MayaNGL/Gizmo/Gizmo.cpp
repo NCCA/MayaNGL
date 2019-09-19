@@ -64,6 +64,7 @@ bool Gizmo::clickedOn<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
     auto &&direction = camera.getInvDirection();
     float size = m_uniform_scale*0.3f;
     mc::Plane<false> handle = {m_position,direction,mc::V2(size,size),m_orientation};
+
     auto poi = mc::intersect(mouse_ray_,handle);
     if (poi != mc::failed)
         return true;
@@ -73,7 +74,7 @@ bool Gizmo::clickedOn<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
 template<>
 void Gizmo::dragOn<Gizmo::Handle::X>()
 {
-    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x +  mouse_move.m_y * m_hv_axis[1].m_x;
+    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
     m_position.m_x += Tx;
     m_object_model->m_30 = m_position.m_x;
 }
@@ -89,7 +90,7 @@ void Gizmo::dragOn<Gizmo::Handle::Y>()
 template<>
 void Gizmo::dragOn<Gizmo::Handle::Z>()
 {
-    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z +  mouse_move.m_y * m_hv_axis[1].m_z;
+    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
     m_position.m_z += Tz;
     m_object_model->m_32 = m_position.m_z;
 }
@@ -97,9 +98,9 @@ void Gizmo::dragOn<Gizmo::Handle::Z>()
 template<>
 void Gizmo::dragOn<Gizmo::Handle::MID>()
 {
-    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x +  mouse_move.m_y * m_hv_axis[1].m_x;
+    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
     auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
-    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z +  mouse_move.m_y * m_hv_axis[1].m_z;
+    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
 
     m_position.m_x += Tx;
     m_position.m_y += Ty;
@@ -216,7 +217,7 @@ void Gizmo::findSelectedHandle(const mc::Ray &mouse_ray_)
 
 void Gizmo::drag_on_axis(const mc::V2 &mouse_drag_)
 {
-    float dist_from_cam = camera.getLookAt().calcDist()*0.0025f;
+    float dist_from_cam = camera.getLookAt().calcDist()*0.002f;
     mouse_move = mouse_drag_ * dist_from_cam;
     m_hv_axis = camera.calc_local_HV_axis();
 
@@ -306,9 +307,9 @@ void Gizmo::draw()
         auto phi = atan2(rotationAxis.dot(direction.cross(shadow)) , direction.dot(shadow));
         mc::Rotation Rx = mc::Axis_Matrix(phi,rotationAxis);
 
-        m_orientation = Rx * Ry * Rz;
+        m_orientation = Rx * Ry;
 
-        m_model = m_uniform_scale * m_orientation;
+        m_model = m_uniform_scale * (m_orientation * Rz);
         m_model.translate(m_position.m_x,m_position.m_y,m_position.m_z);
 
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
