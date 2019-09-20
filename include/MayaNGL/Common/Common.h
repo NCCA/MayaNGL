@@ -43,7 +43,7 @@
  *      seems to affect the transformation even when it's set to 0.
  * (15) Issue when rotating the Triangle Plane about the Arbitrary Axis.
  *      Seems like it's also rotating about the local Z-axis.
- * (16) Cannot overload make_selectable_and_moveable() for ngl::Transform
+ * (16) Cannot overload make_selectable_and_movable() for ngl::Transform
  *      because the .getMatrix() returns a copy which is deleted.
 */
 

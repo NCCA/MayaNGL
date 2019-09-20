@@ -49,7 +49,7 @@ class MayaNGL
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
 
         template<typename PRIM>
-        void make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_);
+        void make_selectable_and_movable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_);
 
         void initialize();
         void resize(int w_, int h_);

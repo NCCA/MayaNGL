@@ -88,7 +88,7 @@ void MayaNGL::mouse_press(QMouseEvent *event_)
         m_mouse.set_anchor(event_->x(),event_->y());
 
         bool alt = (event_->modifiers() & Qt::AltModifier);
-        if (!alt)
+        if ((!alt)  && (!m_select.get_all_selectables().empty()))
         {
             m_select.emit_ray(event_->x(),event_->y());
             if (m_gizmo.is_enabled())
@@ -130,8 +130,8 @@ void MayaNGL::mouse_move(QMouseEvent *event_)
         if (m_gizmo.is_selected())
         {
             m_gizmo.dragged_on_axis(m_mouse.get_drag());
-            auto last_elem = m_select.get_currently_selected().back();
-            m_select.set_primitive_transform(last_elem,*m_gizmo.get_object_transform());
+            auto &&last_elem = m_select.get_currently_selected().back();
+            m_select.set_primitive_transform(last_elem,*m_gizmo.get_currently_selected_model());
         }
     }
 }
@@ -141,7 +141,7 @@ void MayaNGL::mouse_release(QMouseEvent *event_)
     bool alt = (event_->modifiers() & Qt::AltModifier);
     bool lmb = (event_->button() == Qt::LeftButton);
 
-    if (!alt && lmb)
+    if ((!alt && lmb) && (!m_select.get_all_selectables().empty()))
     {
         bool shft = (event_->modifiers() == Qt::ShiftModifier);
         if(shft)
@@ -150,15 +150,16 @@ void MayaNGL::mouse_release(QMouseEvent *event_)
         if (!m_gizmo.is_selected())
         {
             m_gizmo.hide();
-            m_select.pick();
+            auto obj_id = m_select.pick();
+            m_gizmo.set_on_selected_id(obj_id);
         }
 
         m_gizmo.deselect();
         if (!m_select.get_currently_selected().empty())
         {
             auto last_elem = m_select.get_currently_selected().back();
-            auto is_selected_moveable = m_select.get_all_selectables().at(last_elem).get_is_moveable();
-            if (is_selected_moveable)
+            auto is_selected_movable = m_select.get_all_selectables().at(last_elem).get_is_moveable();
+            if (is_selected_movable)
                 m_gizmo.show();
         }
     }

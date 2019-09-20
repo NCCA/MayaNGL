@@ -12,7 +12,7 @@ NGLScene::NGLScene() : m_airplane_mesh("models_textures/airplane.obj"),
                        m_projection(),
                        m_maya(m_view,m_projection)
 {
-    setTitle( "Maya-like Viewport using NGL" );
+    setTitle( "MayaNGL" );
 }
 
 void NGLScene::resizeGL(int w_, int h_)
@@ -106,18 +106,17 @@ void NGLScene::paintGL()
 
     // This is a moveable object, so there's no point in reseting the model matrix.
     {
-        m_model.scale(1.f,1.f,1.f);
-        loadShader<false>(m_model);
+        loadShader<false>(m_teapot_model);
         prim->draw( "teapot" );
-        m_maya.make_selectable_and_moveable(1,"teapot",m_model);
+        m_maya.make_selectable_and_movable(1,"teapot",m_teapot_model);
     }
 
-//    {
-//        m_model.scale(2.f,2.f,2.f);
-//        loadShader<true>(m_model);
-//        m_fish_mesh->draw();
-//        m_maya.make_selectable_and_moveable(2,m_fish_mesh,m_model);
-//    }
+    {
+        m_fish_model.scale(2.f,2.f,2.f);
+        loadShader<true>(m_fish_model);
+        m_fish_mesh->draw();
+        m_maya.make_selectable_and_movable(2,m_fish_mesh,m_fish_model);
+    }
 
 //    m_transform.reset();
 //    {

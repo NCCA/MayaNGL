@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MayaNGL/Camera/Camera_Def.hpp"
+#include "MayaNGL/SelectableMap/SelectableMap.h"
 
 
 class Gizmo
@@ -11,6 +12,7 @@ class Gizmo
     private:
         typedef std::array<mc::Position,6> Vertices;
         typedef std::unique_ptr<ngl::AbstractVAO> VAOPtr;
+        typedef SelectableMap::Selectables<mc::Transform*> Transforms;
 
     private:
         const mc::View &view;
@@ -18,7 +20,8 @@ class Gizmo
         const Camera &camera;
 
     private:
-        mc::Transform *m_object_model;
+        Transforms m_object_models;
+        mc::Transform *m_currently_selected_model;
         mc::Position m_position;
         mc::Size<float> m_average_dist;
         mc::Size<float> m_uniform_scale;
@@ -46,10 +49,11 @@ class Gizmo
                const mc::Projection &projection_,
                const Camera &camera_ );
 
-        GET_MEMBER(m_object_model,object_transform)
+        GET_MEMBER(m_currently_selected_model,currently_selected_model)
 
         void initialize();
-        void make_moveable(mc::Transform &transform_);
+        void set_on_selected_id(int id_);
+        void make_movable(std::size_t id_, mc::Transform &transform_);
         void show();
         void hide();
         bool is_enabled();
@@ -59,7 +63,7 @@ class Gizmo
         void dragged_on_axis(const mc::V2 &mouse_drag_);
         void draw();
 
-        ~Gizmo() noexcept;
+        ~Gizmo() noexcept = default;
 };
 
 

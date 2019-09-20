@@ -16,7 +16,8 @@ class NGLScene : public QOpenGLWindow
     Q_OBJECT
 
     private:
-        ngl::Mat4 m_model;
+        ngl::Mat4 m_teapot_model;
+        ngl::Mat4 m_fish_model;
         ngl::Transformation m_transform;
 
         ngl::Obj m_airplane_mesh;

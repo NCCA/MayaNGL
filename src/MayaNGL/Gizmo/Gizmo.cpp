@@ -9,7 +9,8 @@ Gizmo::Gizmo( const mc::View &view_,
               view(view_),
               projection(projection_),
               camera(camera_),
-              m_object_model(nullptr),
+              m_object_models(),
+              m_currently_selected_model(nullptr),
               m_position(mc::Position::zero()),
               m_average_dist(0.f),
               m_uniform_scale(1.f),
@@ -76,7 +77,7 @@ void Gizmo::dragged_on<Gizmo::Handle::X>()
 {
     auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
     m_position.m_x += Tx;
-    m_object_model->m_30 = m_position.m_x;
+    m_currently_selected_model->m_30 = m_position.m_x;
 }
 
 template<>
@@ -84,7 +85,7 @@ void Gizmo::dragged_on<Gizmo::Handle::Y>()
 {
     auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
     m_position.m_y += Ty;
-    m_object_model->m_31 = m_position.m_y;
+    m_currently_selected_model->m_31 = m_position.m_y;
 }
 
 template<>
@@ -92,7 +93,7 @@ void Gizmo::dragged_on<Gizmo::Handle::Z>()
 {
     auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
     m_position.m_z += Tz;
-    m_object_model->m_32 = m_position.m_z;
+    m_currently_selected_model->m_32 = m_position.m_z;
 }
 
 template<>
@@ -106,9 +107,9 @@ void Gizmo::dragged_on<Gizmo::Handle::MID>()
     m_position.m_y += Ty;
     m_position.m_z += Tz;
 
-    m_object_model->m_30 = m_position.m_x;
-    m_object_model->m_31 = m_position.m_y;
-    m_object_model->m_32 = m_position.m_z;
+    m_currently_selected_model->m_30 = m_position.m_x;
+    m_currently_selected_model->m_31 = m_position.m_y;
+    m_currently_selected_model->m_32 = m_position.m_z;
 }
 
 float Gizmo::calc_length(float p_)
@@ -152,13 +153,21 @@ void Gizmo::initialize()
     prim->createDisk("central",0.5f,4);
 }
 
-void Gizmo::make_moveable(mc::Transform &transform_)
+void Gizmo::set_on_selected_id(int id_)
 {
-    // I may have to store a list of pointers to indiv model matrices.
-    m_object_model = &transform_;
-    m_position.m_x = m_object_model->m_30;
-    m_position.m_y = m_object_model->m_31;
-    m_position.m_z = m_object_model->m_32;
+    if (id_ == -1)
+        return;
+
+    m_currently_selected_model = m_object_models.at(static_cast<std::size_t>(id_));
+
+    m_position.m_x = m_currently_selected_model->m_30;
+    m_position.m_y = m_currently_selected_model->m_31;
+    m_position.m_z = m_currently_selected_model->m_32;
+}
+
+void Gizmo::make_movable(std::size_t id_, mc::Transform &transform_)
+{
+    m_object_models.emplace(id_,&transform_);
 }
 
 void Gizmo::show()
@@ -313,9 +322,4 @@ void Gizmo::draw()
         prim->draw("central");
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
-}
-
-Gizmo::~Gizmo() noexcept
-{
-    m_object_model = nullptr;
 }

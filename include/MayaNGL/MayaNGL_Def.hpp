@@ -32,13 +32,17 @@ void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, T &transform_)
 template<typename PRIM>
 void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_)
 {
-    m_select.make_selectable(id_,prim_,transform_);
+    if (m_select.id_is_not_found(id_))
+        m_select.make_selectable(id_,prim_,transform_);
 }
 
 template<typename PRIM>
-void MayaNGL::make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_)
+void MayaNGL::make_selectable_and_movable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_)
 {
-    m_select.make_selectable(id_,prim_,transform_,true);
-    m_gizmo.make_moveable(transform_);
+    if (m_select.id_is_not_found(id_))
+    {
+        m_gizmo.make_movable(id_,transform_);
+        m_select.make_selectable(id_,prim_,transform_,true);
+    }
 }
 

@@ -14,9 +14,9 @@ Select<visualize_bv_and_ray>::Select( const mc::View &view_,
 {;}
 
 template<bool visualize_bv_and_ray>
-std::size_t Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
+int Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
 {
-    std::size_t selected_id = 0;
+    int selected_id = -1;
 
     for (const auto &i : this->m_selectables)
     {
@@ -42,8 +42,7 @@ template<bool visualize_bv_and_ray>
     template<typename PRIM>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
-    if (this->id_is_not_found(id_))
-        this->insert(id_,prim_,transform_,is_moveable_);
+    this->insert(id_,prim_,transform_,is_moveable_);
 }
 
 template<bool visualize_bv_and_ray>
@@ -73,21 +72,20 @@ mc::Position Select<visualize_bv_and_ray>::clicked_on_object(const VariantPrim &
 }
 
 template<bool visualize_bv_and_ray>
-void Select<visualize_bv_and_ray>::pick()
+int Select<visualize_bv_and_ray>::pick()
 {
-    if (this->m_selectables.empty())
-        return;
-
     if (!m_multi_selection)
         this->m_currently_selected.clear();
 
     auto &&maxf = std::numeric_limits<float>::max();
     float shortest_distance = maxf;
-    std::size_t selected_id = get_selected_id(shortest_distance);
+    int selected_id = get_selected_id(shortest_distance);
     bool something_selected = (shortest_distance < maxf);
 
     if (something_selected)
         this->m_currently_selected.emplace_back(selected_id);
 
     m_multi_selection = false;
+
+    return selected_id;
 }

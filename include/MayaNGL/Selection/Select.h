@@ -10,7 +10,7 @@ class Select final : public BaseSelection<visualize_bv_and_ray>
         bool m_multi_selection;
 
     private:
-        std::size_t get_selected_id(float &shortest_distance_);
+        int get_selected_id(float &shortest_distance_);
 
     public:
         template<typename CAM>
@@ -24,7 +24,7 @@ class Select final : public BaseSelection<visualize_bv_and_ray>
         void resize(int w_, int h_);
         void enable_multi_selection();
         mc::Position clicked_on_object(const VariantPrim &selectable_);
-        void pick();
+        int pick();
 
         ~Select() noexcept = default;
 };

@@ -5,10 +5,11 @@
 
 struct SelectableMap
 {
-    typedef std::unordered_map<std::size_t,VariantPrim> Selectables;
+    template<typename T = class VariantPrim>
+    using Selectables = std::unordered_map<std::size_t,T>;
     typedef std::vector<std::size_t> Selections;
 
-    Selectables m_selectables;
+    Selectables<> m_selectables;
     Selections m_currently_selected;
 
     GET_MEMBER(m_selectables,all_selectables)
