@@ -14,17 +14,17 @@ class Viewport
         const Camera &camera;
 
     private:
-        float m_aspectRatio;
+        float m_aspect_ratio;
         float m_orthographic_zoom;
         mc::View m_initial_view;
 
         Grid m_grid;
-        ProjectionText m_projText;
+        ProjectionText m_projected_text;
         ViewAxis m_axis;
 
     private:
-        void goPersp();
-        void goOrtho();
+        void go_persp();
+        void go_ortho();
 
     public:
         explicit Viewport( mc::View &view_,
@@ -32,12 +32,12 @@ class Viewport
                            const Camera &camera_ );
 
         template<mc::CamView V>
-        void setView();
+        void set_view();
 
         void initialize();
         void resize(int w_, int h_);
         void update_draw();
-        void orthoZoom(const mc::V2 &mouseDrag_);
+        void ortho_zoom(const mc::V2 &mouse_drag_);
 
         ~Viewport() noexcept = default;
 };

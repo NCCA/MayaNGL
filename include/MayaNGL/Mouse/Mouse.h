@@ -19,10 +19,10 @@ class Mouse
     public:
         explicit Mouse() = default;
 
-        GET_MEMBER(m_drag,Drag)
+        GET_MEMBER(m_drag,drag)
 
-        void setAnchor(float x_, float y_);
-        void setTransform(float x_, float y_);
+        void set_anchor(float x_, float y_);
+        void set_transform(float x_, float y_);
         void reset(float x_=0.f, float y_=0.f);
 
         ~Mouse() noexcept = default;

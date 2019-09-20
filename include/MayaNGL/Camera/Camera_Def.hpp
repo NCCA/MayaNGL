@@ -7,5 +7,5 @@ template<typename SEL>
 void Camera::focus(const SEL &select_)
 {
     Focus<Camera> focus(*this);
-    focus.onSelected(select_);
+    focus.on_selected(select_);
 }

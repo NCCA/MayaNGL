@@ -15,7 +15,7 @@ struct VariantPrim::Base
 };
 
 template<typename T, template<typename> class Gen>
-struct VariantPrim::Base_Generic : Base
+struct VariantPrim::BaseGeneric : Base
 {
     Gen<T> *crtp = static_cast<Gen<T>*>(this);
 
@@ -41,7 +41,7 @@ struct VariantPrim::Base_Generic : Base
 };
 
 template<typename T>
-struct VariantPrim::Generic : Base_Generic<T,Generic>
+struct VariantPrim::Generic : BaseGeneric<T,Generic>
 {
     T primitive;
 
@@ -63,7 +63,7 @@ struct VariantPrim::Generic : Base_Generic<T,Generic>
 };
 
 template<typename T>
-struct VariantPrim::Generic<T*> : Base_Generic<T*,Generic>
+struct VariantPrim::Generic<T*> : BaseGeneric<T*,Generic>
 {
     const T *const primitive;
 

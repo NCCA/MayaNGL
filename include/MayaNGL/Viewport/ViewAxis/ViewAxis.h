@@ -23,8 +23,8 @@ class ViewAxis
         ViewAxis( const mc::View &view_ );
 
         void initialize();
-        void resize(float aspectRatio_);
-        void loadShader() const;
+        void resize(float aspect_ratio_);
+        void load_shader() const;
         void draw() const;
 
         ~ViewAxis() noexcept = default;

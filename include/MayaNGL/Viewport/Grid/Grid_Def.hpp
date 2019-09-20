@@ -10,18 +10,18 @@ Grid::Grid( const mc::View &view_,
             :
             view(view_),
             projection(projection_),
-            lookAt(camera_.getLookAt())
+            lookAt(camera_.get_lookAt())
 {;}
 
 template<mc::CamView>
-void Grid::viewOrientation()
+void Grid::view_orientation()
 {
     m_model.identity();
 }
 
 template<>
-void Grid::viewOrientation<mc::CamView::FRONT>();
+void Grid::view_orientation<mc::CamView::FRONT>();
 
 template<>
-void Grid::viewOrientation<mc::CamView::SIDE>();
+void Grid::view_orientation<mc::CamView::SIDE>();
 

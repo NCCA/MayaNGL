@@ -4,23 +4,17 @@
 
 
 template<bool visualize_bv_and_ray>
+    template<typename CAM>
 Select<visualize_bv_and_ray>::Select( const mc::View &view_,
                                       const mc::Projection &projection_,
-                                      const Camera &camera_ )
+                                      const CAM &camera_ )
                                       :
-                                      Base_Selection<visualize_bv_and_ray>(view_,projection_,camera_.getLookAt()),
+                                      BaseSelection<visualize_bv_and_ray>(view_,projection_,camera_.get_lookAt()),
                                       m_multi_selection(false)
 {;}
 
 template<bool visualize_bv_and_ray>
-bool Select<visualize_bv_and_ray>::alreadySelected(std::size_t id_) const
-{
-    auto elem = std::find(this->m_currently_selected.cbegin(),this->m_currently_selected.cend(),id_);
-    return (elem != this->m_currently_selected.cend());
-}
-
-template<bool visualize_bv_and_ray>
-std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance_)
+std::size_t Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
 {
     std::size_t selected_id = 0;
 
@@ -29,8 +23,8 @@ std::size_t Select<visualize_bv_and_ray>::getSelectedId(float &shortest_distance
         auto &&id = i.first;
         auto &&prim = i.second;
 
-        auto poi = clickedOnObject(prim);
-        if (!alreadySelected(id) && (poi != mc::failed))
+        auto poi = clicked_on_object(prim);
+        if (!this->already_selected(id) && (poi != mc::failed))
         {
             auto dist = (poi-this->cam_lookAt.eye).lengthSquared();
             if (shortest_distance_ > dist)
@@ -48,8 +42,8 @@ template<bool visualize_bv_and_ray>
     template<typename PRIM>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
-    if (this->m_selectables.find(id_) == this->m_selectables.cend())
-        this->m_selectables.emplace(id_, VariantPrim{std::forward<PRIM>(prim_),transform_,is_moveable_});
+    if (this->id_is_not_found(id_))
+        this->insert(id_,prim_,transform_,is_moveable_);
 }
 
 template<bool visualize_bv_and_ray>
@@ -60,15 +54,15 @@ void Select<visualize_bv_and_ray>::resize(int w_, int h_)
 }
 
 template<bool visualize_bv_and_ray>
-void Select<visualize_bv_and_ray>::enableMultiSelection()
+void Select<visualize_bv_and_ray>::enable_multi_selection()
 {
     m_multi_selection = true;
 }
 
 template<bool visualize_bv_and_ray>
-mc::Position Select<visualize_bv_and_ray>::clickedOnObject(const VariantPrim &selectable_)
+mc::Position Select<visualize_bv_and_ray>::clicked_on_object(const VariantPrim &selectable_)
 {
-    auto &&transform = selectable_.getTransform();
+    auto &&transform = selectable_.get_transform();
 
     auto pos = mc::Position{transform.m_30,transform.m_31,transform.m_32};
     float rad = std::max({transform.m_00,transform.m_11,transform.m_22});
@@ -89,7 +83,7 @@ void Select<visualize_bv_and_ray>::pick()
 
     auto &&maxf = std::numeric_limits<float>::max();
     float shortest_distance = maxf;
-    std::size_t selected_id = getSelectedId(shortest_distance);
+    std::size_t selected_id = get_selected_id(shortest_distance);
     bool something_selected = (shortest_distance < maxf);
 
     if (something_selected)

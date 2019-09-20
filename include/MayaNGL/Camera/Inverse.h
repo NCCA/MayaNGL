@@ -17,8 +17,8 @@ class Inverse
 
     Inverse( const CAM &cam_ );
 
-    mc::Direction calcCurrent();
-    mc::Direction calcShadow();
+    mc::Direction calc_current();
+    mc::Direction calc_shadow();
     void reset();
 
     ~Inverse() noexcept = default;

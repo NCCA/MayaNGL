@@ -27,6 +27,7 @@ HEADERS += $$PWD/include/*.h \
            $$PWD/include/MayaNGL/Viewport/ProjectionText/*.h* \
            $$PWD/include/MayaNGL/Viewport/ViewAxis/*.h* \
            $$PWD/include/MayaNGL/Selection/*.h* \
+           $$PWD/include/MayaNGL/SelectableMap/*.h* \
            $$PWD/include/MayaNGL/Gizmo/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
@@ -39,6 +40,7 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ProjectionText/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
            $$PWD/src/MayaNGL/Selection/*.cpp \
+           $$PWD/src/MayaNGL/SelectableMap/*.cpp \
            $$PWD/src/MayaNGL/Gizmo/*.cpp
 
 OTHER_FILES += $$PWD/shaders/*.glsl \

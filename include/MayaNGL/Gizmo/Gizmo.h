@@ -33,31 +33,30 @@ class Gizmo
 
     private:
         template<Handle H>
-        bool clickedOn(const mc::Ray &mouse_ray_);
+        bool clicked_on(const mc::Ray &mouse_ray_);
         template<Handle H>
-        void dragOn();
+        void dragged_on();
 
         float calc_length(float p_);
-        void loadShader() const;
-        void loadShader(mc::Colour &&colour_) const;
+        void load_shader() const;
+        void load_shader(mc::Colour &&colour_) const;
 
     public:
         Gizmo( const mc::View &view_,
                const mc::Projection &projection_,
                const Camera &camera_ );
 
-        GET_MEMBER(m_object_model,ObjectTransform)
+        GET_MEMBER(m_object_model,object_transform)
 
         void initialize();
-        void setPosition(float x_, float y_, float z_);
         void make_moveable(mc::Transform &transform_);
         void show();
         void hide();
         bool is_enabled();
         bool is_selected();
         void deselect();
-        void findSelectedHandle(const mc::Ray &mouse_ray_);
-        void drag_on_axis(const mc::V2 &mouse_drag_);
+        void find_selected_handle(const mc::Ray &mouse_ray_);
+        void dragged_on_axis(const mc::V2 &mouse_drag_);
         void draw();
 
         ~Gizmo() noexcept;

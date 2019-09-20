@@ -29,19 +29,19 @@ void ViewAxis::initialize()
     m_vao->unbind();
 }
 
-void ViewAxis::resize(float aspectRatio_)
+void ViewAxis::resize(float aspect_ratio_)
 {
     float zoom = 20.f;
-    m_projection = ngl::ortho(-aspectRatio_*zoom,aspectRatio_*zoom,-zoom,zoom,mc::near_clip,mc::far_clip);
+    m_projection = ngl::ortho(-aspect_ratio_*zoom,aspect_ratio_*zoom,-zoom,zoom,mc::near_clip,mc::far_clip);
 
-    auto pos = mc::Position(1.5f-(aspectRatio_*zoom),1.5f-zoom,0.f);
+    auto pos = mc::Position(1.5f-(aspect_ratio_*zoom),1.5f-zoom,0.f);
     m_model.translate(pos.m_x,pos.m_y,pos.m_z);
 }
 
-void ViewAxis::loadShader() const
+void ViewAxis::load_shader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use(mc::AxisShader);
+    shader->use(mc::axis_shader);
 
     auto rot = scene_view;
     rot.translate(0.f,0.f,0.f);
@@ -52,7 +52,7 @@ void ViewAxis::loadShader() const
 
 void ViewAxis::draw() const
 {
-    loadShader();
+    load_shader();
     m_vao->bind();
     m_vao->draw();
     m_vao->unbind();

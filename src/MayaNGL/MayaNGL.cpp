@@ -17,11 +17,11 @@ MayaNGL::MayaNGL( mc::View &view_,
 
 void MayaNGL::initialize()
 {
-    mc::initializeAdditionalShaders();
+    mc::initialize_additional_shaders();
     m_viewport.initialize();
     m_gizmo.initialize();
     m_select.initialize();
-    m_viewport.setView<mc::CamView::PERSPECTIVE>();
+    m_viewport.set_view<mc::CamView::PERSPECTIVE>();
 }
 
 void MayaNGL::resize(int w_, int h_)
@@ -42,7 +42,7 @@ void MayaNGL::draw_gizmo()
         m_gizmo.draw();
 }
 
-void MayaNGL::keyPress(QKeyEvent *event_)
+void MayaNGL::key_press(QKeyEvent *event_)
 {
     switch ( event_->key() )
     {
@@ -54,25 +54,25 @@ void MayaNGL::keyPress(QKeyEvent *event_)
         case Qt::Key_Space:
             m_mouse.reset();
             m_camera.reset(m_initial_lookAt);
-            m_viewport.setView<mc::CamView::PERSPECTIVE>();
+            m_viewport.set_view<mc::CamView::PERSPECTIVE>();
             break;
 
         case Qt::Key_1:
             m_mouse.reset();
             m_camera.front();
-            m_viewport.setView<mc::CamView::FRONT>();
+            m_viewport.set_view<mc::CamView::FRONT>();
             break;
 
         case Qt::Key_2:
             m_mouse.reset();
             m_camera.side();
-            m_viewport.setView<mc::CamView::SIDE>();
+            m_viewport.set_view<mc::CamView::SIDE>();
             break;
 
         case Qt::Key_3:
             m_mouse.reset();
             m_camera.top();
-            m_viewport.setView<mc::CamView::TOP>();
+            m_viewport.set_view<mc::CamView::TOP>();
             break;
 
         default:
@@ -80,26 +80,26 @@ void MayaNGL::keyPress(QKeyEvent *event_)
     }
 }
 
-void MayaNGL::mousePress(QMouseEvent *event_)
+void MayaNGL::mouse_press(QMouseEvent *event_)
 {
     bool lmb = (event_->button() == Qt::LeftButton);
     if (lmb)
     {
-        m_mouse.setAnchor(event_->x(),event_->y());
+        m_mouse.set_anchor(event_->x(),event_->y());
 
         bool alt = (event_->modifiers() & Qt::AltModifier);
         if (!alt)
         {
-            m_select.emitRay(event_->x(),event_->y());
+            m_select.emit_ray(event_->x(),event_->y());
             if (m_gizmo.is_enabled())
-                m_gizmo.findSelectedHandle(m_select.getRay());
+                m_gizmo.find_selected_handle(m_select.get_ray());
         }
     }
 }
 
-void MayaNGL::mouseMove(QMouseEvent *event_)
+void MayaNGL::mouse_move(QMouseEvent *event_)
 {
-    m_mouse.setTransform(event_->x(),event_->y());
+    m_mouse.set_transform(event_->x(),event_->y());
 
     bool alt = (event_->modifiers() & Qt::AltModifier);
     if (alt)
@@ -107,7 +107,7 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
         switch(event_->buttons())
         {
             case Qt::LeftButton:
-                if (m_camera.getCurrentView() == mc::CamView::PERSPECTIVE)
+                if (m_camera.get_current_view() == mc::CamView::PERSPECTIVE)
                     m_camera.pan();
                 break;
 
@@ -117,8 +117,8 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
 
             case Qt::RightButton:
                 m_camera.dolly();
-                if (m_camera.getCurrentView() != mc::CamView::PERSPECTIVE)
-                    m_viewport.orthoZoom(m_mouse.getDrag());
+                if (m_camera.get_current_view() != mc::CamView::PERSPECTIVE)
+                    m_viewport.ortho_zoom(m_mouse.get_drag());
                 break;
 
             default:
@@ -129,14 +129,14 @@ void MayaNGL::mouseMove(QMouseEvent *event_)
     {
         if (m_gizmo.is_selected())
         {
-            m_gizmo.drag_on_axis(m_mouse.getDrag());
-            auto last_elem = m_select.getCurrentlySelected().back();
-            m_select.setPrimTransform(last_elem,*m_gizmo.getObjectTransform());
+            m_gizmo.dragged_on_axis(m_mouse.get_drag());
+            auto last_elem = m_select.get_currently_selected().back();
+            m_select.set_primitive_transform(last_elem,*m_gizmo.get_object_transform());
         }
     }
 }
 
-void MayaNGL::mouseRelease(QMouseEvent *event_)
+void MayaNGL::mouse_release(QMouseEvent *event_)
 {
     bool alt = (event_->modifiers() & Qt::AltModifier);
     bool lmb = (event_->button() == Qt::LeftButton);
@@ -145,7 +145,7 @@ void MayaNGL::mouseRelease(QMouseEvent *event_)
     {
         bool shft = (event_->modifiers() == Qt::ShiftModifier);
         if(shft)
-            m_select.enableMultiSelection();
+            m_select.enable_multi_selection();
 
         if (!m_gizmo.is_selected())
         {
@@ -154,10 +154,10 @@ void MayaNGL::mouseRelease(QMouseEvent *event_)
         }
 
         m_gizmo.deselect();
-        if (!m_select.getCurrentlySelected().empty())
+        if (!m_select.get_currently_selected().empty())
         {
-            auto last_elem = m_select.getCurrentlySelected().back();
-            auto is_selected_moveable = m_select.getAllSelectables().at(last_elem).getIsMoveable();
+            auto last_elem = m_select.get_currently_selected().back();
+            auto is_selected_moveable = m_select.get_all_selectables().at(last_elem).get_is_moveable();
             if (is_selected_moveable)
                 m_gizmo.show();
         }

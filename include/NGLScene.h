@@ -29,7 +29,7 @@ class NGLScene : public QOpenGLWindow
 
     private:
         template<bool using_texture = false>
-        void loadDiffTexShader(const ngl::Mat4 &mat_);
+        void loadShader(const ngl::Mat4 &mat_);
 
         void keyPressEvent(QKeyEvent *event_ = nullptr) override;
         void mousePressEvent(QMouseEvent *event_ = nullptr) override;

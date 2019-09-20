@@ -14,7 +14,7 @@ class Grid
         mc::Transform m_model;
 
     private:
-        void loadShader() const;
+        void load_shader() const;
 
     public:
         template<typename C>
@@ -23,7 +23,7 @@ class Grid
                        const C &camera_ );
 
         template<mc::CamView>
-        void viewOrientation();
+        void view_orientation();
 
         void initialize();
         void draw() const;

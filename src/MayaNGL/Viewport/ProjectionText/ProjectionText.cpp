@@ -9,25 +9,25 @@ ProjectionText::ProjectionText() : m_screen_width(0),
 {;}
 
 template<>
-void ProjectionText::viewTitle<mc::CamView::PERSPECTIVE>()
+void ProjectionText::view_title<mc::CamView::PERSPECTIVE>()
 {
     m_title = "persp";
 }
 
 template<>
-void ProjectionText::viewTitle<mc::CamView::FRONT>()
+void ProjectionText::view_title<mc::CamView::FRONT>()
 {
     m_title = "front";
 }
 
 template<>
-void ProjectionText::viewTitle<mc::CamView::SIDE>()
+void ProjectionText::view_title<mc::CamView::SIDE>()
 {
     m_title = "side";
 }
 
 template<>
-void ProjectionText::viewTitle<mc::CamView::TOP>()
+void ProjectionText::view_title<mc::CamView::TOP>()
 {
     m_title = "top";
 }

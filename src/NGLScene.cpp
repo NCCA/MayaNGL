@@ -29,9 +29,9 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
-    m_view = ngl::lookAt(m_maya.getCamera().getEye(),
-                         m_maya.getCamera().getTarget(),
-                         m_maya.getCamera().getUp());
+    m_view = ngl::lookAt(m_maya.get_camera().get_eye(),
+                         m_maya.get_camera().get_target(),
+                         m_maya.get_camera().get_up());
 
     m_maya.initialize();
 
@@ -65,7 +65,7 @@ void NGLScene::initializeGL()
 }
 
 template<>
-void NGLScene::loadDiffTexShader<false>(const ngl::Mat4 &mat_)
+void NGLScene::loadShader<false>(const ngl::Mat4 &mat_)
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglDiffuseShader);
@@ -81,7 +81,7 @@ void NGLScene::loadDiffTexShader<false>(const ngl::Mat4 &mat_)
 }
 
 template<>
-void NGLScene::loadDiffTexShader<true>(const ngl::Mat4 &mat_)
+void NGLScene::loadShader<true>(const ngl::Mat4 &mat_)
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use("DiffTexShader");
@@ -106,49 +106,35 @@ void NGLScene::paintGL()
 
     // This is a moveable object, so there's no point in reseting the model matrix.
     {
-        loadDiffTexShader<false>(m_model);
+        m_model.scale(1.f,1.f,1.f);
+        loadShader<false>(m_model);
         prim->draw( "teapot" );
         m_maya.make_selectable_and_moveable(1,"teapot",m_model);
     }
 
-    m_transform.reset();
-    {
-        m_transform.setPosition(8.f,0.f,0.f);
-        m_transform.setRotation(0.f,45.f,0.f);
-        m_transform.setScale(1.5f,1.5f,1.5f);
-        loadDiffTexShader<false>(m_transform.getMatrix());
-        prim->draw( "football" );
-        m_maya.make_selectable(2,"football",m_transform);
-    }
-
-//    m_model.identity();
 //    {
-//        m_model.translate(-8.f,0.f,0.f);
-//        m_model.rotateZ(70.f);
-//        m_model.scale(3.f,3.f,3.f);
-//        loadDiffTexShader<false>(m_model);
-//        prim->draw( "cube" );
-//        m_maya.make_selectable(3,"cube",m_model);
+//        m_model.scale(2.f,2.f,2.f);
+//        loadShader<true>(m_model);
+//        m_fish_mesh->draw();
+//        m_maya.make_selectable_and_moveable(2,m_fish_mesh,m_model);
+//    }
+
+//    m_transform.reset();
+//    {
+//        m_transform.setPosition(8.f,0.f,0.f);
+//        loadShader<false>(m_transform.getMatrix());
+//        prim->draw( "football" );
+//        m_maya.make_selectable(3,"football",m_transform);
 //    }
 
 //    m_transform.reset();
 //    {
 //        m_transform.setPosition(0.f,0.f,8.f);
-//        m_transform.setRotation(0.f,0.f,0.f);
-//        m_transform.setScale(3.f,3.f,3.f);
-//        loadDiffTexShader<false>(m_transform.getMatrix());
+//        m_transform.setRotation(0.f,30.f,0.f);
+//        m_transform.setScale(2.f,2.f,2.f);
+//        loadShader<false>(m_transform.getMatrix());
 //        m_airplane_mesh.draw();
 //        m_maya.make_selectable(4,m_airplane_mesh,m_transform);
-//    }
-
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(0.f,0.f,-8.f);
-//        m_transform.setRotation(0.f,0.f,0.f);
-//        m_transform.setScale(3.f,3.f,3.f);
-//        loadDiffTexShader<true>(m_transform.getMatrix());
-//        m_fish_mesh->draw();
-//        m_maya.make_selectable(5,m_fish_mesh,m_transform);
 //    }
 
     m_maya.draw_gizmo();
@@ -166,25 +152,25 @@ void NGLScene::keyPressEvent(QKeyEvent *event_)
             break;
     }
 
-    m_maya.keyPress(event_);
+    m_maya.key_press(event_);
     update();
 }
 
 void NGLScene::mousePressEvent(QMouseEvent *event_)
 {
-    m_maya.mousePress(event_);
+    m_maya.mouse_press(event_);
     update();
 }
 
 void NGLScene::mouseMoveEvent(QMouseEvent *event_)
 {
-    m_maya.mouseMove(event_);
+    m_maya.mouse_move(event_);
     update();
 }
 
 void NGLScene::mouseReleaseEvent(QMouseEvent *event_)
 {
-    m_maya.mouseRelease(event_);
+    m_maya.mouse_release(event_);
     update();
 }
 

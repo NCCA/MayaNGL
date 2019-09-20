@@ -28,6 +28,7 @@ namespace mc //maya common
     template<>
     struct Plane<false> : Plane<true>
     {
+        enum CRNR {TL,TR,BL,BR};
         typedef std::array<Position,4> Points;
 
         Size<V2> size;
@@ -42,20 +43,17 @@ namespace mc //maya common
                Plane<true>{position_,normal_},
                size(size_),
                orientation(orientation_),
-               corners(initCorners())
+               corners(init_corners())
         {;}
 
-        Points initCorners()
+        Points init_corners()
         {
-            Points tmp = {{
-                            {this->position.m_x-size.m_x,this->position.m_y+size.m_y,this->position.m_z}, // TL
-                            {this->position.m_x+size.m_x,this->position.m_y+size.m_y,this->position.m_z}, // TR
-                            {this->position.m_x-size.m_x,this->position.m_y-size.m_y,this->position.m_z}, // BL
-                            {this->position.m_x+size.m_x,this->position.m_y-size.m_y,this->position.m_z}  // BR
-                         }};
+            Points tmp;
 
-            for (auto &&i : tmp)
-                i = i * orientation;
+            tmp[TL] = this->position + mc::Position{-size.m_x, size.m_y, 0.f} * orientation;
+            tmp[TR] = this->position + mc::Position{ size.m_x, size.m_y, 0.f} * orientation;
+            tmp[BL] = this->position + mc::Position{-size.m_x,-size.m_y, 0.f} * orientation;
+            tmp[BR] = this->position + mc::Position{ size.m_x,-size.m_y, 0.f} * orientation;
 
             return tmp;
         }
@@ -90,19 +88,19 @@ namespace mc //maya common
         Direction up = Direction::up();
         Direction front = glm::normalize((target-eye).toGLM());
 
-        float calcDist() const;
-        Direction calcDirection() const;
+        float calc_dist() const;
+        Direction calc_direction() const;
     };
 
 
     template<typename T>
-    T toDegs(T num_)
+    T to_degs(T num_)
     {
         return static_cast<T>(num_*(180.f/M_PI));
     }
 
     template<typename T>
-    T toRads(T num_)
+    T to_rads(T num_)
     {
         return static_cast<T>(num_*(M_PI/180.f));
     }

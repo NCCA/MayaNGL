@@ -4,14 +4,14 @@
 
 
 template<mc::CamView V>
-void Viewport::setView()
+void Viewport::set_view()
 {
-    m_projText.viewTitle<V>();
-    m_grid.viewOrientation<V>();
+    m_projected_text.view_title<V>();
+    m_grid.view_orientation<V>();
     m_orthographic_zoom = 10.f;
-    goOrtho();
-    m_initial_view = ngl::lookAt(camera.getEye(),camera.getTarget(),camera.getUp());
+    go_ortho();
+    m_initial_view = ngl::lookAt(camera.get_eye(),camera.get_target(),camera.get_up());
 }
 
 template<>
-void Viewport::setView<mc::CamView::PERSPECTIVE>();
+void Viewport::set_view<mc::CamView::PERSPECTIVE>();

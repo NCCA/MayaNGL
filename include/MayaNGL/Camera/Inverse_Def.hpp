@@ -7,33 +7,33 @@ template<typename CAM>
 Inverse<CAM>::Inverse( const CAM &cam_ )
                        :
                        cam(cam_),
-                       current(calcCurrent()),
+                       current(calc_current()),
                        original(current),
-                       shadow(calcShadow())
+                       shadow(calc_shadow())
 {;}
 
 template<typename CAM>
-mc::Direction Inverse<CAM>::calcCurrent()
+mc::Direction Inverse<CAM>::calc_current()
 {
-    current = cam.getEye() - cam.getTarget();
+    current = cam.get_eye() - cam.get_target();
     current.normalize();
     return current;
 }
 
 template<typename CAM>
-mc::Direction Inverse<CAM>::calcShadow()
+mc::Direction Inverse<CAM>::calc_shadow()
 {
     auto shd = mc::Direction(current.m_x,0.f,current.m_z);
     if (mc::round(shd,6) == mc::Direction::zero())
-        shd = cam.getUp().cross(current);
+        shd = cam.get_up().cross(current);
     return shd;
 }
 
 template<typename CAM>
 void Inverse<CAM>::reset()
 {
-    current = calcCurrent();
+    current = calc_current();
     original = current;
-    shadow = calcShadow();
+    shadow = calc_shadow();
 }
 

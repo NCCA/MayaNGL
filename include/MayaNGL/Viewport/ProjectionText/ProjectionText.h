@@ -18,7 +18,7 @@ class ProjectionText
         explicit ProjectionText();
 
         template<mc::CamView>
-        void viewTitle();
+        void view_title();
 
         void initialize();
         void resize(int w_, int h_);

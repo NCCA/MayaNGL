@@ -13,10 +13,10 @@ class Focus
     Focus(CAM &camera_);
 
     template<typename SEL>
-    void onSelected(const SEL &select_);
+    void on_selected(const SEL &select_);
 
-    mc::Position track(float dist_, mc::Position &axis_);
-    mc::Rotation pan(float dist_, const mc::Position &target_pos_);
+    mc::Position track(float distance_, mc::Position &axis_);
+    mc::Rotation pan(float distance_, const mc::Position &target_pos_);
     float dolly(const mc::Position &target_pos_, const mc::Size<> &target_size_);
 };
 

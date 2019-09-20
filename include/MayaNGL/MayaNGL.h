@@ -27,7 +27,7 @@ class MayaNGL
         explicit MayaNGL( mc::View &view_,
                           mc::Projection &projection_ );
 
-        GET_MEMBER(m_camera,Camera)
+        GET_MEMBER(m_camera,camera)
 
         template<typename T, std::size_t N, template<typename,std::size_t> class CNT>
         void initialize(const CNT<T,N> &lookAt_);
@@ -48,13 +48,6 @@ class MayaNGL
         template<typename PRIM>
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
 
-        template<typename PRIM, typename T, typename =  std::enable_if_t<
-                                                            std::is_same<
-                                                                decltype(std::declval<T>().getMatrix()),mc::Transform
-                                                                        >::value
-                                                                        >>
-        void make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, T &transform_);
-
         template<typename PRIM>
         void make_selectable_and_moveable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_);
 
@@ -63,10 +56,10 @@ class MayaNGL
         void draw();
         void draw_gizmo();
 
-        void keyPress(QKeyEvent *event_);
-        void mousePress(QMouseEvent *event_);
-        void mouseMove(QMouseEvent *event_);
-        void mouseRelease(QMouseEvent *event_);
+        void key_press(QKeyEvent *event_);
+        void mouse_press(QMouseEvent *event_);
+        void mouse_move(QMouseEvent *event_);
+        void mouse_release(QMouseEvent *event_);
 
         ~MayaNGL() noexcept = default;
 };

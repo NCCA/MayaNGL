@@ -29,7 +29,7 @@ Gizmo::Gizmo( const mc::View &view_,
 {;}
 
 template<>
-bool Gizmo::clickedOn<Gizmo::Handle::X>(const mc::Ray &mouse_ray_)
+bool Gizmo::clicked_on<Gizmo::Handle::X>(const mc::Ray &mouse_ray_)
 {
     mc::Ray handle{m_position,m_coordinates[1]};
     auto poi = mc::intersect(mouse_ray_,handle);
@@ -39,7 +39,7 @@ bool Gizmo::clickedOn<Gizmo::Handle::X>(const mc::Ray &mouse_ray_)
 }
 
 template<>
-bool Gizmo::clickedOn<Gizmo::Handle::Y>(const mc::Ray &mouse_ray_)
+bool Gizmo::clicked_on<Gizmo::Handle::Y>(const mc::Ray &mouse_ray_)
 {
     mc::Ray handle{m_position,m_coordinates[3]};
     auto poi = mc::intersect(mouse_ray_,handle);
@@ -49,7 +49,7 @@ bool Gizmo::clickedOn<Gizmo::Handle::Y>(const mc::Ray &mouse_ray_)
 }
 
 template<>
-bool Gizmo::clickedOn<Gizmo::Handle::Z>(const mc::Ray &mouse_ray_)
+bool Gizmo::clicked_on<Gizmo::Handle::Z>(const mc::Ray &mouse_ray_)
 {
     mc::Ray handle{m_position,m_coordinates[5]};
     auto poi = mc::intersect(mouse_ray_,handle);
@@ -59,10 +59,10 @@ bool Gizmo::clickedOn<Gizmo::Handle::Z>(const mc::Ray &mouse_ray_)
 }
 
 template<>
-bool Gizmo::clickedOn<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
+bool Gizmo::clicked_on<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
 {
-    auto &&direction = camera.getInvDirection();
-    float size = m_uniform_scale*0.3f;
+    auto &&direction = camera.get_inv_direction();
+    float size = m_uniform_scale*0.6f;
     mc::Plane<false> handle = {m_position,direction,mc::V2(size,size),m_orientation};
 
     auto poi = mc::intersect(mouse_ray_,handle);
@@ -72,7 +72,7 @@ bool Gizmo::clickedOn<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
 }
 
 template<>
-void Gizmo::dragOn<Gizmo::Handle::X>()
+void Gizmo::dragged_on<Gizmo::Handle::X>()
 {
     auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
     m_position.m_x += Tx;
@@ -80,7 +80,7 @@ void Gizmo::dragOn<Gizmo::Handle::X>()
 }
 
 template<>
-void Gizmo::dragOn<Gizmo::Handle::Y>()
+void Gizmo::dragged_on<Gizmo::Handle::Y>()
 {
     auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
     m_position.m_y += Ty;
@@ -88,7 +88,7 @@ void Gizmo::dragOn<Gizmo::Handle::Y>()
 }
 
 template<>
-void Gizmo::dragOn<Gizmo::Handle::Z>()
+void Gizmo::dragged_on<Gizmo::Handle::Z>()
 {
     auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
     m_position.m_z += Tz;
@@ -96,7 +96,7 @@ void Gizmo::dragOn<Gizmo::Handle::Z>()
 }
 
 template<>
-void Gizmo::dragOn<Gizmo::Handle::MID>()
+void Gizmo::dragged_on<Gizmo::Handle::MID>()
 {
     auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
     auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
@@ -117,17 +117,17 @@ float Gizmo::calc_length(float p_)
     return length;
 }
 
-void Gizmo::loadShader() const
+void Gizmo::load_shader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use(mc::AxisShader);
+    shader->use(mc::axis_shader);
 
     auto MVP = projection * view * m_model;
 
     shader->setUniform("MVP",MVP);
 }
 
-void Gizmo::loadShader(mc::Colour &&colour_) const
+void Gizmo::load_shader(mc::Colour &&colour_) const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglColourShader);
@@ -152,17 +152,13 @@ void Gizmo::initialize()
     prim->createDisk("central",0.5f,4);
 }
 
-void Gizmo::setPosition(float x_, float y_, float z_)
-{
-    m_position.m_x = x_;
-    m_position.m_y = y_;
-    m_position.m_z = z_;
-}
-
 void Gizmo::make_moveable(mc::Transform &transform_)
 {
+    // I may have to store a list of pointers to indiv model matrices.
     m_object_model = &transform_;
-    setPosition(m_object_model->m_30,m_object_model->m_31,m_object_model->m_32);
+    m_position.m_x = m_object_model->m_30;
+    m_position.m_y = m_object_model->m_31;
+    m_position.m_z = m_object_model->m_32;
 }
 
 void Gizmo::show()
@@ -190,53 +186,53 @@ void Gizmo::deselect()
     m_handle_selected = Gizmo::Handle::NONE;
 }
 
-void Gizmo::findSelectedHandle(const mc::Ray &mouse_ray_)
+void Gizmo::find_selected_handle(const mc::Ray &mouse_ray_)
 {
     m_handle_selected = Handle::NONE;
-    if (clickedOn<Handle::MID>(mouse_ray_))
+    if (clicked_on<Handle::MID>(mouse_ray_))
     {
         m_handle_selected = Handle::MID;
         return;
     }
-//    if (clickedOn<Handle::X>(mouse_ray_))
-//    {
-//        m_handle_selected = Handle::X;
-//        return;
-//    }
-//    if (clickedOn<Handle::Y>(mouse_ray_))
-//    {
-//        m_handle_selected = Handle::Y;
-//        return;
-//    }
-//    if (clickedOn<Handle::Z>(mouse_ray_))
-//    {
-//        m_handle_selected = Handle::Z;
-//        return;
-//    }
+    if (clicked_on<Handle::X>(mouse_ray_))
+    {
+        m_handle_selected = Handle::X;
+        return;
+    }
+    if (clicked_on<Handle::Y>(mouse_ray_))
+    {
+        m_handle_selected = Handle::Y;
+        return;
+    }
+    if (clicked_on<Handle::Z>(mouse_ray_))
+    {
+        m_handle_selected = Handle::Z;
+        return;
+    }
 }
 
-void Gizmo::drag_on_axis(const mc::V2 &mouse_drag_)
+void Gizmo::dragged_on_axis(const mc::V2 &mouse_drag_)
 {
-    float dist_from_cam = camera.getLookAt().calcDist()*0.002f;
+    float dist_from_cam = camera.get_lookAt().calc_dist()*0.002f;
     mouse_move = mouse_drag_ * dist_from_cam;
-    m_hv_axis = camera.calc_local_HV_axis();
+    m_hv_axis = camera.calc_local_hv_axis();
 
     switch(m_handle_selected)
     {
         case Handle::X:
-            dragOn<Handle::X>();
+            dragged_on<Handle::X>();
             break;
 
         case Handle::Y:
-            dragOn<Handle::Y>();
+            dragged_on<Handle::Y>();
             break;
 
         case Handle::Z:
-            dragOn<Handle::Z>();
+            dragged_on<Handle::Z>();
             break;
 
         case Handle::MID:
-            dragOn<Handle::MID>();
+            dragged_on<Handle::MID>();
             break;
 
         default:
@@ -255,7 +251,7 @@ void Gizmo::draw()
     {
         m_model.scale(m_average_dist,m_average_dist,m_average_dist);
         m_model.translate(m_position.m_x,m_position.m_y,m_position.m_z);
-        loadShader();
+        load_shader();
         m_vao->bind();
         m_vao->draw();
         m_vao->unbind();
@@ -269,7 +265,7 @@ void Gizmo::draw()
         m_orientation.rotateY(90.f);
         m_model = m_uniform_scale * m_orientation;
         m_model.translate(m_position.m_x+m_average_dist,m_position.m_y,m_position.m_z);
-        loadShader(mc::Colour(1.f,0.f,0.f,1.f));
+        load_shader(mc::Colour(1.f,0.f,0.f,1.f));
         prim->draw("arrow_head");
     }
 
@@ -279,7 +275,7 @@ void Gizmo::draw()
         m_orientation.rotateX(-90.f);
         m_model = m_uniform_scale * m_orientation;
         m_model.translate(m_position.m_x,m_position.m_y+m_average_dist,m_position.m_z);
-        loadShader(mc::Colour(0.f,1.f,0.f,1.f));
+        load_shader(mc::Colour(0.f,1.f,0.f,1.f));
         prim->draw("arrow_head");
     }
 
@@ -287,25 +283,25 @@ void Gizmo::draw()
     {
         m_model.scale(m_uniform_scale,m_uniform_scale,m_uniform_scale);
         m_model.translate(m_position.m_x,m_position.m_y,m_position.m_z+m_average_dist);
-        loadShader(mc::Colour(0.f,0.f,1.f,1.f));
+        load_shader(mc::Colour(0.f,0.f,1.f,1.f));
         prim->draw("arrow_head");
     }
 
     m_model.identity();
     {
-        auto &&direction = camera.getInvDirection();
-        auto &&shadow = camera.getInvShadow();
+        auto &&direction = camera.get_inv_direction();
+        auto &&shadow = camera.get_inv_shadow();
 
         mc::Rotation Rz;
         Rz.rotateZ(45.f);
 
         auto theta = atan2(direction.m_x,direction.m_z);
-        mc::Rotation Ry = mc::Y_Matrix(-theta);
+        mc::Rotation Ry = mc::y_matrix(-theta);
 
-        auto rotationAxis = camera.getUp().cross(shadow);
-        rotationAxis.normalize();
-        auto phi = atan2(rotationAxis.dot(direction.cross(shadow)) , direction.dot(shadow));
-        mc::Rotation Rx = mc::Axis_Matrix(phi,rotationAxis);
+        auto rotation_axis = camera.get_up().cross(shadow);
+        rotation_axis.normalize();
+        auto phi = atan2(rotation_axis.dot(direction.cross(shadow)) , direction.dot(shadow));
+        mc::Rotation Rx = mc::axis_matrix(phi,rotation_axis);
 
         m_orientation = Rx * Ry;
 
@@ -313,7 +309,7 @@ void Gizmo::draw()
         m_model.translate(m_position.m_x,m_position.m_y,m_position.m_z);
 
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        loadShader(mc::Colour(1.f,1.f,0.f,1.f));
+        load_shader(mc::Colour(1.f,1.f,0.f,1.f));
         prim->draw("central");
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }

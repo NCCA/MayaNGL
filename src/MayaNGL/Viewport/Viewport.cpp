@@ -9,44 +9,44 @@ Viewport::Viewport( mc::View &view_,
                     view(view_),
                     projection(projection_),
                     camera(camera_),
-                    m_aspectRatio(0.f),
+                    m_aspect_ratio(0.f),
                     m_orthographic_zoom(10.f),
                     m_initial_view(view),
                     m_grid(view,projection,camera),
-                    m_projText(),
+                    m_projected_text(),
                     m_axis(view)
 {;}
 
 void Viewport::initialize()
 {
     m_grid.initialize();
-    m_projText.initialize();
+    m_projected_text.initialize();
     m_axis.initialize();
     m_initial_view = view;
 }
 
 void Viewport::resize(int w_, int h_)
 {
-    m_aspectRatio = static_cast<float>(w_)/h_;
+    m_aspect_ratio = static_cast<float>(w_)/h_;
 
-    if (camera.getCurrentView() != mc::CamView::PERSPECTIVE)
-        goOrtho();
+    if (camera.get_current_view() != mc::CamView::PERSPECTIVE)
+        go_ortho();
     else
-        goPersp();
+        go_persp();
 
-    m_projText.resize(w_,h_);
-    m_axis.resize(m_aspectRatio);
+    m_projected_text.resize(w_,h_);
+    m_axis.resize(m_aspect_ratio);
 }
 
-void Viewport::goPersp()
+void Viewport::go_persp()
 {
-    projection = ngl::perspective(mc::fov,m_aspectRatio,mc::near_clip,mc::far_clip);
+    projection = ngl::perspective(mc::fov,m_aspect_ratio,mc::near_clip,mc::far_clip);
 }
 
-void Viewport::goOrtho()
+void Viewport::go_ortho()
 {
-    projection = ngl::ortho( -m_aspectRatio*m_orthographic_zoom,
-                              m_aspectRatio*m_orthographic_zoom,
+    projection = ngl::ortho( -m_aspect_ratio*m_orthographic_zoom,
+                              m_aspect_ratio*m_orthographic_zoom,
                              -m_orthographic_zoom,
                               m_orthographic_zoom,
                               mc::near_clip,
@@ -55,27 +55,27 @@ void Viewport::goOrtho()
 
 void Viewport::update_draw()
 {
-    view = m_initial_view * camera.computeTransform();
+    view = m_initial_view * camera.compute_transform();
 
     m_grid.draw();
-    m_projText.draw();
+    m_projected_text.draw();
     m_axis.draw();
 }
 
 template<>
-void Viewport::setView<mc::CamView::PERSPECTIVE>()
+void Viewport::set_view<mc::CamView::PERSPECTIVE>()
 {
-    m_projText.viewTitle<mc::CamView::PERSPECTIVE>();
-    m_grid.viewOrientation<mc::CamView::PERSPECTIVE>();
-    goPersp();
-    m_initial_view = ngl::lookAt(camera.getEye(),camera.getTarget(),camera.getUp());
+    m_projected_text.view_title<mc::CamView::PERSPECTIVE>();
+    m_grid.view_orientation<mc::CamView::PERSPECTIVE>();
+    go_persp();
+    m_initial_view = ngl::lookAt(camera.get_eye(),camera.get_target(),camera.get_up());
 }
 
-void Viewport::orthoZoom(const ngl::Vec2 &mouseDrag_)
+void Viewport::ortho_zoom(const ngl::Vec2 &mouse_drag_)
 {
-    if (!((m_orthographic_zoom < 0.1f) && (mouseDrag_.m_x > 0.f)))
-        m_orthographic_zoom -= mouseDrag_.m_x * 0.05f;
-    goOrtho();
+    if (!((m_orthographic_zoom < 0.1f) && (mouse_drag_.m_x > 0.f)))
+        m_orthographic_zoom -= mouse_drag_.m_x * 0.05f;
+    go_ortho();
 }
 
 

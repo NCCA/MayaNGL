@@ -1,7 +1,6 @@
-# Maya-like Viewport using NGL
+# MayaNGL - A Maya-like viewport and controls using NGL
 
 <!-- ![alt tag](mlvn.jpg) -->
-
 
 This is a demo that illustrates a Maya-like viewport experience using NGL. It uses similar shortcuts to switch between different tools and camera movements.
 It is also completely portable to other NGL demos - just copy the "MayaNGL" directory from this project's "include/", "src/" and "shaders/" into your own project and look at this demo's NGLScene.h/.cpp on how to use it.

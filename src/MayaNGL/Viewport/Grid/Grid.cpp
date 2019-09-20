@@ -2,10 +2,10 @@
 #include "MayaNGL/Viewport/Grid/Grid_Def.hpp"
 
 
-void Grid::loadShader() const
+void Grid::load_shader() const
 {
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
-    shader->use(mc::GridShader);
+    shader->use(mc::grid_shader);
 
     auto MVP = projection * view * m_model;
 
@@ -14,14 +14,14 @@ void Grid::loadShader() const
 }
 
 template<>
-void Grid::viewOrientation<mc::CamView::FRONT>()
+void Grid::view_orientation<mc::CamView::FRONT>()
 {
     m_model.identity();
     m_model.rotateX(90.f);
 }
 
 template<>
-void Grid::viewOrientation<mc::CamView::SIDE>()
+void Grid::view_orientation<mc::CamView::SIDE>()
 {
     m_model.identity();
     m_model.rotateZ(90.f);
@@ -37,6 +37,6 @@ void Grid::draw() const
 {
     ngl::VAOPrimitives *grid = ngl::VAOPrimitives::instance();
 
-    loadShader();
+    load_shader();
     grid->draw("Grid");
 }

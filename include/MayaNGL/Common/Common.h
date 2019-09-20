@@ -15,7 +15,7 @@
 
 
 /*
- * About NGL:
+ * NGL comments:
  * (1)  All functions that return a copy should be marked as const.
  *      Currently const & objects cannot call them.
  * (2)  Vec::normalize() should have an overload that returns a
@@ -43,11 +43,13 @@
  *      seems to affect the transformation even when it's set to 0.
  * (15) Issue when rotating the Triangle Plane about the Arbitrary Axis.
  *      Seems like it's also rotating about the local Z-axis.
+ * (16) Cannot overload make_selectable_and_moveable() for ngl::Transform
+ *      because the .getMatrix() returns a copy which is deleted.
 */
 
 
 #define GET_MEMBER(n_,N_)                                                               \
-    auto get##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &    \
+    auto get_##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &    \
     {                                                                                   \
         return n_;                                                                      \
     }                                                                                   \
@@ -81,8 +83,8 @@ namespace mc //maya common
     static constexpr float near_clip = 0.1f;
     static constexpr float far_clip = 1000.f;
     enum class CamView {PERSPECTIVE,FRONT,SIDE,TOP};
-    constexpr auto GridShader = "GridShader";
-    constexpr auto AxisShader = "AxisShader";
+    constexpr auto grid_shader = "GridShader";
+    constexpr auto axis_shader = "AxisShader";
 
 
     struct Ray;
@@ -98,26 +100,26 @@ namespace mc //maya common
     struct LookAt;
 
 
-    void initializeAdditionalShaders();
+    void initialize_additional_shaders();
 
 
     template<typename T>
-    T toDegs(T num_);
+    T to_degs(T num_);
 
     template<typename T>
-    T toRads(T num_);
+    T to_rads(T num_);
 
     template<typename T>
     T round(T num_, unsigned precision_);
 
-    V3 toDegs(const V3 &num_);
-    V3 toRads(const V3 &num_);
+    V3 to_degs(const V3 &num_);
+    V3 to_rads(const V3 &num_);
     V3 absl(const V3 &num_);
     V3 round(const V3 &num_, unsigned precision_);
 
-    M4 X_Matrix(float angle_);
-    M4 Y_Matrix(float angle_);
-    M4 Axis_Matrix(float angle_, const Direction &axis_);
+    M4 x_matrix(float angle_);
+    M4 y_matrix(float angle_);
+    M4 axis_matrix(float angle_, const Direction &axis_);
 
     template<bool infinite = true>
     Position intersect(const Ray &ray_, const Plane<infinite> &plane_);

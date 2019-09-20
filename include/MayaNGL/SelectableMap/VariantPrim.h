@@ -9,7 +9,7 @@ class VariantPrim
         struct Base;
 
         template<typename T, template<typename> class Gen>
-        struct Base_Generic;
+        struct BaseGeneric;
 
         template<typename T>
         struct Generic;
@@ -45,10 +45,10 @@ class VariantPrim
                      const mc::Transform &transform_,
                      bool is_moveable_ = false );
 
-        GET_MEMBER(m_is_moveable,IsMoveable)
-        GET_MEMBER(m_transform,Transform)
+        GET_MEMBER(m_is_moveable,is_moveable)
+        GET_MEMBER(m_transform,transform)
 
-        void setTransform(const mc::Transform &transform_);
+        void set_transform(const mc::Transform &transform_);
         void draw(const mc::View &view_, const mc::Projection &projection_) const;
 };
 

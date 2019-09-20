@@ -1,5 +1,5 @@
 
-#include "MayaNGL/Selection/VariantPrim_Def.hpp"
+#include "MayaNGL/SelectableMap/VariantPrim_Def.hpp"
 
 
 VariantPrim::VariantPrim( std::string &&val_,
@@ -11,7 +11,7 @@ VariantPrim::VariantPrim( std::string &&val_,
                           m_transform(transform_)
 {;}
 
-void VariantPrim::setTransform(const mc::Transform &transform_)
+void VariantPrim::set_transform(const mc::Transform &transform_)
 {
     m_transform = transform_;
 }

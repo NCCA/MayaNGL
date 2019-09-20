@@ -1,35 +1,32 @@
 
-#include "MayaNGL/Selection/Base_Selection.h"
+#include "MayaNGL/Selection/BaseSelection.h"
 
 
 template<>
-Base_Selection<false>::Base_Selection( const mc::View &view_,
-                                       const mc::Projection &projection_,
-                                       const mc::LookAt &cam_lookAt_  )
-                                       :
-                                       view(view_),
-                                       projection(projection_),
-                                       cam_lookAt(cam_lookAt_),
-                                       m_screen_width(0),
-                                       m_screen_height(0),
-                                       m_ray{cam_lookAt.eye,mc::Direction::zero()},
-                                       m_selectables(),
-                                       m_currently_selected()
+BaseSelection<false>::BaseSelection( const mc::View &view_,
+                                     const mc::Projection &projection_,
+                                     const mc::LookAt &cam_lookAt_  )
+                                     :
+                                     SelectableMap(),
+                                     view(view_),
+                                     projection(projection_),
+                                     cam_lookAt(cam_lookAt_),
+                                     m_ray{cam_lookAt.eye,mc::Direction::zero()}
 {;}
 
 template<>
-void Base_Selection<false>::initialize()
+void BaseSelection<false>::initialize()
 {;}
 
 template<>
-void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
+void BaseSelection<false>::emit_ray(float mouse_x_, float mouse_y_)
 {
     // convert mouse position from Screen Space to Normalized Device Space.
-    float normMouseX = (2.f*mouse_x)/m_screen_width - 1.f;
-    float normMouseY = 1.f - (2.f*mouse_y)/m_screen_height;
+    float norm_mouse_x = (2.f*mouse_x_)/m_screen_width - 1.f;
+    float norm_mouse_y = 1.f - (2.f*mouse_y_)/m_screen_height;
 
     // create vector on Clip Space using -1 on the z-depth.
-    mc::V4 clip_coordinates(normMouseX,normMouseY,-1.f,1.f);
+    mc::V4 clip_coordinates(norm_mouse_x,norm_mouse_y,-1.f,1.f);
 
     // convert the clip coordinates to Eye Space.
     mc::V4 eye_coordinates = clip_coordinates * const_cast<mc::Projection &>(projection).inverse();
@@ -44,7 +41,7 @@ void Base_Selection<false>::emitRay(int mouse_x, int mouse_y)
 }
 
 template<>
-void Base_Selection<false>::draw() const
+void BaseSelection<false>::draw() const
 {
     if (m_currently_selected.empty())
         return;
@@ -60,38 +57,38 @@ void Base_Selection<false>::draw() const
 // ------------------------------------------------------------- //
 
 
-Base_Selection<true>::Base_Selection( const mc::View &view_,
+BaseSelection<true>::BaseSelection( const mc::View &view_,
                                       const mc::Projection &projection_,
                                       const mc::LookAt &cam_lookAt_ )
                                       :
-                                      Base_Selection<false>(view_,projection_,cam_lookAt_),
-                                      m_ray_end(Base_Selection<false>::cam_lookAt.eye),
-                                      m_vtxs{{Base_Selection<false>::m_ray.position,m_ray_end}}
+                                      BaseSelection<false>(view_,projection_,cam_lookAt_),
+                                      m_ray_end(BaseSelection<false>::cam_lookAt.eye),
+                                      m_vtxs{{BaseSelection<false>::m_ray.position,m_ray_end}}
 {;}
 
-void Base_Selection<true>::initialize()
+void BaseSelection<true>::initialize()
 {
-    Base_Selection<false>::initialize();
+    BaseSelection<false>::initialize();
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     prim->createSphere("BV",1.f,12);
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 }
 
-void Base_Selection<true>::emitRay(int mouse_x, int mouse_y)
+void BaseSelection<true>::emit_ray(int mouse_x_, int mouse_y_)
 {
-    Base_Selection<false>::emitRay(mouse_x,mouse_y);
+    BaseSelection<false>::emit_ray(mouse_x_,mouse_y_);
 
     m_ray_end = this->m_ray.position + this->m_ray.direction * mc::far_clip;
     m_vtxs = {{this->m_ray.position,m_ray_end}};
 }
 
-void Base_Selection<true>::draw() const
+void BaseSelection<true>::draw() const
 {
     if (m_currently_selected.empty())
         return;
 
-    Base_Selection<false>::draw();
+    BaseSelection<false>::draw();
 
     ngl::ShaderLib *shader = ngl::ShaderLib::instance();
     shader->use(ngl::nglColourShader);
@@ -112,7 +109,7 @@ void Base_Selection<true>::draw() const
 
     for (const auto &i : m_currently_selected)
     {
-        auto &&prim_transform = m_selectables.at(i).getTransform();
+        auto &&prim_transform = m_selectables.at(i).get_transform();
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
         auto MVP = projection * view * prim_transform;

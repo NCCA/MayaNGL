@@ -5,14 +5,14 @@
 namespace mc
 {
 
-    V3 toDegs(const V3 &num_)
+    V3 to_degs(const V3 &num_)
     {
-        return V3{toDegs(num_.m_x),toDegs(num_.m_y),toDegs(num_.m_z)};
+        return V3{to_degs(num_.m_x),to_degs(num_.m_y),to_degs(num_.m_z)};
     }
 
-    V3 toRads(const V3 &num_)
+    V3 to_rads(const V3 &num_)
     {
-        return V3{toRads(num_.m_x),toRads(num_.m_y),toRads(num_.m_z)};
+        return V3{to_rads(num_.m_x),to_rads(num_.m_y),to_rads(num_.m_z)};
     }
 
     V3 absl(const V3 &num_)
@@ -25,7 +25,7 @@ namespace mc
         return V3{round(num_.m_x,precision_),round(num_.m_y,precision_),round(num_.m_z,precision_)};
     }
 
-    M4 X_Matrix(float angle_)
+    M4 x_matrix(float angle_)
     {
         return glm::mat4{ 1.f, 0.f        , 0.f        , 0.f,
                           0.f, cos(angle_),-sin(angle_), 0.f,
@@ -33,7 +33,7 @@ namespace mc
                           0.f, 0.f        , 0.f        , 1.f };
     }
 
-    M4 Y_Matrix(float angle_)
+    M4 y_matrix(float angle_)
     {
         return glm::mat4{ cosf(angle_), 0.f, sinf(angle_), 0.f,
                           0.f         , 1.f, 0.f         , 0.f,
@@ -41,7 +41,7 @@ namespace mc
                           0.f         , 0.f, 0.f         , 1.f };
     }
 
-    M4 Axis_Matrix(float angle_, const Direction &axis_)
+    M4 axis_matrix(float angle_, const Direction &axis_)
     {
         return glm::mat4{ cosf(angle_)+powf(axis_.m_x,2)*(1.f-cosf(angle_))                 , (axis_.m_x*axis_.m_y*(1.f-cosf(angle_)))-(axis_.m_z*sinf(angle_)) , (axis_.m_x*axis_.m_z*(1.f-cosf(angle_)))+(axis_.m_y*sinf(angle_)), 0.f,
                           (axis_.m_y*axis_.m_x*(1.f-cosf(angle_)))+(axis_.m_z*sinf(angle_)) , cosf(angle_)+powf(axis_.m_y,2)*(1.f - cosf(angle_))               , (axis_.m_y*axis_.m_z*(1.f-cosf(angle_)))-(axis_.m_x*sinf(angle_)), 0.f,
@@ -50,23 +50,24 @@ namespace mc
     }
 
 
-    float LookAt::calcDist() const
+    float LookAt::calc_dist() const
     {
         return (target-eye).length();
     }
 
-    Direction LookAt::calcDirection() const
+    Direction LookAt::calc_direction() const
     {
         auto dir = target-eye;
         dir.normalize();
         return dir;
     }
 
-    void initializeAdditionalShaders()
+
+    void initialize_additional_shaders()
     {
         ngl::ShaderLib *shader = ngl::ShaderLib::instance();
 
-        shader->createShaderProgram( GridShader );
+        shader->createShaderProgram( grid_shader );
         shader->attachShader( "GridShader_Vertex", ngl::ShaderType::VERTEX );
         shader->attachShader( "GridShader_Geometry", ngl::ShaderType::GEOMETRY );
         shader->attachShader( "GridShader_Fragment", ngl::ShaderType::FRAGMENT );
@@ -76,12 +77,12 @@ namespace mc
         shader->compileShader( "GridShader_Vertex" );
         shader->compileShader( "GridShader_Geometry" );
         shader->compileShader( "GridShader_Fragment" );
-        shader->attachShaderToProgram( GridShader, "GridShader_Vertex" );
-        shader->attachShaderToProgram( GridShader, "GridShader_Geometry" );
-        shader->attachShaderToProgram( GridShader, "GridShader_Fragment" );
-        shader->linkProgramObject( GridShader );
+        shader->attachShaderToProgram( grid_shader, "GridShader_Vertex" );
+        shader->attachShaderToProgram( grid_shader, "GridShader_Geometry" );
+        shader->attachShaderToProgram( grid_shader, "GridShader_Fragment" );
+        shader->linkProgramObject( grid_shader );
 
-        shader->createShaderProgram( AxisShader );
+        shader->createShaderProgram( axis_shader );
         shader->attachShader( "AxisShader_Vertex", ngl::ShaderType::VERTEX );
         shader->attachShader( "AxisShader_Geometry", ngl::ShaderType::GEOMETRY );
         shader->attachShader( "AxisShader_Fragment", ngl::ShaderType::FRAGMENT );
@@ -91,10 +92,10 @@ namespace mc
         shader->compileShader( "AxisShader_Vertex" );
         shader->compileShader( "AxisShader_Geometry" );
         shader->compileShader( "AxisShader_Fragment" );
-        shader->attachShaderToProgram( AxisShader, "AxisShader_Vertex" );
-        shader->attachShaderToProgram( AxisShader, "AxisShader_Geometry" );
-        shader->attachShaderToProgram( AxisShader, "AxisShader_Fragment" );
-        shader->linkProgramObject( AxisShader );
+        shader->attachShaderToProgram( axis_shader, "AxisShader_Vertex" );
+        shader->attachShaderToProgram( axis_shader, "AxisShader_Geometry" );
+        shader->attachShaderToProgram( axis_shader, "AxisShader_Fragment" );
+        shader->linkProgramObject( axis_shader );
     }
 
     template<>
@@ -126,24 +127,15 @@ namespace mc
             Position poi = r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon();
             Position top_left = p_crn[0];
             Position top_right = p_crn[1];
-            Position bottom_right = p_crn[3];
+            Position bottom_left = p_crn[2];
 
-            auto TR_POI = poi-top_right;
-            auto TR_BR = bottom_right-top_right;
-            auto TR_TL = top_left-top_right;
+            auto AM = poi-top_left;
+            auto AB = top_right-top_left;
+            auto AD = bottom_left-top_left;
 
-            std::cout<< "intersecting plane" <<std::endl;
-
-            std::cout<< "poi =\t" << poi <<std::endl;
-            std::cout<< "t_l =\t" << top_left <<std::endl;
-            std::cout<< "t_r =\t" << top_right <<std::endl;
-            std::cout<< "b_r =\t" << bottom_right <<std::endl;
-
-            // something wrong here...
-            if  ( ( (TR_POI.dot(TR_BR) >= 0.f) && (TR_POI.dot(TR_BR) <= TR_BR.dot(TR_BR)) ) ||
-                  ( (TR_POI.dot(TR_TL) >= 0.f) && (TR_POI.dot(TR_TL) <= TR_TL.dot(TR_TL)) ) )
+            if  ( ( (0.f<AM.dot(AB)) && (AM.dot(AB)<AB.dot(AB)) ) &&
+                  ( (0.f<AM.dot(AD)) && (AM.dot(AD)<AD.dot(AD)) ) )
             {
-                std::cout<< "intersecting central handle" <<std::endl;
                 return poi;
             }
             return failed;
