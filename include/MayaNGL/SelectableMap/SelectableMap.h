@@ -20,6 +20,13 @@ struct SelectableMap
         m_selectables.at(id_).set_transform(transform_);
     }
 
+    void append_multi_primitive_transform(const mc::Transform &mous_transform_)
+    {
+        for (auto itr=m_currently_selected.begin(); itr!=m_currently_selected.end()-1; ++itr)
+            if (m_selectables.at(*itr).get_is_movable())
+                m_selectables.at(*itr).append_transform(mous_transform_);
+    }
+
     bool already_selected(std::size_t id_) const
     {
         auto elem = std::find(m_currently_selected.cbegin(),m_currently_selected.cend(),id_);

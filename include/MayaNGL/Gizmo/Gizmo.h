@@ -18,10 +18,12 @@ class Gizmo
         const mc::View &view;
         const mc::Projection &projection;
         const Camera &camera;
+        const SelectableMap::Selections &currently_selected_ids;
 
     private:
         Transforms m_object_models;
         mc::Transform *m_currently_selected_model;
+        mc::Transform m_mouse_transform;
         mc::Position m_position;
         mc::Size<float> m_average_dist;
         mc::Size<float> m_uniform_scale;
@@ -43,16 +45,19 @@ class Gizmo
         float calc_length(float p_);
         void load_shader() const;
         void load_shader(mc::Colour &&colour_) const;
+        void update_primitive_transforms();
 
     public:
         Gizmo( const mc::View &view_,
                const mc::Projection &projection_,
-               const Camera &camera_ );
+               const Camera &camera_,
+               const SelectableMap &select_);
 
         GET_MEMBER(m_currently_selected_model,currently_selected_model)
+        GET_MEMBER(m_mouse_transform,mouse_transform)
 
         void initialize();
-        void set_on_selected_id(int id_);
+        void set_on_selected_id(std::size_t id_);
         void make_movable(std::size_t id_, mc::Transform &transform_);
         void show();
         void hide();

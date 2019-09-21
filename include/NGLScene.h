@@ -16,15 +16,20 @@ class NGLScene : public QOpenGLWindow
     Q_OBJECT
 
     private:
+        ngl::Mat4 m_view;
+        ngl::Mat4 m_projection;
+
+        // Used Mat4 and Transformation for demonstration
+        // purposes. However, movable objects must provide
+        // a Mat4 model matrix.
         ngl::Mat4 m_teapot_model;
         ngl::Mat4 m_fish_model;
         ngl::Transformation m_transform;
 
-        ngl::Obj m_airplane_mesh;
+        // Used two ngl::Obj objects (ptr and concrete) for
+        // demonstration purposes. Only one is needed.
         std::unique_ptr<ngl::Obj> m_fish_mesh;
-
-        ngl::Mat4 m_view;
-        ngl::Mat4 m_projection;
+        ngl::Obj m_airplane_mesh;
 
         MayaNGL m_maya;
 

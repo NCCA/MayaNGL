@@ -6,11 +6,7 @@
 #include <QGuiApplication>
 
 
-NGLScene::NGLScene() : m_airplane_mesh("models_textures/airplane.obj"),
-                       m_fish_mesh(),
-                       m_view(),
-                       m_projection(),
-                       m_maya(m_view,m_projection)
+NGLScene::NGLScene() : m_maya(m_view,m_projection)
 {
     setTitle( "MayaNGL" );
 }
@@ -29,6 +25,8 @@ void NGLScene::initializeGL()
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_MULTISAMPLE );
 
+    // Other values can be used here instead. But they would
+    // also have to be passed to the maya.initialize().
     m_view = ngl::lookAt(m_maya.get_camera().get_eye(),
                          m_maya.get_camera().get_target(),
                          m_maya.get_camera().get_up());
@@ -59,9 +57,19 @@ void NGLScene::initializeGL()
     shader->setUniform("lightPos",lightPos);
     shader->setUniform("lightDiffuse",lightDiffuse);
 
+    m_airplane_mesh.load("models_textures/airplane.obj");
     m_airplane_mesh.createVAO();
+
     m_fish_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj","models_textures/fish.jpg");
     m_fish_mesh->createVAO();
+
+
+    // The fish's trasformation settings are placed here so that they
+    // can be set only once. If they are placed inside paintGL() then
+    // the loadShader() will reset the fish's transformation every frame
+    // and the gizmo won't have any effect.
+    m_fish_model.translate(0.f,0.f,8.f);
+    m_fish_model.scale(2.f,2.f,2.f);
 }
 
 template<>
@@ -104,37 +112,54 @@ void NGLScene::paintGL()
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
-    // This is a moveable object, so there's no point in reseting the model matrix.
+    // This is a movable object controlled by the gizmo.
+    // There is no point in reseting the model matrix. If the model matrix
+    // is reset, then the gizmo won't have any effect on the primitive.
     {
         loadShader<false>(m_teapot_model);
         prim->draw( "teapot" );
         m_maya.make_selectable_and_movable(1,"teapot",m_teapot_model);
     }
 
+    // This is neither a selectable or movable object. MayaNGL has no
+    // control over it.
+    m_transform.reset();
     {
-        m_fish_model.scale(2.f,2.f,2.f);
-        loadShader<true>(m_fish_model);
-        m_fish_mesh->draw();
-        m_maya.make_selectable_and_movable(2,m_fish_mesh,m_fish_model);
+        m_transform.setPosition(-6.f,2.f,0.f);
+        m_transform.setRotation(20.f,35.f,10.f);
+        m_transform.setScale(1.5f,1.5f,1.5f);
+        loadShader<false>(m_transform.getMatrix());
+        prim->draw( "cube" );
     }
 
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(8.f,0.f,0.f);
-//        loadShader<false>(m_transform.getMatrix());
-//        prim->draw( "football" );
-//        m_maya.make_selectable(3,"football",m_transform);
-//    }
+    // This is also a movable object.
+    {
+        // The transformation settings are put in initializeGL() to avoid
+        // being reset every time.
+        loadShader<true>(m_fish_model);
+        m_fish_mesh->draw();
+        m_maya.make_selectable_and_movable(3,m_fish_mesh,m_fish_model);
+    }
 
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(0.f,0.f,8.f);
-//        m_transform.setRotation(0.f,30.f,0.f);
-//        m_transform.setScale(2.f,2.f,2.f);
-//        loadShader<false>(m_transform.getMatrix());
-//        m_airplane_mesh.draw();
-//        m_maya.make_selectable(4,m_airplane_mesh,m_transform);
-//    }
+    // This is only a selectable object.
+    m_transform.reset();
+    {
+        m_transform.setPosition(8.f,0.f,0.f);
+        loadShader<false>(m_transform.getMatrix());
+        prim->draw( "football" );
+        m_maya.make_selectable(4,"football",m_transform);
+    }
+
+    // This is also only selectable.
+    m_transform.reset();
+    {
+        m_transform.setPosition(0.f,1.f,-6.f);
+        m_transform.setRotation(0.f,0.f,-20.f);
+        m_transform.setScale(3.f,3.f,3.f);
+        loadShader<false>(m_transform.getMatrix());
+        m_airplane_mesh.draw();
+        m_maya.make_selectable(5,m_airplane_mesh,m_transform);
+    }
 
     m_maya.draw_gizmo();
 }

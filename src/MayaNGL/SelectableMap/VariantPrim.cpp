@@ -13,7 +13,18 @@ VariantPrim::VariantPrim( std::string &&val_,
 
 void VariantPrim::set_transform(const mc::Transform &transform_)
 {
-    m_transform = transform_;
+    // only interested in the position
+    m_transform.m_30 = transform_.m_30;
+    m_transform.m_31 = transform_.m_31;
+    m_transform.m_32 = transform_.m_32;
+}
+
+void VariantPrim::append_transform(const mc::Transform &transform_)
+{
+    // only interested in the position
+    m_transform.m_30 += transform_.m_30;
+    m_transform.m_31 += transform_.m_31;
+    m_transform.m_32 += transform_.m_32;
 }
 
 void VariantPrim::draw(const mc::View &view_, const mc::Projection &projection_) const

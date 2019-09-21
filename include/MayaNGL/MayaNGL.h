@@ -20,7 +20,7 @@ class MayaNGL
         Mouse m_mouse;
         Camera m_camera;
         Viewport m_viewport;
-        Select<true> m_select;
+        Select<disable_visualization> m_select;
         Gizmo m_gizmo;
 
     public:

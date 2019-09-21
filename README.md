@@ -1,8 +1,8 @@
-# MayaNGL - A Maya-like viewport and controls using NGL
+# MayaNGL : Maya-like viewport and controls using NGL
 
 <!-- ![alt tag](mlvn.jpg) -->
 
-This is a demo that illustrates a Maya-like viewport experience using NGL. It uses similar shortcuts to switch between different tools and camera movements.
+This is a demo that illustrates a Maya-like viewport experience using NGL. It uses similar shortcuts to switch between different tools and cameras.
 It is also completely portable to other NGL demos - just copy the "MayaNGL" directory from this project's "include/", "src/" and "shaders/" into your own project and look at this demo's NGLScene.h/.cpp on how to use it.
 
 This demo supports/displays the following:
@@ -21,16 +21,19 @@ This demo supports/displays the following:
 
 - View axis.
 
-- Gizmo to translate.
+- Gizmo to translate. (Multi selection and transformation using the Shift key)
 
 
 ## Future Work:
 
 - Select: Create more Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add them as a template arg to the make_selectable() function.
 
-- Replace the functions in the Common.h with native NGL functions.
+- Common: Replace the functions in the Common.h with native NGL functions.
 
 - Handles: Create transformation handles for rotatiting and scaling selected objects.
 
+- Model Matrix: Find a way to use only one model matrix for all selectable and movable primitives.
+
 - Application: Create the demo as a gui to change mouse icon when <q,w,e,r> are pressed.
 
+- Select: Remove the VariantPrim class and use shaders to show (wrap around) the selected model.

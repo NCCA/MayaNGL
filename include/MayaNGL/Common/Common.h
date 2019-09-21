@@ -19,11 +19,11 @@
  * (1)  All functions that return a copy should be marked as const.
  *      Currently const & objects cannot call them.
  * (2)  Vec::normalize() should have an overload that returns a
- *      copy. This can be used in constructors.
+ *      copy which can be used in constructors.
  * (3)  Make model matrix and/or ngl::Transformation a singleton.
  *      I **think** that maya has only on model
  *      matrix in the graphics side. The user is able to modify the
- *      attributes of each object from the software side.
+ *      attributes of each object from the ui.
  * (4)  Implement an Axis-Based rotation matrix (see below).
  * (5)  ngl::Transformation::getMatrix() should not return a copy.
  * (6)  Create a function that can update the font size in ngl::Text.
@@ -41,9 +41,7 @@
  *      by getMatrix() gets deleted at the end of scope.
  * (14) Bug with Mat4::rotateX(90.f) and then Mat4::rotateY(0.f). RotateY
  *      seems to affect the transformation even when it's set to 0.
- * (15) Issue when rotating the Triangle Plane about the Arbitrary Axis.
- *      Seems like it's also rotating about the local Z-axis.
- * (16) Cannot overload make_selectable_and_movable() for ngl::Transform
+ * (15) Cannot overload make_selectable_and_movable() for ngl::Transform
  *      because the .getMatrix() returns a copy which is deleted.
 */
 
@@ -54,6 +52,8 @@
         return n_;                                                                      \
     }                                                                                   \
 
+#define enable_visualization true
+#define disable_visualization false
 
 namespace mc //maya common
 {

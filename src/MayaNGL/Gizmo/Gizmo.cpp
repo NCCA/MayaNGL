@@ -2,15 +2,18 @@
 #include "MayaNGL/Gizmo/Gizmo.h"
 
 
-Gizmo::Gizmo( const mc::View &view_,
+Gizmo::Gizmo(const mc::View &view_,
               const mc::Projection &projection_,
-              const Camera &camera_ )
+              const Camera &camera_,
+              const SelectableMap &select_ )
               :
               view(view_),
               projection(projection_),
               camera(camera_),
+              currently_selected_ids(select_.get_currently_selected()),
               m_object_models(),
               m_currently_selected_model(nullptr),
+              m_mouse_transform(),
               m_position(mc::Position::zero()),
               m_average_dist(0.f),
               m_uniform_scale(1.f),
@@ -75,41 +78,39 @@ bool Gizmo::clicked_on<Gizmo::Handle::MID>(const mc::Ray &mouse_ray_)
 template<>
 void Gizmo::dragged_on<Gizmo::Handle::X>()
 {
-    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
-    m_position.m_x += Tx;
-    m_currently_selected_model->m_30 = m_position.m_x;
+    m_mouse_transform.m_30 = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
+    m_position.m_x += m_mouse_transform.m_30;
+    update_primitive_transforms();
 }
 
 template<>
 void Gizmo::dragged_on<Gizmo::Handle::Y>()
 {
-    auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
-    m_position.m_y += Ty;
-    m_currently_selected_model->m_31 = m_position.m_y;
+    m_mouse_transform.m_31 = mouse_move.m_y * m_hv_axis[1].m_y;
+    m_position.m_y += m_mouse_transform.m_31;
+    update_primitive_transforms();
 }
 
 template<>
 void Gizmo::dragged_on<Gizmo::Handle::Z>()
 {
-    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
-    m_position.m_z += Tz;
-    m_currently_selected_model->m_32 = m_position.m_z;
+    m_mouse_transform.m_32 = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
+    m_position.m_z += m_mouse_transform.m_32;
+    update_primitive_transforms();
 }
 
 template<>
 void Gizmo::dragged_on<Gizmo::Handle::MID>()
 {
-    auto Tx = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
-    auto Ty = mouse_move.m_y * m_hv_axis[1].m_y;
-    auto Tz = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
+    m_mouse_transform.m_30 = mouse_move.m_x * m_hv_axis[0].m_x + mouse_move.m_y * m_hv_axis[1].m_x;
+    m_mouse_transform.m_31 = mouse_move.m_y * m_hv_axis[1].m_y;
+    m_mouse_transform.m_32 = mouse_move.m_x * m_hv_axis[0].m_z + mouse_move.m_y * m_hv_axis[1].m_z;
 
-    m_position.m_x += Tx;
-    m_position.m_y += Ty;
-    m_position.m_z += Tz;
+    m_position.m_x += m_mouse_transform.m_30;
+    m_position.m_y += m_mouse_transform.m_31;
+    m_position.m_z += m_mouse_transform.m_32;
 
-    m_currently_selected_model->m_30 = m_position.m_x;
-    m_currently_selected_model->m_31 = m_position.m_y;
-    m_currently_selected_model->m_32 = m_position.m_z;
+    update_primitive_transforms();
 }
 
 float Gizmo::calc_length(float p_)
@@ -139,6 +140,29 @@ void Gizmo::load_shader(mc::Colour &&colour_) const
     shader->setUniform("Colour",std::move(colour_));
 }
 
+void Gizmo::update_primitive_transforms()
+{
+    // only interested in the position
+    m_currently_selected_model->m_30 = m_position.m_x;
+    m_currently_selected_model->m_31 = m_position.m_y;
+    m_currently_selected_model->m_32 = m_position.m_z;
+
+    if(currently_selected_ids.size() > 1)
+    {
+        for (auto itr=currently_selected_ids.begin(); itr!=currently_selected_ids.end()-1; ++itr)
+        {
+            bool id_is_found = (m_object_models.find(*itr) != m_object_models.cend());
+            if (id_is_found)
+            {
+                mc::Transform *model_mat = m_object_models.at(*itr);
+                model_mat->m_30 += m_mouse_transform.m_30;
+                model_mat->m_31 += m_mouse_transform.m_31;
+                model_mat->m_32 += m_mouse_transform.m_32;
+            }
+        }
+    }
+}
+
 void Gizmo::initialize()
 {
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
@@ -153,12 +177,9 @@ void Gizmo::initialize()
     prim->createDisk("central",0.5f,4);
 }
 
-void Gizmo::set_on_selected_id(int id_)
+void Gizmo::set_on_selected_id(std::size_t id_)
 {
-    if (id_ == -1)
-        return;
-
-    m_currently_selected_model = m_object_models.at(static_cast<std::size_t>(id_));
+    m_currently_selected_model = m_object_models.at(id_);
 
     m_position.m_x = m_currently_selected_model->m_30;
     m_position.m_y = m_currently_selected_model->m_31;

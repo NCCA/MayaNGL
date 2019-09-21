@@ -12,7 +12,7 @@ MayaNGL::MayaNGL( mc::View &view_,
                   m_camera(m_mouse,m_initial_lookAt),
                   m_viewport(view,projection,m_camera),
                   m_select(view,projection,m_camera),
-                  m_gizmo(view,projection,m_camera)
+                  m_gizmo(view,projection,m_camera,m_select)
 {;}
 
 void MayaNGL::initialize()
@@ -130,8 +130,11 @@ void MayaNGL::mouse_move(QMouseEvent *event_)
         if (m_gizmo.is_selected())
         {
             m_gizmo.dragged_on_axis(m_mouse.get_drag());
-            auto &&last_elem = m_select.get_currently_selected().back();
+            auto &&curr_sel = m_select.get_currently_selected();
+            auto &&last_elem = curr_sel.back();
             m_select.set_primitive_transform(last_elem,*m_gizmo.get_currently_selected_model());
+            if (curr_sel.size() > 1)
+                m_select.append_multi_primitive_transform(m_gizmo.get_mouse_transform());
         }
     }
 }
@@ -151,15 +154,20 @@ void MayaNGL::mouse_release(QMouseEvent *event_)
         {
             m_gizmo.hide();
             auto obj_id = m_select.pick();
-            m_gizmo.set_on_selected_id(obj_id);
+            if (obj_id != -1)
+            {
+                std::size_t sel_id = static_cast<std::size_t>(obj_id);
+                if (m_select.get_all_selectables().at(sel_id).get_is_movable())
+                    m_gizmo.set_on_selected_id(sel_id);
+            }
         }
 
         m_gizmo.deselect();
         if (!m_select.get_currently_selected().empty())
         {
             auto last_elem = m_select.get_currently_selected().back();
-            auto is_selected_movable = m_select.get_all_selectables().at(last_elem).get_is_moveable();
-            if (is_selected_movable)
+            auto selected_is_movable = m_select.get_all_selectables().at(last_elem).get_is_movable();
+            if (selected_is_movable)
                 m_gizmo.show();
         }
     }

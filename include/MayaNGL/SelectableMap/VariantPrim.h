@@ -45,10 +45,11 @@ class VariantPrim
                      const mc::Transform &transform_,
                      bool is_moveable_ = false );
 
-        GET_MEMBER(m_is_moveable,is_moveable)
+        GET_MEMBER(m_is_moveable,is_movable)
         GET_MEMBER(m_transform,transform)
 
         void set_transform(const mc::Transform &transform_);
+        void append_transform(const mc::Transform &transform_);
         void draw(const mc::View &view_, const mc::Projection &projection_) const;
 };
 
