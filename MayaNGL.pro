@@ -10,8 +10,8 @@ isEqual(QT_MAJOR_VERSION, 5){
 	DEFINES +=QT5BUILD
 }
 
-
-unix*:QMAKE_CXX=/opt/rh/llvm-toolset-7/root/usr/bin/clang++
+# comment out next line if working on mac
+# unix*:QMAKE_CXX=/opt/rh/llvm-toolset-7/root/usr/bin/clang++
 
 OBJECTS_DIR = obj
 
