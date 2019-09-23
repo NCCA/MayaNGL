@@ -28,8 +28,6 @@ This demo supports/displays the following:
 
 ## Future Work:
 
-- Refactor Code
-
 - Select: Create more Bounding Volumes (AABB, OBB, Cone, Convex Hull) and add them as a template arg to the make_selectable() function.
 
 - Common: Replace the functions in the Common.h with native NGL functions.
