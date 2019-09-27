@@ -26,14 +26,14 @@ void MayaNGL::initialize(const T &eye_, const T &target_, const T &up_)
 template<typename PRIM, typename T, typename>
 void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, T &transform_)
 {
-    this->make_selectable(id_,std::forward<PRIM>(prim_), transform_.getMatrix());
+    this->make_selectable(id_,std::forward<PRIM>(prim_),transform_.getMatrix());
 }
 
 template<typename PRIM>
 void MayaNGL::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_)
 {
     if (m_select.id_is_not_found(id_))
-        m_select.make_selectable(id_,prim_,transform_);
+        m_select.make_selectable(id_,std::forward<PRIM>(prim_),transform_);
 }
 
 template<typename PRIM>
@@ -42,7 +42,7 @@ void MayaNGL::make_selectable_and_movable(std::size_t id_, PRIM &&prim_, mc::Tra
     if (m_select.id_is_not_found(id_))
     {
         m_gizmo.make_movable(id_,transform_);
-        m_select.make_selectable(id_,prim_,transform_,true);
+        m_select.make_selectable(id_,std::forward<PRIM>(prim_),transform_,true);
     }
 }
 

@@ -1,6 +1,7 @@
- #pragma once
+#pragma once
 
-#include "MayaNGL/SelectableMap/SelectableMap.h"
+#include "MayaNGL/BoundingVolume/BoundingVolume.h"
+#include "MayaNGL/SelectableMap/SelectableMap_Def.hpp"
 
 
 template<bool visualize_bv_and_ray>
@@ -13,6 +14,7 @@ class BaseSelection : public SelectableMap
 
     protected:
         mc::Ray m_ray;
+        BoundingVolume<mc::Sphere> m_bv;
         int m_screen_width = 0;
         int m_screen_height = 0;
 
@@ -53,7 +55,7 @@ class BaseSelection<true> : public BaseSelection<false>
 
         void initialize();
         void emit_ray(int mouse_x_, int mouse_y_);
-        void draw() const;
+        void draw();
 
         ~BaseSelection() noexcept = default;
 };

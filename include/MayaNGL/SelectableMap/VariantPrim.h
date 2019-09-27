@@ -17,7 +17,9 @@ class VariantPrim
     private:
         bool m_is_moveable;
         std::unique_ptr<Base> m_prim_ptr = nullptr;
-        mc::Transform m_transform;
+        mc::Transform m_transform; // THIS NEEDS CHECKING! Should be a const &
+                                   // The movable and selectable works fine when this
+                                   // is a const &. But selectables only, don't.
 
     private:
         template<typename T>

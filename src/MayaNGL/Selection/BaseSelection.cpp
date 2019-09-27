@@ -58,20 +58,19 @@ void BaseSelection<false>::draw() const
 
 
 BaseSelection<true>::BaseSelection( const mc::View &view_,
-                                      const mc::Projection &projection_,
-                                      const mc::LookAt &cam_lookAt_ )
-                                      :
-                                      BaseSelection<false>(view_,projection_,cam_lookAt_),
-                                      m_ray_end(BaseSelection<false>::cam_lookAt.eye),
-                                      m_vtxs{{BaseSelection<false>::m_ray.position,m_ray_end}}
+                                    const mc::Projection &projection_,
+                                    const mc::LookAt &cam_lookAt_ )
+                                    :
+                                    BaseSelection<false>(view_,projection_,cam_lookAt_),
+                                    m_ray_end(BaseSelection<false>::cam_lookAt.eye),
+                                    m_vtxs{{BaseSelection<false>::m_ray.position,m_ray_end}}
 {;}
 
 void BaseSelection<true>::initialize()
 {
     BaseSelection<false>::initialize();
 
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    prim->createSphere("BV",1.f,12);
+    m_bv.initialize();
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 }
 
@@ -83,7 +82,7 @@ void BaseSelection<true>::emit_ray(int mouse_x_, int mouse_y_)
     m_vtxs = {{this->m_ray.position,m_ray_end}};
 }
 
-void BaseSelection<true>::draw() const
+void BaseSelection<true>::draw()
 {
     if (m_currently_selected.empty())
         return;
@@ -105,19 +104,10 @@ void BaseSelection<true>::draw() const
     m_vao->draw();
     m_vao->unbind();
 
-    ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-
     for (const auto &i : m_currently_selected)
     {
         auto &&prim_transform = m_selectables.at(i).get_transform();
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-        auto MVP = projection * view * prim_transform;
-        shader->setUniform("MVP",MVP);
-        shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
-        prim->draw("BV");
-
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        m_bv.draw(prim_transform,view,projection);
     }
 }
 

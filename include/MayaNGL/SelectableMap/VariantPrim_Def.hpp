@@ -8,6 +8,7 @@ namespace ngl
     class Obj;
 }
 
+
 struct VariantPrim::Base
 {
     virtual void draw(const mc::Transform &, const mc::View &, const mc::Projection &) const = 0;

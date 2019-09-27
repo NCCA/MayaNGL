@@ -42,7 +42,8 @@ template<bool visualize_bv_and_ray>
     template<typename PRIM>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
-    this->insert(id_,prim_,transform_,is_moveable_);
+    this->insert(id_,std::forward<PRIM>(prim_),transform_,is_moveable_);
+    this->m_bv.compute_volume(std::forward<PRIM>(prim_),transform_);
 }
 
 template<bool visualize_bv_and_ray>
@@ -62,12 +63,8 @@ template<bool visualize_bv_and_ray>
 mc::Position Select<visualize_bv_and_ray>::clicked_on_object(const VariantPrim &selectable_)
 {
     auto &&transform = selectable_.get_transform();
-
-    auto pos = mc::Position{transform.m_30,transform.m_31,transform.m_32};
-    float rad = std::max({transform.m_00,transform.m_11,transform.m_22});
-    mc::Sphere bv {pos,rad};
-
-    auto poi = mc::intersect(this->m_ray,bv);
+    this->m_bv.update(transform);
+    auto poi = mc::intersect(this->m_ray,this->m_bv.get_volume());
     return poi;
 }
 

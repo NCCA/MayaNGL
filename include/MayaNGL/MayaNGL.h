@@ -20,7 +20,7 @@ class MayaNGL
         Mouse m_mouse;
         Camera m_camera;
         Viewport m_viewport;
-        Select<disable_visualization> m_select;
+        Select<enable_visualization> m_select;
         Gizmo m_gizmo;
 
     public:
@@ -38,11 +38,11 @@ class MayaNGL
         template<typename T>
         void initialize(const T &eye_, const T &target_, const T &up_);
 
-        template<typename PRIM, typename T, typename =  std::enable_if_t<
-                                                            std::is_same<
-                                                                decltype(std::declval<T>().getMatrix()),mc::Transform
-                                                                        >::value
-                                                                        >>
+        template<typename PRIM, typename T, typename = std::enable_if_t<
+                                                           std::is_same<
+                                                               decltype(std::declval<T>().getMatrix()),mc::Transform
+                                                                       >::value
+                                                                       >>
         void make_selectable(std::size_t id_, PRIM &&prim_, T &transform_);
 
         template<typename PRIM>
