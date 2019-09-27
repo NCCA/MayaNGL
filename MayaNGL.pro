@@ -51,8 +51,10 @@ DESTDIR = ./
 !equals(PWD, $${OUT_PWD}){
     copydata.commands = echo "creating destination dirs" ;
     copydata.commands += mkdir -p $$OUT_PWD/shaders ;
+    copydata.commands += mkdir -p $$OUT_PWD/models_textures ;
     copydata.commands += echo "copying files" ;
     copydata.commands += $(COPY_DIR) $$PWD/shaders/* $$OUT_PWD/shaders/ ;
+    copydata.commands += $(COPY_DIR) $$PWD/models_textures/* $$OUT_PWD/models_textures/ ;
     first.depends = $(first) copydata
     export(first.depends)
     export(copydata.commands)

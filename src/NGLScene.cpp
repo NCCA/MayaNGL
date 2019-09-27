@@ -161,6 +161,7 @@ void NGLScene::paintGL()
         m_maya.make_selectable(5,m_airplane_mesh,m_transform);
     }
 
+    // Draw the gizmo last so that it'll be "on top" of everything else.
     m_maya.draw_gizmo();
 }
 
