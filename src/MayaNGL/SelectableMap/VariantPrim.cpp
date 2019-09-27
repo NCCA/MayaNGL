@@ -13,7 +13,7 @@ VariantPrim::VariantPrim( std::string &&val_,
 
 void VariantPrim::set_transform(const mc::Transform &transform_)
 {
-    // only interested in the position
+    // this is only needed because m_transform is a copy.
     m_transform.m_30 = transform_.m_30;
     m_transform.m_31 = transform_.m_31;
     m_transform.m_32 = transform_.m_32;
@@ -21,7 +21,7 @@ void VariantPrim::set_transform(const mc::Transform &transform_)
 
 void VariantPrim::append_transform(const mc::Transform &transform_)
 {
-    // only interested in the position
+    // this is only needed because m_transform is a copy.
     m_transform.m_30 += transform_.m_30;
     m_transform.m_31 += transform_.m_31;
     m_transform.m_32 += transform_.m_32;

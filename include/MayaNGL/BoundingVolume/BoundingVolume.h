@@ -18,6 +18,7 @@ class BoundingVolume<mc::Sphere>
     private:
         mc::Sphere bv;
         mc::Transform transform;
+        mc::Position local_centre;
 
     public:
         GET_MEMBER(bv,volume)
@@ -25,13 +26,23 @@ class BoundingVolume<mc::Sphere>
         template<typename PRIM>
         void compute_volume(const PRIM &, const mc::Transform &transform_, std::false_type)
         {
-
+            update(transform_);
         }
 
         template<typename PRIM>
         void compute_volume(const PRIM &prim_, const mc::Transform &transform_, std::true_type)
         {
+            auto vtx_list = prim_->getVertexList();
 
+            mc::Position max_x;
+            for (auto itr=std::cbegin(vtx_list); itr!=std::cend(vtx_list); ++itr)
+            {
+                auto &&vtx = *itr;
+
+                if(max_x.m_x < vtx.m_x)
+                    max_x = vtx;
+            }
+            std::cout<< max_x <<std::endl;
         }
 
         template<typename PRIM>
@@ -46,7 +57,7 @@ class BoundingVolume<mc::Sphere>
 
         void update(const mc::Transform &transform_)
         {
-            bv.position = /*add local pos*/ mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
+            bv.position = local_centre + mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
             bv.radius = /*add local rad*/ std::max({transform_.m_00,transform_.m_11,transform_.m_22});
 
             transform.m_30 = bv.position.m_x;
@@ -73,6 +84,7 @@ class BoundingVolume<mc::Sphere>
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
             update(model_);
+
             auto MVP = projection_ * view_ * transform;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));

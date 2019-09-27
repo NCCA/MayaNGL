@@ -25,7 +25,7 @@
  *      matrix in the graphics side. The user is able to modify the
  *      attributes of each object from the ui.
  * (4)  Implement an Axis-Based rotation matrix (see below).
- * (5)  ngl::Transformation::getMatrix() should not return a copy.
+ * (*5*)  ngl::Transformation::getMatrix() should not return a copy.
  * (6)  Create a function that can update the font size in ngl::Text.
  * (7)  Create a copy constructor in ngl::Transformation that takes
  *      an ngl::Mat4 as a parameter.
@@ -43,11 +43,17 @@
  *      seems to affect the transformation even when it's set to 0.
  * (15) Cannot overload make_selectable_and_movable() for ngl::Transform
  *      because the .getMatrix() returns a copy which is deleted.
+ * (16) AbstractMesh::calcBoundingSphere() and AbstractMesh::calcDimensions()
+ *      are not correct. These functions accumulate all vertex positions and
+ *      then find the average position. However, this does not work when an
+ *      imported obj is heavily meshed on one side (ex: fish model). The
+ *      calcBoundingSphere() is almost correct, but does not tight wrap around
+ *      the mesh.
 */
 
 
 #define GET_MEMBER(n_,N_)                                                               \
-    auto get_##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &    \
+    auto get_##N_() const noexcept -> const typename std::decay<decltype(n_)>::type &   \
     {                                                                                   \
         return n_;                                                                      \
     }                                                                                   \

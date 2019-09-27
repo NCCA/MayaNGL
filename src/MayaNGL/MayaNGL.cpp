@@ -153,6 +153,7 @@ void MayaNGL::mouse_release(QMouseEvent *event_)
         if (!m_gizmo.is_selected())
         {
             m_gizmo.hide();
+
             auto obj_id = m_select.pick();
             if (obj_id != -1)
             {

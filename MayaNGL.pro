@@ -73,7 +73,7 @@ else{
 }
 
 win32: {
-        CONFIG += c++1z
+        CONFIG += c++14
         QMAKE_CXXFLAGS_WARN_ON += "-Wno-unused-variable"
 }
 
