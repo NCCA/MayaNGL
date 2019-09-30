@@ -16,9 +16,20 @@ template<>
 class BoundingVolume<mc::Sphere>
 {
     private:
+        typedef std::array<mc::Position,6> MaxDimensions;
+        enum {left,right,bottom,top,back,front};
         mc::Sphere bv;
         mc::Transform transform;
         mc::Position local_centre;
+        MaxDimensions dimensions;
+
+    private:
+        inline mc::Position centre_pivot()
+        {
+            return mc::Position((dimensions[left].m_x+dimensions[right].m_x)*0.5f,
+                                (dimensions[bottom].m_y+dimensions[top].m_y)*0.5f,
+                                (dimensions[back].m_z+dimensions[front].m_z)*0.5f);
+        }
 
     public:
         GET_MEMBER(bv,volume)
@@ -34,15 +45,41 @@ class BoundingVolume<mc::Sphere>
         {
             auto vtx_list = prim_->getVertexList();
 
-            mc::Position max_x;
             for (auto itr=std::cbegin(vtx_list); itr!=std::cend(vtx_list); ++itr)
             {
                 auto &&vtx = *itr;
 
-                if(max_x.m_x < vtx.m_x)
-                    max_x = vtx;
+                dimensions[left] = std::max(dimensions[left], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x>v2_.m_x);});
+                dimensions[right] = std::max(dimensions[right], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x<v2_.m_x);});
+
+                dimensions[bottom] = std::max(dimensions[bottom], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y>v2_.m_y);});
+                dimensions[top] = std::max(dimensions[top], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y<v2_.m_y);});
+
+                dimensions[back] = std::max(dimensions[back], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z>v2_.m_z);});
+                dimensions[front] = std::max(dimensions[front], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z<v2_.m_z);});
             }
-            std::cout<< max_x <<std::endl;
+
+            std::cout<< (dimensions[left]+dimensions[right])*0.5f <<std::endl;
+            std::cout<< (dimensions[bottom]+dimensions[top])*0.5f <<std::endl;
+            std::cout<< (dimensions[back]+dimensions[front])*0.5f <<std::endl;
+
+            std::cout<< std::accumulate(dimensions.begin(),dimensions.end(),mc::Position()) / dimensions.size() <<std::endl;
+
+//            mc::Position centre = centre_pivot();
+//            std::cout<< centre <<std::endl;
+//            std::sort(dimensions.begin(),dimensions.end(),[&centre](auto &&v1_,auto &&v2_) -> bool
+//                                                          {
+//                                                              float v1_dist = (v1_-centre).lengthSquared();
+//                                                              float v2_dist = (v2_-centre).lengthSquared();
+//                                                              return (v1_dist <= v2_dist);
+//                                                          });
+//            float radius = (*dimensions.begin()-centre).length();
+//            std::cout<< radius <<std::endl;
+//            radius = (*(dimensions.end()-1)-centre).length();
+//            std::cout<< radius <<std::endl;
+
+//            bv.position = centre;
+//            bv.radius = radius;
         }
 
         template<typename PRIM>
@@ -57,8 +94,8 @@ class BoundingVolume<mc::Sphere>
 
         void update(const mc::Transform &transform_)
         {
-            bv.position = local_centre + mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
-            bv.radius = /*add local rad*/ std::max({transform_.m_00,transform_.m_11,transform_.m_22});
+//            bv.position = local_centre + mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
+//            bv.radius = /*add local rad*/ std::max({transform_.m_00,transform_.m_11,transform_.m_22});
 
             transform.m_30 = bv.position.m_x;
             transform.m_31 = bv.position.m_y;
