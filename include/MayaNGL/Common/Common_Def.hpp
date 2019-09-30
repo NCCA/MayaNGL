@@ -18,12 +18,6 @@ namespace mc //maya common
         float radius;
     };
 
-    struct AABB
-    {
-        enum {width=0,height=1,depth=2};
-        Position position;
-        Size<> size;
-    };
 
     template<bool infinite>
     struct Plane
