@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MayaNGL/Common/Common_Def.hpp"
+#include <glm/gtx/perpendicular.hpp>
 
 
 namespace ngl
@@ -21,8 +22,9 @@ class BoundingVolume<mc::Sphere>
         mc::Transform transform;
         mc::Position local_centre;
 
-        typedef std::array<mc::Position,num_of_sides> MaxDimensions;
-        MaxDimensions dimensions;
+        // AABB
+        typedef std::array<mc::Position,num_of_sides> Dimensions;
+        Dimensions aabb_dimensions;
 
     public:
         GET_MEMBER(bv,volume)
@@ -43,17 +45,50 @@ class BoundingVolume<mc::Sphere>
             }
         }
 
-        mc::Position pointOnSphere(float radius_, mc::V2 &&coordinates_)
+        mc::Position point_on_sphere(const mc::Position &centre_, float radius_, mc::V2 &&coordinates_)
         {
             float fi = 2.f * M_PI * coordinates_.m_x;
             float theta = 2.f * M_PI * coordinates_.m_y;
 
             mc::Position poc;
-            poc.m_x = radius_ * sin(fi) * cos(theta);
-            poc.m_y = radius_ * sin(fi) * sin(theta);
-            poc.m_z = radius_ * cos(fi);
+            poc.m_x = centre_.m_x + radius_ * sin(fi) * cos(theta);
+            poc.m_y = centre_.m_y + radius_ * sin(fi) * sin(theta);
+            poc.m_z = centre_.m_z + radius_ * cos(fi);
 
             return poc;
+        }
+
+        int getSign(float val)
+        {
+            int sign = (0.0 < val) - (val < 0.0);
+            return (sign == 0) ? 1 : sign;
+        }
+
+        mc::V2 calc_spherical_coordinates(const mc::Position &centre_, const mc::Position &point_)
+        {
+            mc::V2 coordinates;
+
+            float radius = (point_-centre_).length();
+            float phi = mc::round( acos(point_.m_z/radius) * getSign(point_.m_x) ,4);
+
+
+            float theta = 0.f;
+            if (phi == 0.f)
+                theta = asin(point_.m_y/radius);
+            else
+                theta = asin((point_.m_y/radius)/sin(phi));
+
+
+            coordinates.m_x = mc::round( (phi*0.5f)/M_PI, 4);
+            coordinates.m_y = mc::round( (theta*0.5f)/M_PI, 4);
+            return coordinates;
+        }
+
+        bool lies_on_sphere(const mc::Position &centre_, float radius_, const mc::Position &pnt_)
+        {
+            return ( mc::round((pow((pnt_.m_x-centre_.m_x),2) +
+                                pow((pnt_.m_y-centre_.m_y),2) +
+                                pow((pnt_.m_z-centre_.m_z),2)),4) == mc::round(pow(radius_,2),4) );
         }
 
         template<typename PRIM>
@@ -65,58 +100,83 @@ class BoundingVolume<mc::Sphere>
             {
                 auto &&vtx = *itr;
 
-                dimensions[left] = std::max(dimensions[left], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x>v2_.m_x);});
-                dimensions[right] = std::max(dimensions[right], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x<v2_.m_x);});
-                dimensions[bottom] = std::max(dimensions[bottom], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y>v2_.m_y);});
-                dimensions[top] = std::max(dimensions[top], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y<v2_.m_y);});
-                dimensions[back] = std::max(dimensions[back], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z>v2_.m_z);});
-                dimensions[front] = std::max(dimensions[front], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z<v2_.m_z);});
+                aabb_dimensions[left]   = std::max(aabb_dimensions[left], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x>v2_.m_x);});
+                aabb_dimensions[right]  = std::max(aabb_dimensions[right], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x<v2_.m_x);});
+                aabb_dimensions[bottom] = std::max(aabb_dimensions[bottom], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y>v2_.m_y);});
+                aabb_dimensions[top]    = std::max(aabb_dimensions[top], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y<v2_.m_y);});
+                aabb_dimensions[back]   = std::max(aabb_dimensions[back], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z>v2_.m_z);});
+                aabb_dimensions[front]  = std::max(aabb_dimensions[front], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z<v2_.m_z);});
             }
 
-            // maybe not needed.
             for (auto itr=std::cbegin(vtx_list); itr!=std::cend(vtx_list); ++itr)
             {
                 auto &&vtx = *itr;
 
-                tight(vtx,dimensions[left],0);
-                tight(vtx,dimensions[right],0);
-                tight(vtx,dimensions[bottom],1);
-                tight(vtx,dimensions[top],1);
-                tight(vtx,dimensions[back],2);
-                tight(vtx,dimensions[front],2);
+                tight(vtx,aabb_dimensions[left],0);
+                tight(vtx,aabb_dimensions[right],0);
+                tight(vtx,aabb_dimensions[bottom],1);
+                tight(vtx,aabb_dimensions[top],1);
+                tight(vtx,aabb_dimensions[back],2);
+                tight(vtx,aabb_dimensions[front],2);
             }
 
-            mc::Position centre;
-            centre.m_x = (dimensions[left].m_x + dimensions[right].m_x) * 0.5f;
-            centre.m_y = (dimensions[bottom].m_y + dimensions[top].m_y) * 0.5f;
-            centre.m_z = (dimensions[back].m_z + dimensions[front].m_z) * 0.5f;
+            mc::Position aabb_centre;
+            aabb_centre.m_x = (aabb_dimensions[left].m_x + aabb_dimensions[right].m_x) * 0.5f;
+            aabb_centre.m_y = (aabb_dimensions[bottom].m_y + aabb_dimensions[top].m_y) * 0.5f;
+            aabb_centre.m_z = (aabb_dimensions[back].m_z + aabb_dimensions[front].m_z) * 0.5f;
 
-            mc::Position left_poc = centre + pointOnSphere((dimensions[left]-centre).length(), {0.75f,0.f});
-            mc::Position right_poc = centre + pointOnSphere((dimensions[right]-centre).length(), {0.25f,0.f});
 
-            mc::Position bottom_poc = centre + pointOnSphere((dimensions[bottom]-centre).length(), {0.75f,0.25f});
-            mc::Position top_poc = centre + pointOnSphere((dimensions[top]-centre).length(), {0.25f,0.25f});
 
-            mc::Position back_poc = centre + pointOnSphere((dimensions[back]-centre).length(), {0.5f,0.f});
-            mc::Position front_poc = centre + pointOnSphere((dimensions[front]-centre).length(), {0.f,0.f});
+            mc::Position l(-1.f,0.f,0.f);   //-0.25 , 0
+            mc::Position r(1.f,0.f,0.f);    // 0.25 , 0
+            mc::Position b(0.f,-1.f,0.f);   // 0.25 ,-0.25
+            mc::Position t(0.f,1.f,0.f);    // 0.25 , 0.25
+            mc::Position bc(0.f,0.f,-1.f);  // 0.5  , 0
+            mc::Position f(0.f,0.f,1.f);    // 0    , 0
 
-            dimensions[left] = left_poc;
-            dimensions[right] = right_poc;
-            dimensions[bottom] = bottom_poc;
-            dimensions[top] = top_poc;
-            dimensions[back] = back_poc;
-            dimensions[front] = front_poc;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),l) <<std::endl;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),r) <<std::endl;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),b) <<std::endl;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),t) <<std::endl;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),bc) <<std::endl;
+            std::cout<< calc_spherical_coordinates(mc::Position::zero(),f) <<std::endl;
 
-            mc::Position average = std::accumulate(std::begin(dimensions),std::end(dimensions),mc::Position::zero()) / num_of_sides;
-            std::cout<< average <<std::endl;
+
+            auto p = mc::Position(-4,2,1);
+            auto c = calc_spherical_coordinates(mc::Position::zero(),p);
+            std::cout<< c <<std::endl;
+            auto s = point_on_sphere(mc::Position::zero(), 1.f, std::move(c));
+            std::cout<< s <<std::endl;
+
+
+
+//            Dimensions spherical_points;
+//            spherical_points[left]   = point_on_sphere(aabb_centre,(aabb_dimensions[left]-aabb_centre).length(), {-0.25f,0.f});
+//            spherical_points[right]  = point_on_sphere(aabb_centre,(aabb_dimensions[right]-aabb_centre).length(), {0.25f,0.f});
+//            spherical_points[bottom] = point_on_sphere(aabb_centre,(aabb_dimensions[bottom]-aabb_centre).length(), {0.25f,-0.25f});
+//            spherical_points[top]    = point_on_sphere(aabb_centre,(aabb_dimensions[top]-aabb_centre).length(), {0.25f,0.25f});
+//            spherical_points[back]   = point_on_sphere(aabb_centre,(aabb_dimensions[back]-aabb_centre).length(), {0.5f,0.f});
+//            spherical_points[front]  = point_on_sphere(aabb_centre,(aabb_dimensions[front]-aabb_centre).length(), {0.f,0.f});
+
+//            std::sort(spherical_points.begin(),spherical_points.end(),[&aabb_centre](auto &&v1_,auto &&v2_) -> bool
+//                                                                      {
+//                                                                          float v1_dist = (v1_-aabb_centre).lengthSquared();
+//                                                                          float v2_dist = (v2_-aabb_centre).lengthSquared();
+//                                                                          return (v1_dist > v2_dist);
+//                                                                      });
+
+//            float radius = (spherical_points[1]-spherical_points[0]).length() * 0.5f;
+//            std::cout<< radius <<std::endl;
+
+//            centre = glm::perp()
+
+
+//            std::cout<< liesOnSphere(centre, radius, dimensions[1]) <<std::endl;
+
+
 
 //            mc::Position average = std::accumulate(std::begin(dimensions),std::end(dimensions),mc::Position::zero()) / num_of_sides;
-//            std::sort(dimensions.begin(),dimensions.end(),[&average](auto &&v1_,auto &&v2_) -> bool
-//                                                          {
-//                                                              float v1_dist = (v1_-average).lengthSquared();
-//                                                              float v2_dist = (v2_-average).lengthSquared();
-//                                                              return (v1_dist > v2_dist);
-//                                                          });
+
 
 //            for (auto &&o : dimensions)
 //                std::cout<< o <<std::endl;
@@ -179,42 +239,42 @@ class BoundingVolume<mc::Sphere>
             mc::Transform PT;
             PT.scale(0.025f,0.025f,0.025f);
 
-            auto point = dimensions[left];
+            auto point = aabb_dimensions[left];
             PT.translate(point.m_x,point.m_y,point.m_z);
             auto MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(0.f,0.f,1.f,1.f));
             prim->draw("bv_sphere");
 
-            point = dimensions[right];
+            point = aabb_dimensions[right];
             PT.translate(point.m_x,point.m_y,point.m_z);
             MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(0.f,1.f,0.f,1.f));
             prim->draw("bv_sphere");
 
-            point = dimensions[bottom];
+            point = aabb_dimensions[bottom];
             PT.translate(point.m_x,point.m_y,point.m_z);
             MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(0.f,1.f,1.f,1.f));
             prim->draw("bv_sphere");
 
-            point = dimensions[top];
+            point = aabb_dimensions[top];
             PT.translate(point.m_x,point.m_y,point.m_z);
             MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(1.f,0.f,0.f,1.f));
             prim->draw("bv_sphere");
 
-            point = dimensions[back];
+            point = aabb_dimensions[back];
             PT.translate(point.m_x,point.m_y,point.m_z);
             MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
             shader->setUniform("Colour",ngl::Vec4(0.f,0.f,0.f,1.f));
             prim->draw("bv_sphere");
 
-            point = dimensions[front];
+            point = aabb_dimensions[front];
             PT.translate(point.m_x,point.m_y,point.m_z);
             MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
