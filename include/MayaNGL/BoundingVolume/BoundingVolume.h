@@ -2,6 +2,7 @@
 
 #include "MayaNGL/Common/Common_Def.hpp"
 #include <glm/gtx/perpendicular.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 
 namespace ngl
@@ -35,7 +36,6 @@ class BoundingVolume<mc::Sphere>
             update(transform_);
         }
 
-
         void tight(const mc::Position &vtx_, mc::Position &orig_, std::size_t axis_)
         {
             if (vtx_ != orig_)
@@ -45,7 +45,7 @@ class BoundingVolume<mc::Sphere>
             }
         }
 
-        mc::Position point_on_sphere(const mc::Position &centre_, float radius_, mc::V2 &&coordinates_)
+        mc::Position point_on_sphere(const mc::Position &centre_, float radius_, const mc::V2 &coordinates_)
         {
             float fi = 2.f * M_PI * coordinates_.m_x;
             float theta = 2.f * M_PI * coordinates_.m_y;
@@ -69,18 +69,16 @@ class BoundingVolume<mc::Sphere>
             mc::V2 coordinates;
 
             float radius = (point_-centre_).length();
-            float phi = mc::round( acos(point_.m_z/radius) * getSign(point_.m_x) ,4);
-
-
+            float phi = acos(point_.m_z/radius)*getSign(point_.m_x);
             float theta = 0.f;
-            if (phi == 0.f)
+            if (mc::round(phi,4) == 0.f)
                 theta = asin(point_.m_y/radius);
             else
                 theta = asin((point_.m_y/radius)/sin(phi));
 
+            coordinates.m_x = (phi*0.5f)/M_PI;
+            coordinates.m_y = (theta*0.5f)/M_PI;
 
-            coordinates.m_x = mc::round( (phi*0.5f)/M_PI, 4);
-            coordinates.m_y = mc::round( (theta*0.5f)/M_PI, 4);
             return coordinates;
         }
 
@@ -120,55 +118,38 @@ class BoundingVolume<mc::Sphere>
                 tight(vtx,aabb_dimensions[front],2);
             }
 
-            mc::Position aabb_centre;
-            aabb_centre.m_x = (aabb_dimensions[left].m_x + aabb_dimensions[right].m_x) * 0.5f;
-            aabb_centre.m_y = (aabb_dimensions[bottom].m_y + aabb_dimensions[top].m_y) * 0.5f;
-            aabb_centre.m_z = (aabb_dimensions[back].m_z + aabb_dimensions[front].m_z) * 0.5f;
+            mc::Position centre;
+            centre.m_x = (aabb_dimensions[left].m_x + aabb_dimensions[right].m_x) * 0.5f;
+            centre.m_y = (aabb_dimensions[bottom].m_y + aabb_dimensions[top].m_y) * 0.5f;
+            centre.m_z = (aabb_dimensions[back].m_z + aabb_dimensions[front].m_z) * 0.5f;
 
+            std::sort(aabb_dimensions.begin(),aabb_dimensions.end(),[&centre](auto &&v1_,auto &&v2_) -> bool
+                                                                    {
+                                                                        float v1_dist = (v1_-centre).lengthSquared();
+                                                                        float v2_dist = (v2_-centre).lengthSquared();
+                                                                        return (v1_dist > v2_dist);
+                                                                    });
 
+            std::array<mc::Position,2> spherical_points;
+            spherical_points[0] = point_on_sphere(centre,(aabb_dimensions[0]-centre).length(),{0.f,0.f});
+            spherical_points[1] = point_on_sphere(centre,(aabb_dimensions[1]-centre).length(),{0.5f,0.f});
 
-            mc::Position l(-1.f,0.f,0.f);   //-0.25 , 0
-            mc::Position r(1.f,0.f,0.f);    // 0.25 , 0
-            mc::Position b(0.f,-1.f,0.f);   // 0.25 ,-0.25
-            mc::Position t(0.f,1.f,0.f);    // 0.25 , 0.25
-            mc::Position bc(0.f,0.f,-1.f);  // 0.5  , 0
-            mc::Position f(0.f,0.f,1.f);    // 0    , 0
+            float radius = (spherical_points[1]-spherical_points[0]).length() * 0.5f;
 
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),l) <<std::endl;
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),r) <<std::endl;
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),b) <<std::endl;
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),t) <<std::endl;
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),bc) <<std::endl;
-            std::cout<< calc_spherical_coordinates(mc::Position::zero(),f) <<std::endl;
+            std::array<mc::V2,2> max_coordinates;
+            max_coordinates[0] = calc_spherical_coordinates(centre, aabb_dimensions[0]);
+            max_coordinates[1] = calc_spherical_coordinates(centre, aabb_dimensions[1]);
 
+            std::cout<< max_coordinates[0] << " , " << max_coordinates[1] <<std::endl;
 
-            auto p = mc::Position(-4,2,1);
-            auto c = calc_spherical_coordinates(mc::Position::zero(),p);
-            std::cout<< c <<std::endl;
-            auto s = point_on_sphere(mc::Position::zero(), 1.f, std::move(c));
-            std::cout<< s <<std::endl;
+            spherical_points[0] = point_on_sphere(centre,radius,{max_coordinates[0].m_x,0.25f});
+            spherical_points[1] = point_on_sphere(centre,radius,{max_coordinates[1].m_x,0.25f});
 
+            aabb_dimensions[0] = spherical_points[0];
+            aabb_dimensions[1] = spherical_points[1];
+            aabb_dimensions[2] = point_on_sphere(centre,radius,{0.25f,0.25f});
 
-
-//            Dimensions spherical_points;
-//            spherical_points[left]   = point_on_sphere(aabb_centre,(aabb_dimensions[left]-aabb_centre).length(), {-0.25f,0.f});
-//            spherical_points[right]  = point_on_sphere(aabb_centre,(aabb_dimensions[right]-aabb_centre).length(), {0.25f,0.f});
-//            spherical_points[bottom] = point_on_sphere(aabb_centre,(aabb_dimensions[bottom]-aabb_centre).length(), {0.25f,-0.25f});
-//            spherical_points[top]    = point_on_sphere(aabb_centre,(aabb_dimensions[top]-aabb_centre).length(), {0.25f,0.25f});
-//            spherical_points[back]   = point_on_sphere(aabb_centre,(aabb_dimensions[back]-aabb_centre).length(), {0.5f,0.f});
-//            spherical_points[front]  = point_on_sphere(aabb_centre,(aabb_dimensions[front]-aabb_centre).length(), {0.f,0.f});
-
-//            std::sort(spherical_points.begin(),spherical_points.end(),[&aabb_centre](auto &&v1_,auto &&v2_) -> bool
-//                                                                      {
-//                                                                          float v1_dist = (v1_-aabb_centre).lengthSquared();
-//                                                                          float v2_dist = (v2_-aabb_centre).lengthSquared();
-//                                                                          return (v1_dist > v2_dist);
-//                                                                      });
-
-//            float radius = (spherical_points[1]-spherical_points[0]).length() * 0.5f;
-//            std::cout<< radius <<std::endl;
-
-//            centre = glm::perp()
+//            auto bisector_centre = (spherical_points[0] + spherical_points[1]) * 0.5f;
 
 
 //            std::cout<< liesOnSphere(centre, radius, dimensions[1]) <<std::endl;
@@ -238,6 +219,13 @@ class BoundingVolume<mc::Sphere>
 
             mc::Transform PT;
             PT.scale(0.025f,0.025f,0.025f);
+
+//            auto point = aabb_centre;
+//            PT.translate(point.m_x,point.m_y,point.m_z);
+//            auto MVP = projection_ * view_ * PT;
+//            shader->setUniform("MVP",MVP);
+//            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
+//            prim->draw("bv_sphere");
 
             auto point = aabb_dimensions[left];
             PT.translate(point.m_x,point.m_y,point.m_z);
