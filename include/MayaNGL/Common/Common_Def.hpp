@@ -14,15 +14,31 @@ namespace mc //maya common
 
     struct Sphere
     {
-        Position position;
+        Position centre;
         float radius;
     };
 
+    template<bool using_dimensions>
+    struct AABB
+    {
+        enum {left,right,bottom,top,back,front,num_of_sides};
+        typedef std::array<mc::Position,num_of_sides> Dimensions;
+
+        Position centre;
+        Dimensions dimensions;
+    };
+
+    template<>
+    struct AABB<false>
+    {
+        Position centre;
+        Size<> size;
+    };
 
     template<bool infinite>
     struct Plane
     {
-        Position position;
+        Position centre;
         Direction normal;
     };
 
@@ -51,10 +67,10 @@ namespace mc //maya common
         {
             Points tmp;
 
-            tmp[TL] = this->position + mc::Position{-size.m_x, size.m_y, 0.f} * orientation;
-            tmp[TR] = this->position + mc::Position{ size.m_x, size.m_y, 0.f} * orientation;
-            tmp[BL] = this->position + mc::Position{-size.m_x,-size.m_y, 0.f} * orientation;
-            tmp[BR] = this->position + mc::Position{ size.m_x,-size.m_y, 0.f} * orientation;
+            tmp[TL] = this->centre + Position{-size.m_x, size.m_y, 0.f} * orientation;
+            tmp[TR] = this->centre + Position{ size.m_x, size.m_y, 0.f} * orientation;
+            tmp[BL] = this->centre + Position{-size.m_x,-size.m_y, 0.f} * orientation;
+            tmp[BR] = this->centre + Position{ size.m_x,-size.m_y, 0.f} * orientation;
 
             return tmp;
         }

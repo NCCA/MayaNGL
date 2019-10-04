@@ -103,10 +103,10 @@ namespace mc
     {
         auto &&r_pos = ray_.position;
         auto &&r_dir = ray_.direction;
-        auto &&p_pos = plane_.position;
+        auto &&p_ctr = plane_.centre;
         auto &&p_nrm = plane_.normal;
 
-        float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
+        float t = (p_ctr-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
         if (t>=0)
             return r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon();
         return failed;
@@ -117,11 +117,11 @@ namespace mc
     {
         auto &&r_pos = ray_.position;
         auto &&r_dir = ray_.direction;
-        auto &&p_pos = plane_.position;
+        auto &&p_ctr = plane_.centre;
         auto &&p_nrm = plane_.normal;
         auto &&p_crn = plane_.corners;
 
-        float t = (p_pos-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
+        float t = (p_ctr-r_pos).dot(p_nrm)/r_dir.dot(p_nrm);
         if (t>=0.f)
         {
             Position poi = r_pos+(t*r_dir)+std::numeric_limits<float>::epsilon();
@@ -147,10 +147,10 @@ namespace mc
     {
         auto &&r_pos = ray_.position;
         auto &&r_dir = ray_.direction;
-        auto &&s_pos = sphere_.position;
+        auto &&s_ctr = sphere_.centre;
         auto &&s_rad = sphere_.radius;
 
-        auto a = r_pos - s_pos;
+        auto a = r_pos - s_ctr;
         float b = a.dot(r_dir);
         float c = a.dot(a) - powf(s_rad,2);
 

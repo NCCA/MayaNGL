@@ -43,12 +43,10 @@
  *      seems to affect the transformation even when it's set to 0.
  * (15) Cannot overload make_selectable_and_movable() for ngl::Transform
  *      because the .getMatrix() returns a copy which is deleted.
- * (16) AbstractMesh::calcBoundingSphere() and AbstractMesh::calcDimensions()
- *      are not correct. These functions accumulate all vertex positions and
- *      then find the average position. However, this does not work when an
- *      imported obj is heavily meshed on one side (ex: fish model). The
- *      calcBoundingSphere() is almost correct, but does not tight wrap around
- *      the mesh.
+ * (16) AbstractMesh::calcBoundingSphere() is not accurate0. The function
+ *      accumulates all vertex positions and finds the average position.
+ *      However, this does not work when the imported obj is heavily meshed
+ *      on one side (ex: fish model).
 */
 
 
@@ -95,6 +93,8 @@ namespace mc //maya common
 
     struct Ray;
     struct Sphere;
+    template<bool using_dimensions = true>
+    struct AABB;
     template<bool infinite = true>
     struct Plane;
 
