@@ -18,21 +18,62 @@ namespace mc //maya common
         float radius;
     };
 
-    template<bool using_dimensions>
     struct AABB
     {
         enum {left,right,bottom,top,back,front,num_of_sides};
         typedef std::array<mc::Position,num_of_sides> Dimensions;
 
         Position centre;
-        Dimensions dimensions;
-    };
+        Dimensions end_points;
 
-    template<>
-    struct AABB<false>
-    {
-        Position centre;
-        Size<> size;
+        mc::Position min_average(mc::Position &orig_, const mc::Position &vtx_, std::size_t axis_)
+        {
+            mc::Position min = orig_;
+
+            if (min[axis_] > vtx_[axis_])
+                min = vtx_;
+            else if (std::abs(min[axis_]-vtx_[axis_]) < std::numeric_limits<float>::epsilon())
+                min = (min + vtx_) * 0.5f;
+
+            return min;
+        }
+
+        mc::Position max_average(mc::Position &orig_, const mc::Position &vtx_, std::size_t axis_)
+        {
+            mc::Position max = orig_;
+
+            if (max[axis_] < vtx_[axis_])
+                max = vtx_;
+            else if (std::abs(max[axis_]-vtx_[axis_]) < std::numeric_limits<float>::epsilon())
+                max = (max + vtx_) * 0.5f;
+
+            return max;
+        }
+
+        template<typename T>
+        void calc_end_points(const T &vtx_list_)
+        {
+            for (auto itr=std::cbegin(vtx_list_); itr!=std::cend(vtx_list_); ++itr)
+            {
+                auto &&vtx = *itr;
+
+                end_points[left]   = min_average(end_points[left],vtx,0);
+                end_points[right]  = max_average(end_points[right],vtx,0);
+                end_points[bottom] = min_average(end_points[bottom],vtx,1);
+                end_points[top]    = max_average(end_points[top],vtx,1);
+                end_points[back]   = min_average(end_points[back],vtx,2);
+                end_points[front]  = max_average(end_points[front],vtx,2);
+            }
+        }
+
+        void calc_centre()
+        {
+            centre.m_x = (end_points[left].m_x + end_points[right].m_x) * 0.5f;
+            centre.m_y = (end_points[bottom].m_y + end_points[top].m_y) * 0.5f;
+            centre.m_z = (end_points[back].m_z + end_points[front].m_z) * 0.5f;
+        }
+
+
     };
 
     template<bool infinite>

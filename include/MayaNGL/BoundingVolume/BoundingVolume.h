@@ -18,6 +18,10 @@ template<>
 class BoundingVolume<mc::Sphere>
 {
     private:
+        template<typename T>
+        using DoubleOf = std::array<T,2>;
+
+    private:
         mc::Sphere bv;
         mc::Transform transform;
 
@@ -30,14 +34,6 @@ class BoundingVolume<mc::Sphere>
             update(transform_);
         }
 
-        void tight(const mc::Position &vtx_, mc::Position &orig_, std::size_t axis_)
-        {
-            if (vtx_ != orig_)
-            {
-                if (std::abs(orig_[axis_]-vtx_[axis_]) < std::numeric_limits<float>::epsilon())
-                    orig_ = (orig_ + vtx_) * 0.5f;
-            }
-        }
 
         mc::Position point_on_sphere(const mc::Position &centre_, float radius_, const mc::V2 &coordinates_)
         {
@@ -54,7 +50,7 @@ class BoundingVolume<mc::Sphere>
 
         int getSign(float val)
         {
-            int sign = (0.0 < val) - (val < 0.0);
+            int sign = (0.f < val) - (val < 0.f);
             return (sign == 0) ? 1 : sign;
         }
 
@@ -83,119 +79,71 @@ class BoundingVolume<mc::Sphere>
                                 pow((pnt_.m_z-centre_.m_z),2)),4) == mc::round(pow(radius_,2),4) );
         }
 
+        mc::Position calc_centre_of_sphere(const mc::Position &aabb_centre_, const DoubleOf<mc::Position> &points_, float radius_)
+        {
+            mc::Position centre(0.f,0.f,0.f);
 
+            mc::Position bisector = (points_[0]+points_[1]) * 0.5f;
+            mc::Direction c_dir = aabb_centre_ - bisector;
+            c_dir.normalize();
 
-        mc::AABB<false> box;
+            float q = (points_[1]-points_[0]).length();
+            if (getSign(c_dir.m_y) > 0)
+            {
+                centre.m_z = bisector.m_z + (sqrt(pow(radius_,2)-pow((q*0.5f),2))*(points_[0].m_y-points_[1].m_y)) / q;
+                centre.m_y = bisector.m_y + (sqrt(pow(radius_,2)-pow((q*0.5f),2))*(points_[1].m_z-points_[0].m_z)) / q;
+            }
+            else
+            {
+                centre.m_z = bisector.m_z - (sqrt(pow(radius_,2)-pow((q*0.5f),2))*(points_[0].m_y-points_[1].m_y)) / q;
+                centre.m_y = bisector.m_y - (sqrt(pow(radius_,2)-pow((q*0.5f),2))*(points_[1].m_z-points_[0].m_z)) / q;
+            }
+
+            return centre;
+        }
 
         template<typename PRIM>
         void compute_volume(const PRIM &prim_, const mc::Transform &transform_, std::true_type)
         {
-            auto vtx_list = prim_->getVertexList();
-            prim_->calcDimensions();
+            // find a way to consider the transform matrix from NGLScene.
 
+            mc::AABB box;
 
-            auto bbox = prim_->getBBox();
-            box.size.m_x = bbox.width();
-            box.size.m_y = bbox.height();
-            box.size.m_z = bbox.depth();
+            box.calc_end_points(prim_.getVertexList());
+            box.calc_centre();
 
+            // find the two most distant vtxs from the centre and calc their radii.
+            std::sort(std::begin(box.end_points),std::end(box.end_points),[&box](auto &&v1_,auto &&v2_) -> bool
+                                                                          {
+                                                                              float v1_dist = (v1_-box.centre).lengthSquared();
+                                                                              float v2_dist = (v2_-box.centre).lengthSquared();
+                                                                              return (v1_dist > v2_dist);
+                                                                          });
+            DoubleOf<float> max_radii;
+            for (std::size_t i=0; i<max_radii.size(); ++i)
+                max_radii[i] = (box.end_points[i]-box.centre).length();
 
+            // place the two max dist vtxs on opposite sides upon their spherical coordinates.
+            DoubleOf<mc::Position> points_on_sphere;
+            points_on_sphere[0] = point_on_sphere(box.centre,max_radii[0],{0.f,0.f});
+            points_on_sphere[1] = point_on_sphere(box.centre,max_radii[1],{0.5f,0.f});
 
+            // compute the radius of the sphere that captures both max dist points.
+            float radius = (points_on_sphere[1]-points_on_sphere[0]).length() * 0.5f;
 
-//            // populate the AABB faces.
-//            for (auto itr=std::cbegin(vtx_list); itr!=std::cend(vtx_list); ++itr)
-//            {
-//                auto &&vtx = *itr;
+            // place points on the 2D circle by locking the theta angle on the z-axis
+            DoubleOf<mc::V2> max_coordinates;
+            for (std::size_t i=0; i<points_on_sphere.size(); ++i)
+            {
+                max_coordinates[i] = calc_spherical_coordinates(box.centre, box.end_points[i]);
+                points_on_sphere[i] = point_on_sphere(box.centre,max_radii[i],{max_coordinates[i].m_x,0.25f});
+            }
 
-//                box.dimensions[mc::AABB::left]   = std::max(box.dimensions[mc::AABB::left], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x>v2_.m_x);});
-//                box.dimensions[mc::AABB::right]  = std::max(box.dimensions[mc::AABB::right], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_x<v2_.m_x);});
-//                box.dimensions[mc::AABB::bottom] = std::max(box.dimensions[mc::AABB::bottom], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y>v2_.m_y);});
-//                box.dimensions[mc::AABB::top]    = std::max(box.dimensions[mc::AABB::top], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_y<v2_.m_y);});
-//                box.dimensions[mc::AABB::back]   = std::max(box.dimensions[mc::AABB::back], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z>v2_.m_z);});
-//                box.dimensions[mc::AABB::front]  = std::max(box.dimensions[mc::AABB::front], vtx, [](auto &&v1_,auto &&v2_){return (v1_.m_z<v2_.m_z);});
-//            }
-
-//            // sort out multiple vtxs that are on the same max dist from the centre.
-//            for (auto itr=std::cbegin(vtx_list); itr!=std::cend(vtx_list); ++itr)
-//            {
-//                auto &&vtx = *itr;
-
-//                tight(vtx,box.dimensions[mc::AABB::left],0);
-//                tight(vtx,box.dimensions[mc::AABB::right],0);
-//                tight(vtx,box.dimensions[mc::AABB::bottom],1);
-//                tight(vtx,box.dimensions[mc::AABB::top],1);
-//                tight(vtx,box.dimensions[mc::AABB::back],2);
-//                tight(vtx,box.dimensions[mc::AABB::front],2);
-//            }
-
-//            // calculate the centre of the AABB.
-//            mc::Position centre;
-//            centre.m_x = (aabb_dimensions[left].m_x + aabb_dimensions[right].m_x) * 0.5f;
-//            centre.m_y = (aabb_dimensions[bottom].m_y + aabb_dimensions[top].m_y) * 0.5f;
-//            centre.m_z = (aabb_dimensions[back].m_z + aabb_dimensions[front].m_z) * 0.5f;
-
-
-//            // find the two most distant vtxs from the centre.
-//            std::sort(aabb_dimensions.begin(),aabb_dimensions.end(),[&centre](auto &&v1_,auto &&v2_) -> bool
-//                                                                    {
-//                                                                        float v1_dist = (v1_-centre).lengthSquared();
-//                                                                        float v2_dist = (v2_-centre).lengthSquared();
-//                                                                        return (v1_dist > v2_dist);
-//                                                                    });
-
-
-//            // place the two max dist vtxs on opposite sides upon their spherical coordinates.
-//            std::array<mc::Position,2> points_on_sphere;
-//            points_on_sphere[0] = point_on_sphere(centre,(aabb_dimensions[0]-centre).length(),{0.f,0.f});
-//            points_on_sphere[1] = point_on_sphere(centre,(aabb_dimensions[1]-centre).length(),{0.5f,0.f});
-
-//            // compute the radius of the sphere that captures both max dist points.
-//            float radius = (points_on_sphere[1]-points_on_sphere[0]).length() * 0.5f;
-
-
-//            std::array<mc::V2,2> max_coordinates;
-//            max_coordinates[0] = calc_spherical_coordinates(centre, aabb_dimensions[0]);
-//            max_coordinates[1] = calc_spherical_coordinates(centre, aabb_dimensions[1]);
-//            // place points on the 2D circle by locking the theta angle on the z-axis
-//            points_on_sphere[0] = point_on_sphere(centre,(aabb_dimensions[0]-centre).length(),{max_coordinates[0].m_x,0.25f});
-//            points_on_sphere[1] = point_on_sphere(centre,(aabb_dimensions[1]-centre).length(),{max_coordinates[1].m_x,0.25f});
-
-//            aabb_dimensions[0] = points_on_sphere[0];
-//            aabb_dimensions[1] = points_on_sphere[1];
-
-
-
-
-
-//            mc::Position bisector = (points_on_sphere[0]+points_on_sphere[1]) * 0.5f;
-//            mc::Direction c_dir = centre - bisector;
-//            c_dir.normalize();
-
-
-
-//            auto p0 = points_on_sphere[0];
-//            auto p1 = points_on_sphere[1];
-
-//            float q = (p1-p0).length();
-//            mc::Position bisector = (p0+p1) * 0.5f;
-
-//            float cz = bisector.m_z + (sqrt(powf(radius,2)-powf((q*0.5f),2))*(p0.m_y-p1.m_y)) / q;
-//            float cy = bisector.m_y + (sqrt(powf(radius,2)-powf((q*0.5f),2))*(p1.m_z-p0.m_z)) / q;
-
-//            std::cout<< "0.0," << cy << "," << cz <<std::endl;
-//            aabb_dimensions[2] = mc::Position{0.f,cy,cz};
-
-
-//            cz = bisector.m_z - (sqrt(powf(radius,2)-powf((q*0.5f),2))*(p0.m_y-p1.m_y)) / q;
-//            cy = bisector.m_y - (sqrt(powf(radius,2)-powf((q*0.5f),2))*(p1.m_z-p0.m_z)) / q;
-
-//            std::cout<< "0.0," << cy << "," << cz <<std::endl;
-//            aabb_dimensions[3] = mc::Position{0.f,cy,cz};
-
-
-//            bv.position = mc::Position{0.f,cy,cz};
-//            bv.radius = radius;
-
+            auto centre = calc_centre_of_sphere(box.centre,points_on_sphere,radius);
+            bv.centre.m_x = transform_.m_30 + centre.m_x;
+            bv.centre.m_y = transform_.m_31 + centre.m_y;
+            bv.centre.m_z = transform_.m_32 + centre.m_z;
+            bv.radius = std::max({transform_.m_00,transform_.m_11,transform_.m_22})*radius;
         }
 
         template<typename PRIM>
@@ -210,8 +158,10 @@ class BoundingVolume<mc::Sphere>
 
         void update(const mc::Transform &transform_)
         {
-            bv.centre = mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
-            bv.radius = std::max({transform_.m_00,transform_.m_11,transform_.m_22});
+//            bv.centre = mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
+//            bv.radius = std::max({transform_.m_00,transform_.m_11,transform_.m_22});
+
+//            transform = transform_;
 
             transform.m_30 = bv.centre.m_x;
             transform.m_31 = bv.centre.m_y;
@@ -225,7 +175,7 @@ class BoundingVolume<mc::Sphere>
         void initialize()
         {
             ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-            prim->createSphere("bv_sphere",1.f,20);
+            prim->createSphere("bv_sphere",1.f,120);
         }
 
         void draw(const mc::Model &model_, const mc::View &view_, const mc::Projection &projection_)
@@ -235,78 +185,57 @@ class BoundingVolume<mc::Sphere>
             ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-//            update(model_);
-
+            update(model_);
             auto MVP = projection_ * view_ * transform;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
-//            prim->draw("bv_sphere");
-
-
-            mc::Transform PT;
-            auto point = box.centre;
-            PT.translate(point.m_x,point.m_y,point.m_z);
-            PT.scale(box.size.m_x,box.size.m_y,box.size.m_z);
-            MVP = projection_ * view_ * PT;
             shader->setUniform("MVP",MVP);
-            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
-            prim->draw("cube");
-
+            shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
+            prim->draw("bv_sphere");
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
 
 //            mc::Transform PT;
 //            PT.scale(0.01f,0.01f,0.01f);
-
-//            auto point = aabb_dimensions[left];
+//            auto point = box.end_points[mc::AABB::left];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
+//            auto MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(0.f,0.f,1.f,1.f));
 //            prim->draw("bv_sphere");
 
-//            point = aabb_dimensions[right];
+//            point = box.end_points[mc::AABB::right];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
 //            MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(0.f,1.f,0.f,1.f));
 //            prim->draw("bv_sphere");
 
-//            point = aabb_dimensions[bottom];
+//            point = box.end_points[mc::AABB::bottom];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
 //            MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(0.f,1.f,1.f,1.f));
 //            prim->draw("bv_sphere");
 
-//            point = aabb_dimensions[top];
+//            point = box.end_points[mc::AABB::top];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
 //            MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(1.f,0.f,0.f,1.f));
 //            prim->draw("bv_sphere");
 
-//            point = aabb_dimensions[back];
+//            point = box.end_points[mc::AABB::back];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
 //            MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(0.f,0.f,0.f,1.f));
 //            prim->draw("bv_sphere");
 
-//            point = aabb_dimensions[front];
+//            point = box.end_points[mc::AABB::front];
 //            PT.translate(point.m_x,point.m_y,point.m_z);
 //            MVP = projection_ * view_ * PT;
 //            shader->setUniform("MVP",MVP);
 //            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,0.f,1.f));
 //            prim->draw("bv_sphere");
-
-//            point = bisector;
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,1.f,1.f));
-//            prim->draw("bv_sphere");
-
 
         }
 };

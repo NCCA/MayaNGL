@@ -93,7 +93,6 @@ namespace mc //maya common
 
     struct Ray;
     struct Sphere;
-    template<bool using_dimensions = true>
     struct AABB;
     template<bool infinite = true>
     struct Plane;

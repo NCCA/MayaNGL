@@ -132,14 +132,14 @@ void NGLScene::paintGL()
 //        prim->draw( "cube" );
 //    }
 
-    // This is also a movable object.
-    {
-        // The transformation settings are put in initializeGL() to avoid
-        // being reset every time.
-        loadShader<true>(m_fish_model);
-        m_fish_mesh->draw();
-        m_maya.make_selectable_and_movable(3,m_fish_mesh,m_fish_model);
-    }
+//    // This is also a movable object.
+//    {
+//        // The transformation settings are put in initializeGL() to avoid
+//        // being reset every time.
+//        loadShader<true>(m_fish_model);
+//        m_fish_mesh->draw();
+//        m_maya.make_selectable_and_movable(3,m_fish_mesh,m_fish_model);
+//    }
 
 //    // This is only a selectable object.
 //    m_transform.reset();
@@ -150,16 +150,16 @@ void NGLScene::paintGL()
 //        m_maya.make_selectable(4,"football",m_transform);
 //    }
 
-//    // This is also only selectable.
-//    m_transform.reset();
-//    {
+    // This is also only selectable.
+    m_transform.reset();
+    {
 //        m_transform.setPosition(0.f,1.f,-6.f);
-//        m_transform.setRotation(0.f,0.f,-20.f);
+//        m_transform.setRotation(0.f,0.f,0.f);
 //        m_transform.setScale(3.f,3.f,3.f);
-//        loadShader<false>(m_transform.getMatrix());
-//        m_airplane_mesh.draw();
-//        m_maya.make_selectable(5,m_airplane_mesh,m_transform);
-//    }
+        loadShader<false>(m_transform.getMatrix());
+        m_airplane_mesh.draw();
+        m_maya.make_selectable(5,m_airplane_mesh,m_transform);
+    }
 
     // Draw the gizmo last so that it'll be "on top" of everything else.
     m_maya.draw_gizmo();
