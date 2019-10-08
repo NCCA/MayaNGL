@@ -15,7 +15,7 @@ namespace mc //maya common
     struct Sphere
     {
         Position centre;
-        float radius;
+        float radius = 1.f;
     };
 
     struct AABB

@@ -20,12 +20,19 @@ class BoundingVolume<mc::Sphere>
     private:
         template<typename T>
         using DoubleOf = std::array<T,2>;
+        typedef std::vector<mc::Position> VertexList;
 
     private:
+        mc::Sphere orig_bv;
         mc::Sphere bv;
         mc::Transform transform;
 
     public:
+        BoundingVolume() : orig_bv(),
+                           bv(),
+                           transform()
+        {;}
+
         GET_MEMBER(bv,volume)
 
         template<typename PRIM>
@@ -33,7 +40,6 @@ class BoundingVolume<mc::Sphere>
         {
             update(transform_);
         }
-
 
         mc::Position point_on_sphere(const mc::Position &centre_, float radius_, const mc::V2 &coordinates_)
         {
@@ -102,14 +108,12 @@ class BoundingVolume<mc::Sphere>
             return centre;
         }
 
-        template<typename PRIM>
-        void compute_volume(const PRIM &prim_, const mc::Transform &transform_, std::true_type)
+
+        void calc_tight_bound_volume(const VertexList &vtx_list_)
         {
-            // find a way to consider the transform matrix from NGLScene.
-
+            // constuct an AABB from the primitive's vertices.
             mc::AABB box;
-
-            box.calc_end_points(prim_.getVertexList());
+            box.calc_end_points(vtx_list_);
             box.calc_centre();
 
             // find the two most distant vtxs from the centre and calc their radii.
@@ -119,9 +123,11 @@ class BoundingVolume<mc::Sphere>
                                                                               float v2_dist = (v2_-box.centre).lengthSquared();
                                                                               return (v1_dist > v2_dist);
                                                                           });
+
+            // calculate the centre of sphere
             DoubleOf<float> max_radii;
-            for (std::size_t i=0; i<max_radii.size(); ++i)
-                max_radii[i] = (box.end_points[i]-box.centre).length();
+            max_radii[0] = (box.end_points[0]-box.centre).length();
+            max_radii[1] = (box.end_points[1]-box.centre).length();
 
             // place the two max dist vtxs on opposite sides upon their spherical coordinates.
             DoubleOf<mc::Position> points_on_sphere;
@@ -129,7 +135,7 @@ class BoundingVolume<mc::Sphere>
             points_on_sphere[1] = point_on_sphere(box.centre,max_radii[1],{0.5f,0.f});
 
             // compute the radius of the sphere that captures both max dist points.
-            float radius = (points_on_sphere[1]-points_on_sphere[0]).length() * 0.5f;
+            orig_bv.radius = (points_on_sphere[1]-points_on_sphere[0]).length() * 0.5f;
 
             // place points on the 2D circle by locking the theta angle on the z-axis
             DoubleOf<mc::V2> max_coordinates;
@@ -139,29 +145,44 @@ class BoundingVolume<mc::Sphere>
                 points_on_sphere[i] = point_on_sphere(box.centre,max_radii[i],{max_coordinates[i].m_x,0.25f});
             }
 
-            auto centre = calc_centre_of_sphere(box.centre,points_on_sphere,radius);
-            bv.centre.m_x = transform_.m_30 + centre.m_x;
-            bv.centre.m_y = transform_.m_31 + centre.m_y;
-            bv.centre.m_z = transform_.m_32 + centre.m_z;
-            bv.radius = std::max({transform_.m_00,transform_.m_11,transform_.m_22})*radius;
+            // calculate the centre of the new sphere
+            orig_bv.centre = calc_centre_of_sphere(box.centre,points_on_sphere,orig_bv.radius);
+        }
+
+
+        template<typename PRIM>
+        void compute_volume(const PRIM &prim_, std::true_type)
+        {
+            const auto &vtx_list = prim_.getVertexList();
+            calc_tight_bound_volume(vtx_list);
+        }
+
+        template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
+        void compute_volume(const SmPtr<T> &prim_, std::true_type)
+        {
+            const auto &vtx_list = prim_->getVertexList();
+            calc_tight_bound_volume(vtx_list);
         }
 
         template<typename PRIM>
-        void compute_volume(PRIM &&prim_, const mc::Transform &transform_)
+        void compute_volume(PRIM &&prim_)
         {
             typedef typename std::remove_reference<PRIM>::type nRType;
             typedef typename std::remove_const<nRType>::type nCType;
             typedef typename mc::remove_smart_ptr<nCType>::type PrimType;
 
-            this->compute_volume(std::forward<PRIM>(prim_),transform_,std::is_same<PrimType,ngl::Obj>());
+            this->compute_volume(std::forward<PRIM>(prim_),std::is_same<PrimType,ngl::Obj>());
         }
 
         void update(const mc::Transform &transform_)
         {
-//            bv.centre = mc::Position{transform_.m_30,transform_.m_31,transform_.m_32};
-//            bv.radius = std::max({transform_.m_00,transform_.m_11,transform_.m_22});
-
-//            transform = transform_;
+            // Problem with the transform. When I allow both prims
+            // to exist, then the fish doesn't fit correctly.
+            bv.centre = orig_bv.centre * transform_;
+            bv.centre.m_x += transform_.m_30;
+            bv.centre.m_y += transform_.m_31;
+            bv.centre.m_z += transform_.m_32;
+            bv.radius = orig_bv.radius * std::max({transform_.m_00,transform_.m_11,transform_.m_22});
 
             transform.m_30 = bv.centre.m_x;
             transform.m_31 = bv.centre.m_y;
@@ -191,51 +212,5 @@ class BoundingVolume<mc::Sphere>
             shader->setUniform("Colour",ngl::Vec4(1.f,0.263f,0.639f,1.f));
             prim->draw("bv_sphere");
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-
-//            mc::Transform PT;
-//            PT.scale(0.01f,0.01f,0.01f);
-//            auto point = box.end_points[mc::AABB::left];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            auto MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(0.f,0.f,1.f,1.f));
-//            prim->draw("bv_sphere");
-
-//            point = box.end_points[mc::AABB::right];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(0.f,1.f,0.f,1.f));
-//            prim->draw("bv_sphere");
-
-//            point = box.end_points[mc::AABB::bottom];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(0.f,1.f,1.f,1.f));
-//            prim->draw("bv_sphere");
-
-//            point = box.end_points[mc::AABB::top];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(1.f,0.f,0.f,1.f));
-//            prim->draw("bv_sphere");
-
-//            point = box.end_points[mc::AABB::back];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(0.f,0.f,0.f,1.f));
-//            prim->draw("bv_sphere");
-
-//            point = box.end_points[mc::AABB::front];
-//            PT.translate(point.m_x,point.m_y,point.m_z);
-//            MVP = projection_ * view_ * PT;
-//            shader->setUniform("MVP",MVP);
-//            shader->setUniform("Colour",ngl::Vec4(1.f,1.f,0.f,1.f));
-//            prim->draw("bv_sphere");
-
         }
 };

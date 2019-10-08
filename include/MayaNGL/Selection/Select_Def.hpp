@@ -43,7 +43,7 @@ template<bool visualize_bv_and_ray>
 void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
     this->insert(id_,std::forward<PRIM>(prim_),transform_,is_moveable_);
-    this->m_bv.compute_volume(std::forward<PRIM>(prim_),transform_);
+    this->m_bv.compute_volume(std::forward<PRIM>(prim_));
 }
 
 template<bool visualize_bv_and_ray>
