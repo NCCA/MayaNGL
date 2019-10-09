@@ -26,7 +26,7 @@ HEADERS += $$PWD/include/*.h \
            $$PWD/include/MayaNGL/Selection/*.h* \
            $$PWD/include/MayaNGL/SelectableMap/*.h* \
            $$PWD/include/MayaNGL/Gizmo/*.h* \
-           $$PWD/include/MayaNGL/BoundingVolume/*.h*
+           $$PWD/include/MayaNGL/BoundingVolumes/*.h*
 
 SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/*.cpp \
@@ -39,7 +39,8 @@ SOURCES += $$PWD/src/*.cpp \
            $$PWD/src/MayaNGL/Viewport/ViewAxis/*.cpp \
            $$PWD/src/MayaNGL/Selection/*.cpp \
            $$PWD/src/MayaNGL/SelectableMap/*.cpp \
-           $$PWD/src/MayaNGL/Gizmo/*.cpp
+           $$PWD/src/MayaNGL/Gizmo/*.cpp \
+           $$PWD/src/MayaNGL/BoundingVolumes/*.cpp
 
 OTHER_FILES += $$PWD/shaders/*.glsl \
                $$PWD/shaders/MayaNGL/*.glsl \

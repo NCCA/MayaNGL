@@ -3,17 +3,15 @@
 #include "VariantPrim.h"
 
 
-namespace ngl
-{
-    class Obj;
-}
-
-
 struct VariantPrim::Base
 {
     virtual void draw(const mc::Transform &, const mc::View &, const mc::Projection &) const = 0;
     virtual ~Base() noexcept = default;
 };
+
+
+//===================================================================//
+
 
 template<typename T, template<typename> class Gen>
 struct VariantPrim::BaseGeneric : Base
@@ -40,6 +38,10 @@ struct VariantPrim::BaseGeneric : Base
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
 };
+
+
+//===================================================================//
+
 
 template<typename T>
 struct VariantPrim::Generic : BaseGeneric<T,Generic>
@@ -86,7 +88,7 @@ struct VariantPrim::Generic<T*> : BaseGeneric<T*,Generic>
 };
 
 
-// ------------------------------------------------------------- //
+//===================================================================//
 
 
 template<typename T, typename>
@@ -97,27 +99,31 @@ VariantPrim::VariantPrim( T *primitive_,
                           m_is_moveable(is_moveable_),
                           m_prim_ptr{std::make_unique<Generic<T*>>(primitive_)},
                           m_transform(transform_)
-{;}
+{
+    bv.compute_volume(primitive_);
+}
 
 template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
-VariantPrim::VariantPrim( const SmPtr<T> &val_,
+VariantPrim::VariantPrim( const SmPtr<T> &primitive_,
                           const mc::Transform &transform_,
                           bool is_moveable_ )
                           :
                           m_is_moveable(is_moveable_),
-                          m_prim_ptr{std::make_unique<Generic<T*>>(val_.get())},
+                          m_prim_ptr{std::make_unique<Generic<T*>>(primitive_.get())},
                           m_transform(transform_)
-{;}
+{
+    bv.compute_volume(primitive_);
+}
 
 template<typename T, typename>
-VariantPrim::VariantPrim( const T &val_,
+VariantPrim::VariantPrim( const T &primitive_,
                           const mc::Transform &transform_,
                           bool is_moveable_ )
                           :
                           m_is_moveable(is_moveable_),
-                          m_prim_ptr{std::make_unique<Generic<const T &>>(val_)},
+                          m_prim_ptr{std::make_unique<Generic<const T &>>(primitive_)},
                           m_transform(transform_)
-{;}
-
-
+{
+    bv.compute_volume(primitive_);
+}
 

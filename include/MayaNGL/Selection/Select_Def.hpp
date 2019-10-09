@@ -3,18 +3,18 @@
 #include "Select.h"
 
 
-template<bool visualize_bv_and_ray>
+template<bool visualization>
     template<typename CAM>
-Select<visualize_bv_and_ray>::Select( const mc::View &view_,
-                                      const mc::Projection &projection_,
-                                      const CAM &camera_ )
-                                      :
-                                      BaseSelection<visualize_bv_and_ray>(view_,projection_,camera_.get_lookAt()),
-                                      m_multi_selection(false)
+Select<visualization>::Select( const mc::View &view_,
+                               const mc::Projection &projection_,
+                               const CAM &camera_ )
+                               :
+                               BaseSelection<visualization>(view_,projection_,camera_.get_lookAt()),
+                               m_multi_selection(false)
 {;}
 
-template<bool visualize_bv_and_ray>
-int Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
+template<bool visualization>
+int Select<visualization>::get_selected_id(float &shortest_distance_)
 {
     int selected_id = -1;
 
@@ -26,7 +26,9 @@ int Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
         auto poi = clicked_on_object(prim);
         if (!this->already_selected(id) && (poi != mc::failed))
         {
-            auto dist = (poi-this->cam_lookAt.eye).lengthSquared();
+            auto &&camera_eye = this->cam_lookAt.eye;
+
+            auto dist = (poi-camera_eye).lengthSquared();
             if (shortest_distance_ > dist)
             {
                 shortest_distance_ = dist;
@@ -38,38 +40,36 @@ int Select<visualize_bv_and_ray>::get_selected_id(float &shortest_distance_)
     return selected_id;
 }
 
-template<bool visualize_bv_and_ray>
+template<bool visualization>
     template<typename PRIM>
-void Select<visualize_bv_and_ray>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
+void Select<visualization>::make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_, bool is_moveable_)
 {
     this->insert(id_,std::forward<PRIM>(prim_),transform_,is_moveable_);
-    this->m_bv.compute_volume(std::forward<PRIM>(prim_));
 }
 
-template<bool visualize_bv_and_ray>
-void Select<visualize_bv_and_ray>::resize(int w_, int h_)
+template<bool visualization>
+void Select<visualization>::resize(int w_, int h_)
 {
     this->m_screen_width = w_;
     this->m_screen_height = h_;
 }
 
-template<bool visualize_bv_and_ray>
-void Select<visualize_bv_and_ray>::enable_multi_selection()
+template<bool visualization>
+void Select<visualization>::enable_multi_selection()
 {
     m_multi_selection = true;
 }
 
-template<bool visualize_bv_and_ray>
-mc::Position Select<visualize_bv_and_ray>::clicked_on_object(const VariantPrim &selectable_)
+template<bool visualization>
+mc::Position Select<visualization>::clicked_on_object(const VariantPrim &selectable_)
 {
-    auto &&transform = selectable_.get_transform();
-    this->m_bv.update(transform);
-    auto poi = mc::intersect(this->m_ray,this->m_bv.get_volume());
+    this->m_viz_bv.update(selectable_);
+    auto poi = mc::intersect(this->m_ray,this->m_viz_bv.get_updated_volume());
     return poi;
 }
 
-template<bool visualize_bv_and_ray>
-int Select<visualize_bv_and_ray>::pick()
+template<bool visualization>
+int Select<visualization>::pick()
 {
     if (!m_multi_selection)
         this->m_currently_selected.clear();

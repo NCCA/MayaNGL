@@ -19,7 +19,9 @@ This demo supports/displays the following:
 
 - Valid with ngl::VAOPrimitives and ngl::Obj using ngl::Mat4 and ngl::Transformation.
 
-- Object selection via ray casting. (Visualize the ray and object intersection by setting "Select<true> m_select;" in MayaNGL.h)
+- Object selection via ray casting. (Visualize the ray and object intersection by changing "Select<disable_visualization> m_select;" to "Select<enable_visualization> m_select;" in MayaNGL.h)
+
+- BV algorithm for tight sphere bounding volume.
 
 - View axis.
 

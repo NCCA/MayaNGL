@@ -1,10 +1,9 @@
 #pragma once
 
-#include "MayaNGL/BoundingVolume/BoundingVolume.h"
 #include "MayaNGL/SelectableMap/SelectableMap_Def.hpp"
 
 
-template<bool visualize_bv_and_ray>
+template<bool visualization>
 class BaseSelection : public SelectableMap
 {
     protected:
@@ -14,7 +13,7 @@ class BaseSelection : public SelectableMap
 
     protected:
         mc::Ray m_ray;
-        BoundingVolume<mc::Sphere> m_bv;
+        BoundingVolume<mc::Sphere,true> m_viz_bv;
         int m_screen_width = 0;
         int m_screen_height = 0;
 
@@ -33,7 +32,7 @@ class BaseSelection : public SelectableMap
 };
 
 
-// ------------------------------------------------------------- //
+//===================================================================//
 
 
 template<>

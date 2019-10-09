@@ -59,6 +59,13 @@
 #define enable_visualization true
 #define disable_visualization false
 
+
+namespace ngl
+{
+    class Obj;
+}
+
+
 namespace mc //maya common
 {
 

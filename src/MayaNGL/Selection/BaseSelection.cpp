@@ -54,7 +54,7 @@ void BaseSelection<false>::draw() const
 }
 
 
-// ------------------------------------------------------------- //
+//===================================================================//
 
 
 BaseSelection<true>::BaseSelection( const mc::View &view_,
@@ -70,7 +70,7 @@ void BaseSelection<true>::initialize()
 {
     BaseSelection<false>::initialize();
 
-    m_bv.initialize();
+    m_viz_bv.initialize();
     m_vao = ngl::VAOFactory::createVAO("simpleVAO",GL_LINES);
 }
 
@@ -106,8 +106,8 @@ void BaseSelection<true>::draw()
 
     for (const auto &i : m_currently_selected)
     {
-        auto &&prim_transform = m_selectables.at(i).get_transform();
-        m_bv.draw(prim_transform,view,projection);
+        auto &&prim = m_selectables.at(i);
+        m_viz_bv.draw(prim,view,projection);
     }
 }
 

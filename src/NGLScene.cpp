@@ -63,13 +63,12 @@ void NGLScene::initializeGL()
     m_fish_mesh = std::make_unique<ngl::Obj>("models_textures/fish.obj","models_textures/fish.jpg");
     m_fish_mesh->createVAO();
 
-
-//    // The fish's trasformation settings are placed here so that they
-//    // can be set only once. If they are placed inside paintGL() then
-//    // the loadShader() will reset the fish's transformation every frame
-//    // and the gizmo won't have any effect.
-//    m_fish_model.translate(0.f,0.f,8.f);
-//    m_fish_model.scale(2.f,2.f,2.f);
+    // The fish's trasformation settings are placed here so that they
+    // can be set only once. If they are placed inside paintGL() then
+    // the loadShader() will reset the fish's transformation every frame
+    // and the gizmo won't have any effect.
+    m_fish_model.translate(0.f,0.f,8.f);
+    m_fish_model.scale(2.f,2.f,2.f);
 }
 
 template<>
@@ -112,25 +111,25 @@ void NGLScene::paintGL()
 
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
 
-//    // This is a movable object controlled by the gizmo.
-//    // There is no point in reseting the model matrix. If the model matrix
-//    // is reset, then the gizmo won't have any effect on the primitive.
-//    {
-//        loadShader<false>(m_teapot_model);
-//        prim->draw( "teapot" );
-//        m_maya.make_selectable_and_movable(1,"teapot",m_teapot_model);
-//    }
+    // This is a movable object controlled by the gizmo.
+    // There is no point in reseting the model matrix. If the model matrix
+    // is reset, then the gizmo won't have any effect on the primitive.
+    {
+        loadShader<false>(m_teapot_model);
+        prim->draw( "teapot" );
+        m_maya.make_selectable_and_movable(1,"teapot",m_teapot_model);
+    }
 
-//    // This is neither a selectable or movable object. MayaNGL has no
-//    // control over it.
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(-6.f,2.f,0.f);
-//        m_transform.setRotation(20.f,35.f,10.f);
-//        m_transform.setScale(1.5f,1.5f,1.5f);
-//        loadShader<false>(m_transform.getMatrix());
-//        prim->draw( "cube" );
-//    }
+    // This is neither a selectable or movable object. MayaNGL has no
+    // control over it.
+    m_transform.reset();
+    {
+        m_transform.setPosition(-6.f,2.f,0.f);
+        m_transform.setRotation(20.f,35.f,10.f);
+        m_transform.setScale(1.5f,1.5f,1.5f);
+        loadShader<false>(m_transform.getMatrix());
+        prim->draw( "cube" );
+    }
 
     // This is also a movable object.
     {
@@ -141,25 +140,25 @@ void NGLScene::paintGL()
         m_maya.make_selectable_and_movable(3,m_fish_mesh,m_fish_model);
     }
 
-//    // This is only a selectable object.
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(8.f,0.f,0.f);
-//        loadShader<false>(m_transform.getMatrix());
-//        prim->draw( "football" );
-//        m_maya.make_selectable(4,"football",m_transform);
-//    }
+    // This is only a selectable object.
+    m_transform.reset();
+    {
+        m_transform.setPosition(8.f,0.f,0.f);
+        loadShader<false>(m_transform.getMatrix());
+        prim->draw( "football" );
+        m_maya.make_selectable(4,"football",m_transform);
+    }
 
-//    // This is also only selectable.
-//    m_transform.reset();
-//    {
-//        m_transform.setPosition(0.f,1.f,-6.f);
-//        m_transform.setRotation(-20.f,0.f,0.f);
-//        m_transform.setScale(3.f,3.f,3.f);
-//        loadShader<false>(m_transform.getMatrix());
-//        m_airplane_mesh.draw();
-//        m_maya.make_selectable(5,m_airplane_mesh,m_transform);
-//    }
+    // This is also only selectable.
+    m_transform.reset();
+    {
+        m_transform.setPosition(0.f,1.f,-6.f);
+        m_transform.setRotation(-20.f,0.f,0.f);
+        m_transform.setScale(3.f,3.f,3.f);
+        loadShader<false>(m_transform.getMatrix());
+        m_airplane_mesh.draw();
+        m_maya.make_selectable(5,m_airplane_mesh,m_transform);
+    }
 
     // Draw the gizmo last so that it'll be "on top" of everything else.
     m_maya.draw_gizmo();

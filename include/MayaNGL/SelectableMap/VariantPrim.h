@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MayaNGL/Common/Common_Def.hpp"
+#include "MayaNGL/BoundingVolumes/BoundingVolumes.h"
 
 
 class VariantPrim
@@ -20,6 +21,9 @@ class VariantPrim
         // This needs to be a copy because Transformation::getMatrix() returns a copy.
         mc::Transform m_transform;
 
+    public:
+        BoundingVolume<mc::Sphere,false> bv;
+
     private:
         template<typename T>
         using sfinae_type = std::enable_if_t<!std::is_trivially_constructible<T>::value>;
@@ -30,19 +34,19 @@ class VariantPrim
         template<typename T, typename = sfinae_type<T>>
         VariantPrim( T *primitive_,
                      const mc::Transform &transform_,
-                     bool is_moveable_ = false );
+                     bool is_moveable_ = false);
 
         template <typename T, template<typename, typename = std::default_delete<T> > class SmPtr>
-        VariantPrim( const SmPtr<T> &val_,
+        VariantPrim( const SmPtr<T> &primitive_,
                      const mc::Transform &transform_,
                      bool is_moveable_ = false );
 
         template<typename T, typename = sfinae_type<T>>
-        VariantPrim( const T &val_,
+        VariantPrim( const T &primitive_,
                      const mc::Transform &transform_,
                      bool is_moveable_ = false );
 
-        VariantPrim( std::string &&val_,
+        VariantPrim( std::string &&primitive_,
                      const mc::Transform &transform_,
                      bool is_moveable_ = false );
 

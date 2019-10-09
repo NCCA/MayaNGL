@@ -3,8 +3,8 @@
 #include "BaseSelection.h"
 
 
-template<bool visualize_bv_and_ray = false>
-class Select final : public BaseSelection<visualize_bv_and_ray>
+template<bool visualization = false>
+class Select final : public BaseSelection<visualization>
 {
     private:
         bool m_multi_selection;

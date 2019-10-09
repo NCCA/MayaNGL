@@ -9,7 +9,7 @@ namespace mc //maya common
     struct Ray
     {
         Position position;
-        Direction direction;
+        Direction direction = Direction::in();
     };
 
     struct Sphere
@@ -72,8 +72,6 @@ namespace mc //maya common
             centre.m_y = (end_points[bottom].m_y + end_points[top].m_y) * 0.5f;
             centre.m_z = (end_points[back].m_z + end_points[front].m_z) * 0.5f;
         }
-
-
     };
 
     template<bool infinite>

@@ -2,12 +2,12 @@
 #include "MayaNGL/SelectableMap/VariantPrim_Def.hpp"
 
 
-VariantPrim::VariantPrim( std::string &&val_,
+VariantPrim::VariantPrim( std::string &&primitive_,
                           const mc::Transform &transform_,
                           bool is_moveable_ )
                           :
                           m_is_moveable(is_moveable_),
-                          m_prim_ptr{std::make_unique<Generic<std::string>>(std::move(val_))},
+                          m_prim_ptr{std::make_unique<Generic<std::string>>(std::move(primitive_))},
                           m_transform(transform_)
 {;}
 
