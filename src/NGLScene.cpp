@@ -140,13 +140,14 @@ void NGLScene::paintGL()
         m_maya.make_selectable_and_movable(3,m_fish_mesh,m_fish_model);
     }
 
-    // This is only a selectable object.
+    // This is marked as a movable object, however due to the usage of ngl::Transform
+    // it can only be a selectable object.
     m_transform.reset();
     {
         m_transform.setPosition(8.f,0.f,0.f);
         loadShader<false>(m_transform.getMatrix());
         prim->draw( "football" );
-        m_maya.make_selectable(4,"football",m_transform);
+        m_maya.make_selectable_and_movable(4,"football",m_transform);
     }
 
     // This is also only selectable.

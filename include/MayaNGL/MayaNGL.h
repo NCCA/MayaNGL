@@ -48,6 +48,14 @@ class MayaNGL
         template<typename PRIM>
         void make_selectable(std::size_t id_, PRIM &&prim_, const mc::Transform &transform_);
 
+
+        template<typename PRIM, typename T, typename = std::enable_if_t<
+                                                           std::is_same<
+                                                               decltype(std::declval<T>().getMatrix()),mc::Transform
+                                                                       >::value
+                                                                       >>
+        void make_selectable_and_movable(std::size_t id_, PRIM &&prim_, T &transform_);
+
         template<typename PRIM>
         void make_selectable_and_movable(std::size_t id_, PRIM &&prim_, mc::Transform &transform_);
 

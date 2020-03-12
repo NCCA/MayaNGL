@@ -20,33 +20,45 @@
  *      Currently const & objects cannot call them.
  * (2)  Vec::normalize() should have an overload that returns a
  *      copy which can be used in constructors.
- * (3)  Make model matrix and/or ngl::Transformation a singleton.
- *      I **think** that maya has only on model
- *      matrix in the graphics side. The user is able to modify the
- *      attributes of each object from the ui.
+ * (3)  Allow ngl::Transformation to be referenced.
  * (4)  Implement an Axis-Based rotation matrix (see below).
- * (*5*)  ngl::Transformation::getMatrix() should not return a copy.
+ * (5)  Getter functions should not return a copy.
+ *      ngl::Transformation::getMatrix() should not return a copy.
  * (6)  Create a function that can update the font size in ngl::Text.
  * (7)  Create a copy constructor in ngl::Transformation that takes
  *      an ngl::Mat4 as a parameter.
  * (8)  get vertex data from VAOPrimitives.
- * (9)  Convert Matrix to Euler Rotations.
- * (10) Access the static id of each ngl::VAOPrimitive that's created.
+ * (9)  Add a convert Matrix to Euler Rotations function.
+ * (10) Access the static id of each ngl::VAOPrimitive that's
+ *      created.
  * (11) ngl::Mat4::scale does not work properly.
  * (12) Why isn't ngl::Vec3 * working with ngl::AbstractVAO in the
  *      Base_Selection class.
- * (13) UB when passing an ngl::Transformation as a templated function
- *      argument. This is because the function getMatrix() returns a
- *      copy and not a const&, which means that the local object returned
- *      by getMatrix() gets deleted at the end of scope.
- * (14) Bug with Mat4::rotateX(90.f) and then Mat4::rotateY(0.f). RotateY
- *      seems to affect the transformation even when it's set to 0.
- * (15) Cannot overload make_selectable_and_movable() for ngl::Transform
- *      because the .getMatrix() returns a copy which is deleted.
- * (16) AbstractMesh::calcBoundingSphere() is not accurate0. The function
- *      accumulates all vertex positions and finds the average position.
- *      However, this does not work when the imported obj is heavily meshed
- *      on one side (ex: fish model).
+ * (13) UB when passing an ngl::Transformation as a templated
+ *      function argument. This is because the function getMatrix()
+ *      returns a copy and not a const&, which means that the local
+ *      object returned by getMatrix() gets deleted at the end of
+ *      scope.
+ * (14) Bug with Mat4::rotateX(90.f) and then Mat4::rotateY(0.f).
+ *      RotateY seems to affect the transformation even when it's
+ *      set to 0.
+ * (15) Cannot overload make_selectable_and_movable() for
+ *      ngl::Transform because the .getMatrix() returns a copy
+ *      which is deleted. I used a static copy as a hack around it.
+ * (16) AbstractMesh::calcBoundingSphere() is not accurate. The
+ *      function accumulates all vertex positions and finds the
+ *      average position. However, this does not work when the
+ *      imported obj is heavily meshed on one side (ex: fish).
+ * (17) vec3 * mat3 has a different output than vec3 * mat4.
+ * (18) UB for Vec3 that uses an anonymus union-struct and array
+ *      to access the members.
+ * (19) ngl::Obj cannot be referenced. The unique_ptr deleter
+ *      releases the memory when referenced. This is due to the
+ *      inherited ngl::AbstractVAO which is designed not to be
+ *      referenced once a VAO is created. Decouple ngl::Obj with
+ *      the VAO creation.
+ * (20) Overload Mat4 setter functions (translation,scale) to
+ *      accept ngl::Vec3 objects.
 */
 
 
